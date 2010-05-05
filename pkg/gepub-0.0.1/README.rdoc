@@ -1,6 +1,6 @@
 = gepub
 
-* http://github.com/#{github_username}/#{project_name}
+* http://github.com/skoji/gepub
 
 == DESCRIPTION:
 
@@ -17,7 +17,8 @@ a good-enough EPUB generator library.
 
 == SYNOPSIS:
 
-  require 'epub'
+  require 'rubygems'
+  require 'gepub'
   require 'fileutils'
 
   epubdir = "testepub"
@@ -25,7 +26,7 @@ a good-enough EPUB generator library.
   FileUtils.rm_rf(epubdir)
   FileUtils.mkdir(epubdir)
 
-  epub = EPUB::Contents.new(title)
+  epub = GEPUB::Generator.new(title)
   epub.author="the author"
   epub.publisher="the publisher"
   epub.date = "2010-05-03"
@@ -75,7 +76,7 @@ a good-enough EPUB generator library.
 
 == INSTALL:
 
-* gem install gepub
+* rake install_gem 
 
 == LICENSE:
 
