@@ -77,7 +77,7 @@ a good-enough EPUB generator library.
 
 == INSTALL:
 
-* rake install_gem 
+* gem install gepub
 
 == LICENSE:
 
