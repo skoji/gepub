@@ -4,5 +4,5 @@ $:.unshift(File.dirname(__FILE__)) unless
 require 'gepub/generator'
 
 module GEPUB
-  VERSION = '0.0.1'
+  VERSION = '0.0.2'
 end

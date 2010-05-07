@@ -8,7 +8,7 @@ module GEPUB
   class Generator
 
     attr_accessor :spine
-    
+
     def initialize(title)
       @metadata = Hash.new
       @manifest = Hash.new
@@ -16,9 +16,12 @@ module GEPUB
       @toc = Array.new
       @metadata[:title] = title
       @manifest['ncx'] = { :href => 'toc.ncx', :mediatype => 'application/x-dtbncx+xml' }
-
+      @contents_prefix = "" # may insert "OEBPS/"
     end
 
+    def contents_prefix=(prefix)
+      @contents_prefix =  prefix + "/"
+    end
     def title
       @metadata[:title]
     end
@@ -101,7 +104,7 @@ EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">
   <rootfiles>
-    <rootfile full-path="content.opf" media-type="application/oebps-package+xml"/>
+    <rootfile full-path="#{@contents_prefix}content.opf" media-type="application/oebps-package+xml"/>
   </rootfiles>
 </container>
 EOF
@@ -162,7 +165,7 @@ EOF
     end
 
     def create_opf(destdir)
-      File.open(destdir + "/content.opf", 'w') { | file | file << opf_xml }
+      File.open(destdir + "/" + @contents_prefix + "content.opf", 'w') { | file | file << opf_xml }
     end
 
     def ncx_xml
@@ -215,7 +218,7 @@ EOF
     end
     
     def create_toc(destdir)
-      File.open(destdir + "/toc.ncx", 'w') {
+      File.open(destdir + "/" + @contents_prefix + "toc.ncx", 'w') {
         |file|
         file << ncx_xml
       }
