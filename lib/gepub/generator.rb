@@ -38,6 +38,14 @@ module GEPUB
       @metadata[:creator] = author
     end
 
+    def contributor
+      @metadata[:contributor]
+    end
+    
+    def contributor=(contributor)
+      @metadata[:contributor] = contributor
+    end
+
     def publisher
       @metadata[:publisher]
     end

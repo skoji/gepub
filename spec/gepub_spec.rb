@@ -3,26 +3,11 @@ require File.dirname(__FILE__) + '/spec_helper.rb'
 require 'rubygems'
 require 'xml/libxml'
 
-# for parsing only elements. DO I REALLY NEED THIS !?
-class LibXML::XML::Node
-  def next_element
-    r = self.next
-    r = r.next while !r.element?
-    r            
-  end
-
-  def first_child_element
-    r = self.first
-    r = r.next_element if !r.element?
-    r
-  end
-end
-
-
 describe GEPUB::Generator do
   before do
     @generator = GEPUB::Generator.new('thetitle')
     @generator.author = "theauthor"
+    @generator.contributor = "contributors contributors!"
     @generator.publisher = "thepublisher"
     @generator.date = "2010-05-05"
     @generator.identifier = "http://example.jp/foobar/"
@@ -111,5 +96,15 @@ describe GEPUB::Generator do
     spine['toc'].should == 'ncx'
     spine.find_first('a:itemref')['idref'].should == 'c1'
   end
-  
+
+  it "should have correct cover image" do
+
+    @generator.addCoverImage("/path/to/cover.jpg")
+    opf = LibXML::XML::Parser.string(@generator.opf_xml).parse
+    opf.root.namespaces.default_prefix='a'
+
+    
+
+  end
+
 end
