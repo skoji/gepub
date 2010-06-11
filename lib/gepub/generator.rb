@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 require 'rubygems'
 require 'xml/libxml'
+require 'zipruby'
 require 'fileutils'
 
 
@@ -90,8 +91,19 @@ module GEPUB
       FileUtils.cd("#{destdir}") {
         |dir|
         epubname = "#{realtarget}/#{epubname}.epub"
-        %x(zip -0X \"#{epubname}\" \"mimetype\")
-        %x(zip -r9XD \"#{epubname}\" * -x mimetype)
+
+        Zip::Archive.open(epubname, Zip::CREATE | Zip::TRUNC, Zip::NO_COMPRESSION) do
+          |epubfile|
+          epubfile.add_file("mimetype")
+        end
+
+        Zip::Archive.open(epubname, Zip::CREATE) do
+          |epubfile|
+          Dir["**/*"].each do
+            |file|
+            epubfile.add_file(f,f) unless File.basename(f) == 'mimetype'
+          end
+        end
       }
     end
 
