@@ -73,7 +73,8 @@ a good-enough EPUB generator library.
   
 == REQUIREMENTS:
 
-* LibXML
+* libxml-ruby
+* zipruby
 
 == INSTALL:
 

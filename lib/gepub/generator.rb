@@ -23,6 +23,7 @@ module GEPUB
     def contents_prefix=(prefix)
       @contents_prefix =  prefix + "/"
     end
+
     def title
       @metadata[:title]
     end
@@ -79,6 +80,10 @@ module GEPUB
       @toc.push({ :id => id, :text => text, :ref => ref})
     end
 
+    def addCoverImage(id, href)
+      
+    end
+
     def create(destdir)
       create_mimetype(destdir)
       create_container(destdir)
@@ -100,7 +105,7 @@ module GEPUB
         Zip::Archive.open(epubname, Zip::CREATE) do
           |epubfile|
           Dir["**/*"].each do
-            |file|
+            |f|
             epubfile.add_file(f,f) unless File.basename(f) == 'mimetype'
           end
         end

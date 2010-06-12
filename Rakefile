@@ -11,6 +11,8 @@ begin
     gem.homepage = "http://github.com/skoji/gepub"
     gem.authors = ["KOJIMA Satoshi"]
     gem.add_development_dependency "rspec", ">= 1.2.9"
+	gem.add_dependency('libxml-ruby', ">= 1.1.4")
+	gem.add_dependency('zipruby', ">= 0.3.6")
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
   Jeweler::GemcutterTasks.new

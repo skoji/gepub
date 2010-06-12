@@ -99,12 +99,15 @@ describe GEPUB::Generator do
 
   it "should have correct cover image" do
 
-    @generator.addCoverImage("/path/to/cover.jpg")
+    @generator.addCoverImage("theId", "path/to/cover.jpg")
     opf = LibXML::XML::Parser.string(@generator.opf_xml).parse
     opf.root.namespaces.default_prefix='a'
 
+    metadata = opf.find_first('a:metadata')
+    metacover = metadata.find_first('meta')
+    metacover['name'].should == 'cover'
+    metacover['content'].should == 'theId'
     
-
   end
 
 end
