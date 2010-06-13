@@ -80,8 +80,8 @@ module GEPUB
       @toc.push({ :id => id, :text => text, :ref => ref})
     end
 
-    def addCoverImage(id, href)
-      
+    def specifyCoverImage(id)
+      @metadata[:cover] = id
     end
 
     def create(destdir)
@@ -161,10 +161,16 @@ EOF
       metadataelem << XML::Node.new('dc:language', 'ja')
 
       @metadata.each { | k, v |
-        metadataelem << node = XML::Node.new("dc:#{k}",v)
-        if (k == :identifier)
-          node['id'] = 'BookID'
-          node['opf:scheme'] = 'URL'
+        if (k == :cover)
+          metadataelem << node = XML::Node.new("meta")
+          node['name'] = 'cover'
+          node['content'] = v
+        else
+          metadataelem << node = XML::Node.new("dc:#{k}",v)
+          if (k == :identifier)
+            node['id'] = 'BookID'
+            node['opf:scheme'] = 'URL'
+          end
         end
       }
 
