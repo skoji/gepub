@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require 'rubygems'
 require 'xml/libxml'
-require 'zipruby'
+require 'zip/zip'
 require 'fileutils'
 
 
@@ -90,29 +90,31 @@ module GEPUB
       create_toc(destdir)
       create_opf(destdir)
     end
-
+    
     def create_epub(destdir, targetdir, epubname = @metadata[:title])
       realtarget = File::expand_path(targetdir)
-      FileUtils.cd("#{destdir}") {
+      FileUtils.cd("#{destdir}") do
         |dir|
         epubname = "#{realtarget}/#{epubname}.epub"
+        File.delete(epubname) if File.exist?(epubname)
+        
+        Zip::ZipOutputStream::open(epubname) {
+          |epub|
+          epub.put_next_entry('mimetype', '', '', Zip::ZipEntry::STORED)
+          epub << "application/epub+zip"
 
-        Zip::Archive.open(epubname, Zip::CREATE | Zip::TRUNC, Zip::NO_COMPRESSION) do
-          |epubfile|
-          epubfile.add_buffer("mimetype", "application/epub+zip")
-          # epubfile.add_file("mimetype")
-        end
-
-        Zip::Archive.open(epubname, Zip::CREATE, Zip::BEST_COMPRESSION) do
-          |epubfile|
           Dir["**/*"].each do
             |f|
             if File.basename(f) != 'mimetype' && !File.directory?(f)
-             epubfile.add_file(f,f)
+              File.open(f,'rb') do
+                |file|
+                epub.put_next_entry(f)
+                epub << file.read
+              end
             end
           end
-        end
-      }
+        }
+      end
     end
 
     def mimetype_contents
