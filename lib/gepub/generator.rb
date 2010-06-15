@@ -99,14 +99,17 @@ module GEPUB
 
         Zip::Archive.open(epubname, Zip::CREATE | Zip::TRUNC, Zip::NO_COMPRESSION) do
           |epubfile|
-          epubfile.add_file("mimetype")
+          epubfile.add_buffer("mimetype", "application/epub+zip")
+          # epubfile.add_file("mimetype")
         end
 
-        Zip::Archive.open(epubname, Zip::CREATE) do
+        Zip::Archive.open(epubname, Zip::CREATE, Zip::BEST_COMPRESSION) do
           |epubfile|
           Dir["**/*"].each do
             |f|
-            epubfile.add_file(f,f) unless File.basename(f) == 'mimetype'
+            if File.basename(f) != 'mimetype' && !File.directory?(f)
+             epubfile.add_file(f,f)
+            end
           end
         end
       }
