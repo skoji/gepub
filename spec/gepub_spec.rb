@@ -3,6 +3,60 @@ require File.dirname(__FILE__) + '/spec_helper.rb'
 require 'rubygems'
 require 'xml/libxml'
 
+describe GEPUB::Item do
+  it "should return atttributes" do
+    item = GEPUB::Item.new('theid', 'foo/bar.bar', 'application/xhtml+xml')
+    item.id.should == 'theid'
+    item.href.should == 'foo/bar.bar'
+    item.mediatype.should == 'application/xhtml+xml'
+  end
+
+  it "should handle html" do
+    item = GEPUB::Item.new('id', 'text/foo.html')
+    item.mediatype.should == 'application/xhtml+xml'
+  end
+
+  it "should handle xhtml" do
+    item = GEPUB::Item.new('id', 'text/foo.xhtml')
+    item.mediatype.should == 'application/xhtml+xml'
+  end
+
+  it "should handle JPG" do
+    item = GEPUB::Item.new('id', 'img/foo.JPG')
+    item.mediatype.should == 'image/jpeg'
+  end
+
+end
+
+describe GEPUB::Book do
+  before do
+    @generator = GEPUB::Book.new('thetitle')
+    @generator.author = "theauthor"
+    @generator.contributor = "contributors contributors!"
+    @generator.publisher = "thepublisher"
+    @generator.date = "2010-05-05"
+    @generator.identifier = "http://example.jp/foobar/"
+
+    c1 = @generator.add_ref_to_item('c1', 'text/foobar.html')
+    c2 = @generator.add_ref_to_item('c2', 'text/barbar.html')
+    @generator.add_nav(c2, 'test chapter')
+    @generator.spine.push(c1)
+  end
+
+  it "should have titile"  do
+    @generator.title.should == 'thetitle' 
+  end
+
+  it "should generate correct ncx"  do
+    ncx = LibXML::XML::Parser.string(@generator.ncx_xml).parse
+    ncx.root.name.should == 'ncx'
+    ncx.root.attributes['version'].should == '2005-1'
+    ncx.root.namespaces.namespace.href.should == 'http://www.daisy.org/z3986/2005/ncx/'
+  end
+  
+end
+
+# GEPUB::Generator is deprecated
 describe GEPUB::Generator do
   before do
     @generator = GEPUB::Generator.new('thetitle')

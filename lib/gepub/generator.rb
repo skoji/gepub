@@ -75,7 +75,7 @@ module GEPUB
     def addManifest(id, href, mediatype)
       @manifest[id] = { :href => href, :mediatype => mediatype }
     end
-    
+
     def addNav(id, text, ref)
       @toc.push({ :id => id, :text => text, :ref => ref})
     end
@@ -93,6 +93,7 @@ module GEPUB
     
     def create_epub(destdir, targetdir, epubname = @metadata[:title])
       realtarget = File::expand_path(targetdir)
+
       FileUtils.cd("#{destdir}") do
         |dir|
         epubname = "#{realtarget}/#{epubname}.epub"
