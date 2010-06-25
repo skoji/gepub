@@ -11,6 +11,7 @@ module GEPUB
     attr_accessor :spine
 
     def initialize(title)
+      warn('GEPUB::Generator is obsolete. use GEPUB::Book instead.')
       @metadata = Hash.new
       @manifest = Hash.new
       @spine = Array.new

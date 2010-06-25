@@ -7,7 +7,7 @@ require 'fileutils'
 
 module GEPUB
   class Book
-    attr_accessor :spine, :basedir
+    attr_accessor :spine
 
     def initialize(title, contents_prefix="")
       @metadata = {}
@@ -18,10 +18,6 @@ module GEPUB
       @contents_prefix = contents_prefix # may insert "OEBPS"
       @contents_prefix = @contents_prefix + "/" if contents_prefix != ""
       @itemcount = 0
-    end
-
-    def use_existing_dir(dir)
-      @basedir = dir
     end
 
     def title
@@ -84,8 +80,8 @@ module GEPUB
       add_ref_to_item(href, itemid).add_content(io)
     end
 
-    def add_sequential_item(href, io, itemid = nil)
-      item = add_ref_to_item(href, itemid).add_content(io)
+    def add_ordered_item(href, io)
+      item = add_ref_to_item(href).add_content(io)
       @spine.push(item)
       item
     end
