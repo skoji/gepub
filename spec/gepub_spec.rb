@@ -1,7 +1,9 @@
-require File.dirname(__FILE__) + '/spec_helper.rb'
+# need to install 'epubcheck'.
 
+require File.dirname(__FILE__) + '/spec_helper.rb'
 require 'rubygems'
 require 'xml/libxml'
+
 
 describe GEPUB::Item do
   it "should return atttributes" do
@@ -37,8 +39,13 @@ describe GEPUB::Book do
     @generator.date = "2010-05-05"
     @generator.identifier = "http://example.jp/foobar/"
     item1 = @generator.add_ref_to_item('text/foobar.html','c1')
+    item1.add_content(StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c1</title></head><body><p>the first page</p></body></html>'))
+
     item2 = @generator.add_ref_to_item('text/barbar.html','c2')
+    item2.add_content(StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title></head><body><p>second page, whith is test chapter.</p></body></html>'))
+
     @generator.spine.push(item1)
+    @generator.spine.push(item2)
     @generator.add_nav(item2, 'test chapter')
   end
 
@@ -132,7 +139,6 @@ describe GEPUB::Book do
   end
 
   it "should have correct cover image id" do
-
     item = @generator.add_ref_to_item("img/img.jpg")
     @generator.specify_cover_image(item)
 
@@ -143,7 +149,12 @@ describe GEPUB::Book do
     metacover = metadata.find_first('a:meta')
     metacover['name'].should == 'cover'
     metacover['content'].should == item.itemid
+  end
 
+  it "should generate correct epub" do
+    epubname = File.join(File.dirname(__FILE__), 'testepub.epub')
+    @generator.generate_epub(epubname)
+    %x( epubcheck #{epubname} )
   end
 
 end

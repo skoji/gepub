@@ -9,6 +9,7 @@ module GEPUB
     end
 
     def add_content(io)
+      io.binmode
       @content = io.read
       self
     end

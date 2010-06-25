@@ -102,7 +102,7 @@ module GEPUB
         Zip::ZipOutputStream::open(epubname) {
           |epub|
           epub.put_next_entry('mimetype', '', '', Zip::ZipEntry::STORED)
-          epub << "application/epub+zip"
+          epub << 'application/epub+zip'
 
           Dir["**/*"].each do
             |f|

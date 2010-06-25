@@ -17,7 +17,7 @@ module GEPUB
       @metadata[:title] = title
       @contents_prefix = contents_prefix # may insert "OEBPS"
       @contents_prefix = @contents_prefix + "/" if contents_prefix != ""
-
+      @itemcount = 0
     end
 
     def use_existing_dir(dir)
@@ -73,18 +73,19 @@ module GEPUB
     end
 
     def add_ref_to_item(href, itemid = nil)
-      itemid ||= 'item' + File.basename(href, '.*') 
+      itemid ||= 'item' + @itemcount.to_s
+      @itemcount = @itemcount + 1
       item = Item.new(itemid, href)
       @manifest << item
       item
     end
 
-    def add_item(href, io, id = null)
-      add_ref_to_item(href, id).add_content(io)
+    def add_item(href, io, itemid = nil)
+      add_ref_to_item(href, itemid).add_content(io)
     end
 
-    def add_sequential_item(href, io, id = null)
-      item = add_ref_to_item(href, id).add_content(io)
+    def add_sequential_item(href, io, itemid = nil)
+      item = add_ref_to_item(href, itemid).add_content(io)
       @spine.push(item)
       item
     end
@@ -98,14 +99,19 @@ module GEPUB
     end
 
     def generate_epub(path_to_epub)
-      add_item('toc.ncx', StringIO.new(nxc_xml), 'ncx')
+      if (@toc.size == 0)
+        @toc << { :item => @spine[0], :text => " " }
+      end
+
+      add_item('toc.ncx', StringIO.new(ncx_xml), 'ncx')
 
       File.delete(path_to_epub) if File.exist?(path_to_epub)
       Zip::ZipOutputStream::open(path_to_epub) {
         |epub|
+
         # create metadata files
         epub.put_next_entry('mimetype', '', '', Zip::ZipEntry::STORED)
-        epub << "application/epub.zip"
+        epub << "application/epub+zip"
 
         epub.put_next_entry('META-INF/container.xml')
         epub << container_xml
