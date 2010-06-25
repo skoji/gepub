@@ -6,7 +6,7 @@ require 'xml/libxml'
 describe GEPUB::Item do
   it "should return atttributes" do
     item = GEPUB::Item.new('theid', 'foo/bar.bar', 'application/xhtml+xml')
-    item.id.should == 'theid'
+    item.itemid.should == 'theid'
     item.href.should == 'foo/bar.bar'
     item.mediatype.should == 'application/xhtml+xml'
   end
@@ -36,39 +36,10 @@ describe GEPUB::Book do
     @generator.publisher = "thepublisher"
     @generator.date = "2010-05-05"
     @generator.identifier = "http://example.jp/foobar/"
-
-    c1 = @generator.add_ref_to_item('c1', 'text/foobar.html')
-    c2 = @generator.add_ref_to_item('c2', 'text/barbar.html')
-    @generator.add_nav(c2, 'test chapter')
-    @generator.spine.push(c1)
-  end
-
-  it "should have titile"  do
-    @generator.title.should == 'thetitle' 
-  end
-
-  it "should generate correct ncx"  do
-    ncx = LibXML::XML::Parser.string(@generator.ncx_xml).parse
-    ncx.root.name.should == 'ncx'
-    ncx.root.attributes['version'].should == '2005-1'
-    ncx.root.namespaces.namespace.href.should == 'http://www.daisy.org/z3986/2005/ncx/'
-  end
-  
-end
-
-# GEPUB::Generator is deprecated
-describe GEPUB::Generator do
-  before do
-    @generator = GEPUB::Generator.new('thetitle')
-    @generator.author = "theauthor"
-    @generator.contributor = "contributors contributors!"
-    @generator.publisher = "thepublisher"
-    @generator.date = "2010-05-05"
-    @generator.identifier = "http://example.jp/foobar/"
-
-    @generator.addManifest('c1', 'foobar.html', 'foo/bar')
-    @generator.addNav('c2', 'test chapter', 'foobar2.html')
-    @generator.spine.push('c1')
+    item1 = @generator.add_ref_to_item('text/foobar.html','c1')
+    item2 = @generator.add_ref_to_item('text/barbar.html','c2')
+    @generator.spine.push(item1)
+    @generator.add_nav(item2, 'test chapter')
   end
 
   it "should have titile"  do
@@ -114,7 +85,7 @@ describe GEPUB::Generator do
     
     nav_point.find_first('a:navLabel/a:text').content.should == 'test chapter'
     nav_point.find_first('a:content')['src'] == 'foobar2.html'
-    
+
   end
 
   it "should create correct opf" do
@@ -143,24 +114,35 @@ describe GEPUB::Generator do
 
     manifest = opf.find_first('a:manifest')
     manifest.find_first('a:item')['id'].should == 'c1'
-    manifest.find_first('a:item')['href'].should == 'foobar.html'    
-    manifest.find_first('a:item')['media-type'].should == 'foo/bar'
+    manifest.find_first('a:item')['href'].should == 'text/foobar.html'    
+    manifest.find_first('a:item')['media-type'].should == 'application/xhtml+xml'
 
     spine = opf.find_first('a:spine')
     spine['toc'].should == 'ncx'
     spine.find_first('a:itemref')['idref'].should == 'c1'
   end
 
+  it "should have correct metadata in opf" do
+    opf = LibXML::XML::Parser.string(@generator.opf_xml).parse
+    opf.root.namespaces.default_prefix='a'
+
+    metadata = opf.find_first('a:metadata')
+    metadata.find_first('dc:language').content.should == 'ja'
+    # TODO checking metadatas...
+  end
+
   it "should have correct cover image id" do
 
-    @generator.specifyCoverImage("theId")
+    item = @generator.add_ref_to_item("img/img.jpg")
+    @generator.specify_cover_image(item)
+
     opf = LibXML::XML::Parser.string(@generator.opf_xml).parse
     opf.root.namespaces.default_prefix='a'
 
     metadata = opf.find_first('a:metadata')
     metacover = metadata.find_first('a:meta')
     metacover['name'].should == 'cover'
-    metacover['content'].should == 'theId'
+    metacover['content'].should == item.itemid
 
   end
 

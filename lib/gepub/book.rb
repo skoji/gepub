@@ -7,15 +7,21 @@ require 'fileutils'
 
 module GEPUB
   class Book
-    attr_accessor :spine
+    attr_accessor :spine, :basedir
 
     def initialize(title, contents_prefix="")
       @metadata = {}
-      @manifest = {}
+      @manifest = []
       @spine = []
       @toc = []
       @metadata[:title] = title
-      @contents_prefix = contents_prefix # may insert "OEBPS/"
+      @contents_prefix = contents_prefix # may insert "OEBPS"
+      @contents_prefix = @contents_prefix + "/" if contents_prefix != ""
+
+    end
+
+    def use_existing_dir(dir)
+      @basedir = dir
     end
 
     def title
@@ -66,69 +72,56 @@ module GEPUB
       @metadata[:identifier] = id
     end
 
-    def add_ref_to_item(href, id = null)
-      id ||= 'item' + File.basename(href, '.*')
-      item = Item.new(id, href)
+    def add_ref_to_item(href, itemid = nil)
+      itemid ||= 'item' + File.basename(href, '.*') 
+      item = Item.new(itemid, href)
+      @manifest << item
+      item
     end
 
-    def add_existing_item(href, io, id = null)
+    def add_item(href, io, id = null)
       add_ref_to_item(href, id).add_content(io)
     end
-    
+
+    def add_sequential_item(href, io, id = null)
+      item = add_ref_to_item(href, id).add_content(io)
+      @spine.push(item)
+      item
+    end
+
     def add_nav(item, text)
-      @toc.push({ :id => item.id, :text => text,  :href => item.href })
+      @toc.push({ :item => item, :text => text})
     end
 
     def specify_cover_image(item)
-      @metadata[:cover] = item.id
+      @metadata[:cover] = item.itemid
     end
 
-    def create(destdir)
-      create_mimetype(destdir)
-      create_container(destdir)
-      create_toc(destdir)
-      create_opf(destdir)
-    end
-    
-    def create_epub(destdir, targetdir, epubname = @metadata[:title])
-      realtarget = File::expand_path(targetdir)
+    def generate_epub(path_to_epub)
+      add_item('toc.ncx', StringIO.new(nxc_xml), 'ncx')
 
-      FileUtils.cd("#{destdir}") do
-        |dir|
-        epubname = "#{realtarget}/#{epubname}.epub"
-        File.delete(epubname) if File.exist?(epubname)
-        
-        Zip::ZipOutputStream::open(epubname) {
-          |epub|
-          epub.put_next_entry('mimetype', '', '', Zip::ZipEntry::STORED)
-          epub << "application/epub+zip"
+      File.delete(path_to_epub) if File.exist?(path_to_epub)
+      Zip::ZipOutputStream::open(path_to_epub) {
+        |epub|
+        # create metadata files
+        epub.put_next_entry('mimetype', '', '', Zip::ZipEntry::STORED)
+        epub << "application/epub.zip"
 
-          Dir["**/*"].each do
-            |f|
-            if File.basename(f) != 'mimetype' && !File.directory?(f)
-              File.open(f,'rb') do
-                |file|
-                epub.put_next_entry(f)
-                epub << file.read
-              end
-            end
-          end
+        epub.put_next_entry('META-INF/container.xml')
+        epub << container_xml
+
+        epub.put_next_entry(@contents_prefix + 'content.opf')
+        epub << opf_xml
+
+        # create items
+        @manifest.each {
+          |item|
+          epub.put_next_entry(@contents_prefix + item.href)
+          epub << item.content
         }
-      end
-    end
-
-    def mimetype_contents
-      <<EOF
-application/epub+zip
-EOF
-    end
-    def create_mimetype(destdir)
-      File.open(destdir + '/mimetype', 'w') {
-        | file |
-        file << mimetype_contents
       }
     end
-
+    
     def container_xml
       <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
@@ -138,16 +131,6 @@ EOF
   </rootfiles>
 </container>
 EOF
-    end
-
-    def create_container(destdir)
-      infdir = destdir + "/META-INF"
-      Dir.mkdir(infdir) if !File.exist?(infdir)
-
-      File.open(infdir + "/container.xml", 'w') {
-        |file|
-        file << container_xml
-      }
     end
 
     def opf_xml
@@ -180,11 +163,12 @@ EOF
       }
 
       package << manifestelem = XML::Node.new('manifest')
-      @manifest.each {|k,v|
+      @manifest.each {
+        |item|
         manifestelem << node = XML::Node.new("item")
-        node['id'] = "#{k}"
-        node['href'] = "#{v[:href]}"
-        node['media-type'] = "#{v[:mediatype]}" 
+        node['id'] = "#{item.itemid}"
+        node['href'] = "#{item.href}"
+        node['media-type'] = "#{item.mediatype}" 
       }
       
       package << spineelem = XML::Node.new('spine')
@@ -193,15 +177,11 @@ EOF
       @spine.each {
         |v|
         spineelem << node = XML::Node.new('itemref')
-        node['idref'] = "#{v}"
+        node['idref'] = "#{v.itemid}"
       }
 
       result.to_s
 
-    end
-
-    def create_opf(destdir)
-      File.open(destdir + "/" + @contents_prefix + "content.opf", 'w') { | file | file << opf_xml }
     end
 
     def ncx_xml
@@ -236,14 +216,14 @@ EOF
       @toc.each {
         |x|
         nav_point = XML::Node.new('navPoint')
-        nav_point['id'] = "#{x[:id]}"
+        nav_point['id'] = "#{x[:item].itemid}"
         nav_point['playOrder'] = "#{count}"
         
         nav_label = XML::Node.new('navLabel')
         nav_label << XML::Node.new('text', "#{x[:text]}")
         
         nav_content = XML::Node.new('content')
-        nav_content['src'] = "#{x[:ref]}"
+        nav_content['src'] = "#{x[:item].href}"
         count = count + 1
 
         nav_map << nav_point
@@ -252,13 +232,5 @@ EOF
       }
       result.to_s
     end
-    
-    def create_toc(destdir)
-      File.open(destdir + "/" + @contents_prefix + "toc.ncx", 'w') {
-        |file|
-        file << ncx_xml
-      }
-    end
-
   end
 end

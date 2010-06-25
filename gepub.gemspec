@@ -16,13 +16,17 @@ Gem::Specification.new do |s|
     "README.rdoc"
   ]
   s.files = [
-    ".gitignore",
+    ".document",
+     ".gitignore",
      "README.rdoc",
      "Rakefile",
      "VERSION",
      "examples/example.rb",
+     "gepub.gemspec",
      "lib/gepub.rb",
+     "lib/gepub/book.rb",
      "lib/gepub/generator.rb",
+     "lib/gepub/item.rb",
      "spec/gepub_spec.rb",
      "spec/spec.opts",
      "spec/spec_helper.rb"

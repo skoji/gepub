@@ -1,15 +1,15 @@
 module GEPUB
   class Item
-    attr_accessor :id, :href, :mediatype, :content
+    attr_accessor :itemid, :href, :mediatype, :content
 
-    def initialize(id, href, mediatype = nil)
-      @id = id
+    def initialize(itemid, href, mediatype = nil)
+      @itemid = itemid
       @href = href
       @mediatype = mediatype || guess_mediatype
     end
 
     def add_content(io)
-      @content = io
+      @content = io.read
       self
     end
     
