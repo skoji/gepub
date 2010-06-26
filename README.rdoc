@@ -22,24 +22,20 @@ a good-enough EPUB generator library.
   require 'gepub'
   require 'fileutils'
 
-  epubdir = "testepub"
+  epubname = "testepub.epub"
   title = "samplepub"
-  FileUtils.rm_rf(epubdir)
-  FileUtils.mkdir(epubdir)
 
-  epub = GEPUB::Generator.new(title)
+  epub = GEPUB::Book.new(title)
   epub.author="the author"
   epub.publisher="the publisher"
   epub.date = "2010-05-03"
-  epub.identifier = "http://www.skoji.jp/testepub/2010-05-03"
+  epub.identifier = "http://www.skoji.jp/testepub/2010-06-26"
 
   # create test contents files
-
+  contents = {}
   [ 'coverpage', 'chapter1', 'chapter2' ].each {
-  |name|
-  File.open(epubdir + "/#{name}.html", 'w') {
-  |file|
-  file << <<EOF
+    |name|
+    contents[name] = <<EOF
   <?xml version="1.0" encoding="UTF-8"?>
   <html xmlns="http://www.w3.org/1999/xhtml" lang="ja" xml:lang="ja">
   <head>
@@ -52,24 +48,15 @@ a good-enough EPUB generator library.
   </html>
   EOF
   }
-  }
 
   # coverpage won't appear on toc, so do not call addNav
-  epub.addManifest('cover', "coverpage.html", 'application/xhtml+xml')
-  epub.spine.push('cover')
-
-
-  epub.addManifest('chap1', "chapter1.html", 'application/xhtml+xml')
-  epub.spine.push('chap1')
-  epub.addNav('chap1', 'Chapter 1', "chapter1.html")
-
-  epub.addManifest('chap2', "chapter2.html", 'application/xhtml+xml')
-  epub.spine.push('chap2')
-  epub.addNav('chap1', 'Chapter 2', "chapter2.html")
-
-
-  epub.create(epubdir)
-  epub.create_epub(epubdir, ".")
+  epub.add_ordered_item('coverpage.html', StringIO.new(contents['coverpage']))
+  
+  chap1 = epub.add_ordered_item("chapter1.html", StringIO.new(contents['chapter1']))
+  epub.add_nav(chap1, 'Chapter 1')
+  chap2 = epub.add_ordered_item("chapter2.html", StringIO.new(contents['chapter2']))
+  epub.add_nav(chap2, 'Chapter 2')
+  epub.generate_epub(epubname)
   
 == REQUIREMENTS:
 

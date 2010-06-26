@@ -94,6 +94,10 @@ module GEPUB
       @metadata[:cover] = item.itemid
     end
 
+    def cover_image_item
+      @metadata[:cover]
+    end
+
     def generate_epub(path_to_epub)
       if (@toc.size == 0)
         @toc << { :item => @spine[0], :text => " " }
