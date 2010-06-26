@@ -16,7 +16,7 @@ a good-enough EPUB generator library.
 * ncx: can't nest navPoint elements
 * ...and many other restrictions
 
-* note: GEPUB::Generator is now obsolete. use GEPUB::Bok.
+* note: GEPUB::Generator is now obsolete. use GEPUB::Book.
 
 == SYNOPSIS:
 
@@ -58,9 +58,13 @@ a good-enough EPUB generator library.
   epub.add_nav(chap1, 'Chapter 1')
   chap2 = epub.add_ordered_item("chapter2.html", StringIO.new(contents['chapter2']))
   epub.add_nav(chap2, 'Chapter 2')
+
+  # GEPUB::Book#add_ordered_item will added on <manifest> and <spine> section.
+  # if you want to add image file, use GEPUB::Book#add_item instead.
+
   epub.generate_epub(epubname)
   
-== REQUIREMENTS:
+== REQUIREMENTS: 
 
 * libxml-ruby
 * zipruby
