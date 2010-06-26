@@ -8,13 +8,15 @@ a good-enough EPUB generator library.
 
 == FEATURES/PROBLEMS:
 
-* GEPUB::Generator provides functionality to create ncx/opf, and epub file.
+* GEPUB::Book provides functionality to create ncx/opf, and epub file.
 
 * opf: can't specify creators with role
 * opf: can't specify date with event
 * opf: unique-identifier's scheme is fixed to 'URL'
 * ncx: can't nest navPoint elements
 * ...and many other restrictions
+
+* note: GEPUB::Generator is now obsolete. use GEPUB::Bok.
 
 == SYNOPSIS:
 
