@@ -67,7 +67,6 @@ describe GEPUB::Book do
     ncx.find_first('a:head').should_not be_nil
 
     ncx.find_first("a:head/a:meta[@name='dtb:uid']")['content'].should == "http://example.jp/foobar/"
-
     ncx.find_first("a:head/a:meta[@name='dtb:depth']").should_not be_nil
     ncx.find_first("a:head/a:meta[@name='dtb:totalPageCount']").should_not be_nil
     ncx.find_first("a:head/a:meta[@name='dtb:maxPageNumber']").should_not be_nil

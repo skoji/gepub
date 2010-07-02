@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["KOJIMA Satoshi"]
-  s.date = %q{2010-06-26}
+  s.date = %q{2010-07-02}
   s.description = %q{an easy-to-use (and easy-to-implement) EPUB generator.}
   s.email = %q{skoji@skoji.jp}
   s.extra_rdoc_files = [

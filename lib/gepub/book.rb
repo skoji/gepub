@@ -11,6 +11,7 @@ module GEPUB
 
     def initialize(title, contents_prefix="")
       @metadata = {}
+      @metadata[:identifier] = []
       @manifest = []
       @spine = []
       @toc = []
@@ -61,15 +62,20 @@ module GEPUB
     end
     
     def identifier
-      @metadata[:itentifier]
+      @main_identifier
     end
 
     def identifier=(id)
-      @metadata[:identifier] = id
+      @metadata[:identifier] << { :scheme => 'URL', :identifier => id, :main_id => true }
+      @main_identifier = id
+    end
+
+    def setIdentifier(scheme, identfier)
+      @metadata[:identifier] << { :scheme => scheme, :identifier => identifier }
     end
 
     def add_ref_to_item(href, itemid = nil)
-      itemid ||= 'item' + @itemcount.to_s
+      itemid ||= 'item' + @itemcount.to_s + "_" + File.basename(href, '.*')
       @itemcount = @itemcount + 1
       item = Item.new(itemid, href)
       @manifest << item
@@ -78,12 +84,6 @@ module GEPUB
 
     def add_item(href, io, itemid = nil)
       add_ref_to_item(href, itemid).add_content(io)
-    end
-
-    def add_ordered_item(href, io)
-      item = add_ref_to_item(href).add_content(io)
-      @spine.push(item)
-      item
     end
 
     def add_nav(item, text)
@@ -159,12 +159,17 @@ EOF
           metadataelem << node = XML::Node.new("meta")
           node['name'] = 'cover'
           node['content'] = v
+        elsif (k == :identifier)
+          v.each {
+            |id|
+            metadataelem << node = XML::Node.new("dc:#{k}",id[:identifier])
+            if (id[:main_id])
+              node['id'] = 'BookID'
+            end
+            node['opf:scheme'] = id[:scheme]
+          }
         else
           metadataelem << node = XML::Node.new("dc:#{k}",v)
-          if (k == :identifier)
-            node['id'] = 'BookID'
-            node['opf:scheme'] = 'URL'
-          end
         end
       }
 
@@ -199,7 +204,7 @@ EOF
       root << head = XML::Node.new('head')
       head << uid = XML::Node.new('meta')
       uid['name'] = 'dtb:uid'
-      uid['content'] = "#{@metadata[:identifier]}"
+      uid['content'] = "#{@main_identifier}"
 
       head << depth = XML::Node.new('meta')
       depth['name'] = 'dtb:depth'
