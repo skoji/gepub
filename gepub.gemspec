@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{gepub}
-  s.version = "0.1.1"
+  s.version = "0.1.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["KOJIMA Satoshi"]
-  s.date = %q{2010-07-06}
+  s.date = %q{2010-11-27}
   s.description = %q{an easy-to-use (and easy-to-implement) EPUB generator.}
   s.email = %q{skoji@skoji.jp}
   s.extra_rdoc_files = [
