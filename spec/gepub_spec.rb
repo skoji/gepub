@@ -40,12 +40,11 @@ describe GEPUB::Book do
     @generator.identifier = "http://example.jp/foobar/"
     item1 = @generator.add_ref_to_item('text/foobar.html','c1')
     item1.add_content(StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c1</title></head><body><p>the first page</p></body></html>'))
-
-    item2 = @generator.add_ref_to_item('text/barbar.html','c2')
-    item2.add_content(StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title></head><body><p>second page, whith is test chapter.</p></body></html>'))
-
     @generator.spine.push(item1)
-    @generator.spine.push(item2)
+
+    item2 = @generator.add_ordered_item('text/barbar.html',
+                                        StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title></head><body><p>second page, whith is test chapter.</p></body></html>'),
+                                        'c2')
     @generator.add_nav(item2, 'test chapter')
   end
 
@@ -145,9 +144,11 @@ describe GEPUB::Book do
     opf.root.namespaces.default_prefix='a'
 
     metadata = opf.find_first('a:metadata')
-    metacover = metadata.find_first('a:meta')
-    metacover['name'].should == 'cover'
-    metacover['content'].should == item.itemid
+    metas = metadata.find('a:meta').select {
+      |m| m['name'] == 'cover'
+    }
+    metas.length.should == 1
+    metas[0]['content'].should == item.itemid    
   end
 
   it "should generate correct epub" do

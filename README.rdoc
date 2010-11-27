@@ -18,6 +18,7 @@ a good-enough EPUB generator library.
 * ...and many other restrictions
 
 * note: GEPUB::Generator is now obsolete. use GEPUB::Book.
+* GEPUB::Book does not create directory. GEPUB::Book accepts IO object, not File.
 
 == SYNOPSIS:
 

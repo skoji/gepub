@@ -12,10 +12,11 @@ module GEPUB
     def initialize(title, contents_prefix="")
       @metadata = {}
       @metadata[:identifier] = []
+      @metadata[:title] = title
+      @metadata[:gepub_version] = '0.1'
       @manifest = []
       @spine = []
       @toc = []
-      @metadata[:title] = title
       @contents_prefix = contents_prefix # may insert "OEBPS"
       @contents_prefix = @contents_prefix + "/" if contents_prefix != ""
       @itemcount = 0
@@ -84,6 +85,12 @@ module GEPUB
 
     def add_item(href, io, itemid = nil)
       add_ref_to_item(href, itemid).add_content(io)
+    end
+
+    def add_ordered_item(href, io, itemid = nil)
+      item = add_item(href, io, itemid)
+      @spine.push(item)
+      item
     end
 
     def add_nav(item, text)
@@ -168,6 +175,10 @@ EOF
             end
             node['opf:scheme'] = id[:scheme]
           }
+        elsif (k == :gepub_version)
+          metadataelem << node = XML::Node.new("meta")
+          node['name'] = 'gepub version'
+          node['content'] = v
         else
           metadataelem << node = XML::Node.new("dc:#{k}",v)
         end
