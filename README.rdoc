@@ -32,7 +32,7 @@ a good-enough EPUB generator library.
   epub = GEPUB::Book.new(title)
   epub.author="the author"
   epub.publisher="the publisher"
-  epub.date = "2010-05-03"
+  epub.date = "2010-11-27"
   epub.identifier = "http://www.skoji.jp/testepub/2010-06-26"
 
   # create test contents files
