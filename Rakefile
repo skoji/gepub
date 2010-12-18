@@ -12,8 +12,10 @@ begin
     gem.authors = ["KOJIMA Satoshi"]
     gem.add_development_dependency "rspec", ">= 1.2.9"
     gem.add_development_dependency "epubcheck", ">= 0.1.0"
-	gem.add_dependency('libxml-ruby', ">= 1.1.4")
-	gem.add_dependency('rubyzip', ">= 0.9.4")
+    gem.add_development_dependency "bundler", ">= 1.0.7"
+    gem.add_development_dependency "jeweler", ">= 1.5.1"
+    gem.add_dependency('libxml-ruby', ">= 1.1.4")
+    gem.add_dependency('rubyzip', ">= 0.9.4")
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
   Jeweler::GemcutterTasks.new
