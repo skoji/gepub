@@ -10,7 +10,7 @@ begin
     gem.email = "skoji@skoji.jp"
     gem.homepage = "http://github.com/skoji/gepub"
     gem.authors = ["KOJIMA Satoshi"]
-    gem.add_development_dependency "rspec", ">= 1.2.9"
+    gem.add_development_dependency "rspec", ">= 1.2.9", "< 2"
     gem.add_development_dependency "epubcheck", ">= 0.1.0"
     gem.add_development_dependency "bundler", ">= 1.0.7"
     gem.add_development_dependency "jeweler", ">= 1.5.1"
