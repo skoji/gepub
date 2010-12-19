@@ -14,7 +14,6 @@ a good-enough EPUB generator library.
 * opf: can't specify date with event
 * opf: unique-identifier's scheme is fixed to 'URL'
 * ncx: can't nest navPoint elements
-* opf: oops!! it specifies lang='ja'. it's hardcoded. (*sigh*)
 * ...and many other restrictions
 
 * note: GEPUB::Generator is now obsolete. use GEPUB::Book.
@@ -34,6 +33,7 @@ a good-enough EPUB generator library.
   epub.publisher="the publisher"
   epub.date = "2010-11-27"
   epub.identifier = "http://www.skoji.jp/testepub/2010-06-26"
+  epub.locale = 'ja' #defaults to 'en'
 
   # create test contents files
   contents = {}
