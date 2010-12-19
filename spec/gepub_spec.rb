@@ -38,6 +38,7 @@ describe GEPUB::Book do
     @generator.publisher = "thepublisher"
     @generator.date = "2010-05-05"
     @generator.identifier = "http://example.jp/foobar/"
+    @generator.locale = 'ja'
     item1 = @generator.add_ref_to_item('text/foobar.html','c1')
     item1.add_content(StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c1</title></head><body><p>the first page</p></body></html>'))
     @generator.spine.push(item1)

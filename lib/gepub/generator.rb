@@ -19,6 +19,7 @@ module GEPUB
       @metadata[:title] = title
       @manifest['ncx'] = { :href => 'toc.ncx', :mediatype => 'application/x-dtbncx+xml' }
       @contents_prefix = "" # may insert "OEBPS/"
+      @locale = 'en'
     end
 
     def contents_prefix=(prefix)
@@ -71,6 +72,14 @@ module GEPUB
 
     def identifier=(id)
       @metadata[:identifier] = id
+    end
+    
+    def locale
+      @locale
+    end
+    
+    def locale=(locale)
+      @locale = locale
     end
 
     def addManifest(id, href, mediatype)
@@ -165,7 +174,7 @@ EOF
       XML::Namespace.new(metadataelem, 'opf', 'http://www.idpf.org/2007/opf')
       XML::Namespace.new(metadataelem, 'dc', "http://purl.org/dc/elements/1.1/")
 
-      metadataelem << XML::Node.new('dc:language', 'ja')
+      metadataelem << XML::Node.new('dc:language', @locale)
 
       @metadata.each { | k, v |
         if (k == :cover)

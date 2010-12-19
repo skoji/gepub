@@ -20,6 +20,7 @@ module GEPUB
       @contents_prefix = contents_prefix # may insert "OEBPS"
       @contents_prefix = @contents_prefix + "/" if contents_prefix != ""
       @itemcount = 0
+      @locale = 'en'
     end
 
     def title
@@ -69,6 +70,14 @@ module GEPUB
     def identifier=(id)
       @metadata[:identifier] << { :scheme => 'URL', :identifier => id, :main_id => true }
       @main_identifier = id
+    end
+
+    def locale
+      @locale
+    end
+
+    def locale=(locale)
+      @locale = locale
     end
 
     def setIdentifier(scheme, identfier)
@@ -159,7 +168,7 @@ EOF
       XML::Namespace.new(metadataelem, 'opf', 'http://www.idpf.org/2007/opf')
       XML::Namespace.new(metadataelem, 'dc', "http://purl.org/dc/elements/1.1/")
 
-      metadataelem << XML::Node.new('dc:language', 'ja')
+      metadataelem << XML::Node.new('dc:language', @locale)
 
       @metadata.each { | k, v |
         if (k == :cover)
