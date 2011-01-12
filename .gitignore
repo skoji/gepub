@@ -23,3 +23,5 @@ pkg
 
 ## BUNDLER
 Gemfile.lock
+vendor/**
+.bundle/**
