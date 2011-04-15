@@ -12,7 +12,8 @@ def srccheck(srcdir)
     exit 1
   end
   if !File.exist?(File.join(srcdir, 'gepuber.conf'))
-    STDERR.print "gepuber.conf does not exists in#{srcdir}."    
+    STDERR.print "gepuber.conf does not exists in#{srcdir}."
+    exit 1
   end
 end
 
@@ -39,11 +40,11 @@ srcdir = opt.parse(ARGV)[0]
 srccheck(srcdir)
 
 Dir.chdir(srcdir)
-do
+begin
   File.open('gepuber.conf', 'rb') {
     |io|
     gepuber = GEPUB::Gepuber.new(io.read)
+    gepuber.create destbasedir
   }
-  gepuber.create
 end
 

@@ -7,8 +7,19 @@ require 'fileutils'
 
 module GEPUB
   class Book
-    attr_accessor :spine
+    attr_accessor :spine, :locale
 
+    def self.def_meta(name, key = nil)
+      key ||= name
+      define_method name.to_sym do
+        instance_variable_get('@metadata')[key.to_sym]
+      end
+      define_method ( name.to_s + "=" ).to_sym do
+        |v|
+        instance_variable_get('@metadata')[key.to_sym] = v
+      end
+    end
+    
     def initialize(title, contents_prefix="")
       @metadata = {}
       @metadata[:identifier] = []
@@ -23,45 +34,11 @@ module GEPUB
       @locale = 'en'
     end
 
-    def title
-      @metadata[:title]
-    end
-
-    def title=(title)
-      @metadata[:title] = title
-    end
-
-    def author
-      @metadata[:creator]
-    end
-
-    def author=(author)
-      @metadata[:creator] = author
-    end
-
-    def contributor
-      @metadata[:contributor]
-    end
-    
-    def contributor=(contributor)
-      @metadata[:contributor] = contributor
-    end
-
-    def publisher
-      @metadata[:publisher]
-    end
-
-    def publisher=(publisher)
-      @metadata[:publisher] = publisher
-    end
-    
-    def date
-      @metadata[:date]
-    end
-
-    def date=(date)
-      @metadata[:date] = date
-    end
+    def_meta :title
+    def_meta :author, :creator
+    def_meta :contributor
+    def_meta :publisher
+    def_meta :date
     
     def identifier
       @main_identifier
@@ -70,14 +47,6 @@ module GEPUB
     def identifier=(id)
       @metadata[:identifier] << { :scheme => 'URL', :identifier => id, :main_id => true }
       @main_identifier = id
-    end
-
-    def locale
-      @locale
-    end
-
-    def locale=(locale)
-      @locale = locale
     end
 
     def setIdentifier(scheme, identfier)
