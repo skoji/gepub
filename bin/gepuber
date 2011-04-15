@@ -1,0 +1,49 @@
+require 'gepub'
+require 'optparse'
+
+def usage
+  STDERR.print "gepuber [-d destination ] <source-directory>\r\n"
+  exit 1
+end
+
+def srccheck(srcdir)
+  if !File.exist?(srcdir) || !File.directory?(srcdir) 
+    STDERR.print "#{srcdir} is not a directory"
+    exit 1
+  end
+  if !File.exist?(File.join(srcdir, 'gepuber.conf'))
+    STDERR.print "gepuber.conf does not exists in#{srcdir}."    
+  end
+end
+
+def destcheck(destdir)
+  if (File.exist?(destdir) && !File.directory?(destdir))
+    STDERR.print "#{destdir} is not a directory\n"
+    exit 1
+  end
+end
+
+destbasedir = "."
+
+opt = OptionParser.new
+
+usage if ARGV.length < 1
+
+opt.on('-d [directory]') { |dir|
+  destbasedir = dir
+}
+
+destbasedir = File.expand_path(destbasedir)
+
+srcdir = opt.parse(ARGV)[0]
+srccheck(srcdir)
+
+Dir.chdir(srcdir)
+do
+  File.open('gepuber.conf', 'rb') {
+    |io|
+    gepuber = GEPUB::Gepuber.new(io.read)
+  }
+  gepuber.create
+end
+
