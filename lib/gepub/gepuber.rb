@@ -40,7 +40,7 @@ module GEPUB
         |f, fio|
         item = add_item(f, fio)
         @spine << item
-        add_nav(item, @toc[f]) if !@toc[f].nil?
+        add_nav(item, @table_of_contents[f]) if !@table_of_contents[f].nil?
       }
 
       @provider.new(@resources).each {
