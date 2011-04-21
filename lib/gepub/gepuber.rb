@@ -1,63 +1,54 @@
 require 'rubygems'
 
 module GEPUB
-  class Gepuber
+  class Gepuber < GEPUB::Book
+    class FileProvider
+      include Enumerable
+      def initialize(pattern)
+        @list = Dir.glob(pattern)
+      end
+
+      def each (&block)
+        @list.each {
+          |f|
+          File.open(f, 'rb') {
+            |fio|
+            yield f, fio
+          }
+        }
+      end
+    end
+
+    attr_accessor :texts, :resources, :epubname, :coverimg, :table_of_contents, :provider
     
-    def self.book_setter(*namelist)
-      namelist.each {
-        |name|
-        define_method (name.to_sym) {
-          |arg|
-          @book.send(name.to_s + "=" , arg)
-        }
+    def initialize(param)
+      super('', 'OEBPS')
+      param.each {
+        |k,v|
+        self.send "#{k}=", v
       }
-    end
-
-    def self.attr_setter(*namelist)
-      namelist.each {
-        |name|
-        define_method (name.to_sym) {
-          |arg|
-          instance_variable_set("@" + name.to_s, arg)
-        }
-      }
-    end
-
-    attr_setter :texts, :resources, :epubname, :coverimg, :book, :toc
-    book_setter :title, :author, :publisher, :date, :identifier, :locale
-
-    def initialize(str)
-      @book = GEPUB::Book.new('', 'OEBPS')
-      @book.locale = 'ja'
-      instance_eval(str)
-      @texts ||= Dir.glob('[0-9]*.html')
-      @resources ||= Dir.glob('*.css') + Dir.glob(File.join('img', '*'))
+      @texts ||= ['[0-9]*.html'] 
+      @resources ||= ['*.css',  'img/*']
       @coverimg ||= 'cover.jpg'
-      @toc ||= {}
+      @table_of_contents ||= {}
       @epubname ||= 'gepuber_generated'
+      @provider ||= FileProvider
     end
 
     def create(destbasedir = ".")
-
-      @texts.each {
-        |f|
-        File.open(f,'rb') {
-          |fio|
-          item = @book.add_item(f, fio)
-          @book.spine << item
-          @book.add_nav(item, @toc[f]) if !@toc[f].nil?
-        }
+      @provider.new(@texts).each {
+        |f, fio|
+        item = @book.add_item(f, fio)
+        @spine << item
+        add_nav(item, @toc[f]) if !@toc[f].nil?
       }
 
-      @resources.each {
-        |f|
-        File.open(f,'rb') {
-          |fio|
-          item = @book.add_item(f, fio)
-          @book.specify_cover_image(item) if File.basename(f) == @coverimg
-        }
+      @provider.new(@resources).each {
+        |f, fio|
+        item = add_item(f, fio)
+        specify_cover_image(item) if File.basename(f) == @coverimg
       }
-      @book.generate_epub(File.join(destbasedir, @epubname + '.epub'))      
+      generate_epub(File.join(destbasedir, @epubname + '.epub'))      
     end
   end
 end

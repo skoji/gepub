@@ -43,7 +43,7 @@ Dir.chdir(srcdir)
 begin
   File.open('gepuber.conf', 'rb') {
     |io|
-    gepuber = GEPUB::Gepuber.new(io.read)
+    gepuber = GEPUB::Gepuber.new(eval("#{io.read}"))
     gepuber.create destbasedir
   }
 end
