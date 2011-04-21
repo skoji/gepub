@@ -10,7 +10,6 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["KOJIMA Satoshi"]
   s.date = %q{2011-04-21}
-  s.default_executable = %q{gepuber}
   s.description = %q{an easy-to-use (and easy-to-implement) EPUB generator.}
   s.email = %q{skoji@skoji.jp}
   s.executables = ["gepuber"]
@@ -39,7 +38,7 @@ Gem::Specification.new do |s|
   ]
   s.homepage = %q{http://github.com/skoji/gepub}
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.5.2}
+  s.rubygems_version = %q{1.7.2}
   s.summary = %q{a good-enough EPUB generator.}
   s.test_files = [
     "examples/example.rb",
