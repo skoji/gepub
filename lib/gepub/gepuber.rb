@@ -38,7 +38,7 @@ module GEPUB
     def create(destbasedir = ".")
       @provider.new(@texts).each {
         |f, fio|
-        item = @book.add_item(f, fio)
+        item = add_item(f, fio)
         @spine << item
         add_nav(item, @toc[f]) if !@toc[f].nil?
       }
