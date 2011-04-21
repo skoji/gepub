@@ -32,6 +32,7 @@ Gem::Specification.new do |s|
     "lib/gepub/gepuber.rb",
     "lib/gepub/item.rb",
     "spec/fixtures/testdata/0.html",
+    "spec/fixtures/testdata/1.html",
     "spec/gepub_spec.rb",
     "spec/gepuber_spec.rb",
     "spec/spec_helper.rb"
