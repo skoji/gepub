@@ -71,8 +71,8 @@ module GEPUB
       item
     end
 
-    def add_nav(item, text)
-      @toc.push({ :item => item, :text => text})
+    def add_nav(item, text, id = nil)
+      @toc.push({ :item => item, :text => text, :id => id})
     end
 
     def specify_cover_image(item)
@@ -223,7 +223,12 @@ EOF
         nav_label << XML::Node.new('text', "#{x[:text]}")
         
         nav_content = XML::Node.new('content')
-        nav_content['src'] = "#{x[:item].href}"
+        if x[:id].nil?
+          nav_content['src'] = "#{x[:item].href}"
+        else
+          nav_content['src'] = "#{x[:item].href}##{x[:id]}"
+        end
+        
         count = count + 1
 
         nav_map << nav_point

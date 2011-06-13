@@ -28,6 +28,7 @@ describe GEPUB::Gepuber do
       table_of_contents: {
         '1_.html' => '1st toc',
         '3_.html' => '3rd toc',
+        '3_.html#a1' => '3rd toc 2',
         '9_.html' => 'last toc'
       },
       coverimg: 'cover.gif',
@@ -44,7 +45,7 @@ describe GEPUB::Gepuber do
     gepuber.identifier.should == 'http://skoji.jp/gepuber/2011-03-11.0.0'
     gepuber.epubname.should == 'gepub_00'
     gepuber.coverimg.should == 'cover.gif'
-    gepuber.table_of_contents.should == {  '1_.html' => '1st toc',  '3_.html' => '3rd toc',  '9_.html' => 'last toc'}
+    gepuber.table_of_contents.should == {  '1_.html' => '1st toc',  '3_.html' => '3rd toc', '3_.html#a1' => '3rd toc 2','9_.html' => 'last toc'}
     gepuber.texts.should == ['*.html']
     gepuber.resources.should == ['*.css',  '*.gif']
 
