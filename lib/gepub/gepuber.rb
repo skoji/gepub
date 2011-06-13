@@ -45,7 +45,7 @@ module GEPUB
           @table_of_contents.each {
             |k,v|
             k =~ /^#{f}#(.*)$/
-            add_nav(item, @table_of_contents[f], $1) unless $1.nil?
+            add_nav(item, v, $1) unless $1.nil?
           }
         end
       }
