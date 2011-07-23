@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 require 'rubygems'
-require 'xml/libxml'
+require 'nokogiri'
 require 'zip/zip'
 require 'fileutils'
 
@@ -125,104 +125,101 @@ EOF
     end
 
     def opf_xml
-      result = XML::Document.new
-      result.root = XML::Node.new('package')
-      package = result.root
-      XML::Namespace.new(package, nil, 'http://www.idpf.org/2007/opf')
+      opf = Nokogiri::XML::Document.new
+      opf.root = package = Nokogiri::XML::Node.new('package', opf)
+      package.add_namespace(nil, 'http://www.idpf.org/2007/opf')
       package['version'] = '2.0'
       package['unique-identifier'] = 'BookID'
-
-
-      package << metadataelem = XML::Node.new('metadata')
-      XML::Namespace.new(metadataelem, 'opf', 'http://www.idpf.org/2007/opf')
-      XML::Namespace.new(metadataelem, 'dc', "http://purl.org/dc/elements/1.1/")
-
-      metadataelem << XML::Node.new('dc:language', @locale)
-
-      @metadata.each { | k, v |
+      package << metadataelem = Nokogiri::XML::Node.new('metadata', opf)
+      metadataelem.add_namespace('opf', 'http://www.idpf.org/2007/opf')
+      metadataelem.add_namespace('dc', "http://purl.org/dc/elements/1.1/")
+      metadataelem << lang = Nokogiri::XML::Node.new('dc:language', opf)
+      lang.content = @locale
+      @metadata.each { |k,v|
         if (k == :cover)
-          metadataelem << node = XML::Node.new("meta")
+          metadataelem << node = Nokogiri::XML::Node.new("meta", opf)
           node['name'] = 'cover'
           node['content'] = v
         elsif (k == :identifier)
           v.each {
             |id|
-            metadataelem << node = XML::Node.new("dc:#{k}",id[:identifier])
+            metadataelem << node = Nokogiri::XML::Node.new("dc:#{k}", opf)
+            node.content = id[:identifier]
             if (id[:main_id])
               node['id'] = 'BookID'
             end
             node['opf:scheme'] = id[:scheme]
           }
         elsif (k == :gepub_version)
-          metadataelem << node = XML::Node.new("meta")
+          metadataelem << node = Nokogiri::XML::Node.new("meta", opf)
           node['name'] = 'gepub version'
           node['content'] = v
         else
-          metadataelem << node = XML::Node.new("dc:#{k}",v)
+          metadataelem << node = Nokogiri::XML::Node.new("dc:#{k}",opf)
+          node.content = v
         end
       }
 
-      package << manifestelem = XML::Node.new('manifest')
+      package << manifestelem = Nokogiri::XML::Node.new('manifest', opf)
       @manifest.each {
         |item|
-        manifestelem << node = XML::Node.new("item")
+        manifestelem << node = Nokogiri::XML::Node.new("item", opf)
         node['id'] = "#{item.itemid}"
         node['href'] = "#{item.href}"
         node['media-type'] = "#{item.mediatype}" 
       }
-      
-      package << spineelem = XML::Node.new('spine')
+
+      package << spineelem = Nokogiri::XML::Node.new('spine', opf)
       spineelem['toc'] = 'ncx'
 
       @spine.each {
         |v|
-        spineelem << node = XML::Node.new('itemref')
+        spineelem << node = Nokogiri::XML::Node.new('itemref', opf)
         node['idref'] = "#{v.itemid}"
       }
-
-      result.to_s
-
+      opf.to_s
     end
+    
 
     def ncx_xml
-      result = XML::Document.new
-      result.root = XML::Node.new('ncx')
-      root = result.root
-      XML::Namespace.new(root, nil, "http://www.daisy.org/z3986/2005/ncx/")
+      ncx = Nokogiri::XML::Document.new
+      ncx.root = root = Nokogiri::XML::Node.new('ncx', ncx)
+      root.add_namespace(nil, "http://www.daisy.org/z3986/2005/ncx/")
       root['version'] = "2005-1"
-      root << head = XML::Node.new('head')
-      head << uid = XML::Node.new('meta')
+      root << head = Nokogiri::XML::Node.new('head', ncx)
+      head << uid = Nokogiri::XML::Node.new('meta', ncx)
       uid['name'] = 'dtb:uid'
       uid['content'] = "#{@main_identifier}"
 
-      head << depth = XML::Node.new('meta')
+      head << depth = Nokogiri::XML::Node.new('meta', ncx)
       depth['name'] = 'dtb:depth'
       depth['content'] = '1'
 
-      head << totalPageCount = XML::Node.new('meta')
+      head << totalPageCount = Nokogiri::XML::Node.new('meta', ncx)
       totalPageCount['name'] = 'dtb:totalPageCount'
       totalPageCount['content'] = '0'
 
-      head << maxPageNumber = XML::Node.new('meta')
+      head << maxPageNumber = Nokogiri::XML::Node.new('meta', ncx)
       maxPageNumber['name'] = 'dtb:maxPageNumber'
       maxPageNumber['content'] = '0'
 
+      root << docTitle = Nokogiri::XML::Node.new('docTitle', ncx)
+      docTitle << docTitleText = Nokogiri::XML::Node.new('text', ncx)
+      docTitleText.content = "#{@metadata[:title]}"
 
-      root << docTitle = XML::Node.new('docTitle')
-      docTitle << XML::Node.new('text', "#{@metadata[:title]}")
-      
-      root << nav_map = XML::Node.new('navMap')
+      root << nav_map = Nokogiri::XML::Node.new('navMap', ncx)
       count = 1
       @toc.each {
         |x|
-        nav_point = XML::Node.new('navPoint')
+        nav_point = Nokogiri::XML::Node.new('navPoint', ncx)
         nav_point['id'] = "#{x[:item].itemid}"
         nav_point['playOrder'] = "#{count}"
         
-        nav_label = XML::Node.new('navLabel')
-        nav_label << XML::Node.new('text', "#{x[:text]}")
+        nav_label = Nokogiri::XML::Node.new('navLabel', ncx)
+        nav_label << navtxt = Nokogiri::XML::Node.new('text', ncx)
+        navtxt.content = "#{x[:text]}"
         
-        nav_content = XML::Node.new('content')
+        nav_content = Nokogiri::XML::Node.new('content', ncx)
         if x[:id].nil?
           nav_content['src'] = "#{x[:item].href}"
         else
@@ -230,12 +227,11 @@ EOF
         end
         
         count = count + 1
-
         nav_map << nav_point
         nav_point << nav_label
         nav_point << nav_content
       }
-      result.to_s
+      ncx.to_s
     end
   end
 end
