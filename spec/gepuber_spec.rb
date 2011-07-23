@@ -3,8 +3,6 @@
 
 require File.dirname(__FILE__) + '/spec_helper.rb'
 require 'rubygems'
-require 'xml/libxml'
-
 
 describe GEPUB::Gepuber do
   it "should be initialized with empty conf" do
