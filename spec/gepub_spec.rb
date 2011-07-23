@@ -2,8 +2,7 @@
 
 require File.dirname(__FILE__) + '/spec_helper.rb'
 require 'rubygems'
-require 'xml/libxml'
-
+require 'nokogiri'
 
 describe GEPUB::Item do
   it "should return atttributes" do
@@ -54,102 +53,78 @@ describe GEPUB::Book do
   end
 
   it "should generate correct ncx"  do
-    ncx = LibXML::XML::Parser.string(@generator.ncx_xml).parse
-    ncx.root.name.should == 'ncx'
-    ncx.root.attributes['version'].should == '2005-1'
-    ncx.root.namespaces.namespace.href.should == 'http://www.daisy.org/z3986/2005/ncx/'
+    ncx = Nokogiri::XML.parse(@generator.ncx_xml).root
+    ncx.name.should == 'ncx'
+    ncx.attributes['version'].value.should == '2005-1'
+    ncx.namespaces['xmlns'] == 'http://www.daisy.org/z3986/2005/ncx/'
   end
 
   it "should have correct head in ncx" do
-    ncx = LibXML::XML::Parser.string(@generator.ncx_xml).parse
-    ncx.root.namespaces.default_prefix='a'
-
-    ncx.find_first('a:head').should_not be_nil
-
-    ncx.find_first("a:head/a:meta[@name='dtb:uid']")['content'].should == "http://example.jp/foobar/"
-    ncx.find_first("a:head/a:meta[@name='dtb:depth']").should_not be_nil
-    ncx.find_first("a:head/a:meta[@name='dtb:totalPageCount']").should_not be_nil
-    ncx.find_first("a:head/a:meta[@name='dtb:maxPageNumber']").should_not be_nil
+    head = Nokogiri::XML.parse(@generator.ncx_xml).at_xpath('/xmlns:ncx/xmlns:head')
+    head.should_not be_nil
+    head.at_xpath("xmlns:meta[@name='dtb:uid']")['content'].should == "http://example.jp/foobar/"
+    head.xpath("xmlns:meta[@name='dtb:depth']").size.should > 0
+    head.xpath("xmlns:meta[@name='dtb:totalPageCount']").size.should > 0
+    head.xpath("xmlns:meta[@name='dtb:maxPageNumber']").size.should > 0
   end
 
   it "should have correct ncx doctitle" do
-    ncx = LibXML::XML::Parser.string(@generator.ncx_xml).parse
-    ncx.root.namespaces.default_prefix='a'
+    doctitle = Nokogiri::XML.parse(@generator.ncx_xml).root
 
-    ncx.root.find_first('a:docTitle').should_not be_nil
-    ncx.root.find_first('a:docTitle/a:text').content.should == 'thetitle'
+    doctitle.xpath('xmlns:docTitle').size.should > 0 
+    doctitle.at_xpath('xmlns:docTitle/xmlns:text').text.should == 'thetitle'
   end
 
   it "should correct ncx navmap" do
-    ncx = LibXML::XML::Parser.string(@generator.ncx_xml).parse
-    ncx.root.namespaces.default_prefix='a'
+    ncx = Nokogiri::XML::parse(@generator.ncx_xml).root
 
-    ncx.root.find_first('a:navMap').should_not be_nil
-    nav_point = ncx.root.find_first('a:navMap/a:navPoint')
+    ncx.xpath('xmlns:navMap').size.should > 0
+    nav_point = ncx.at_xpath('xmlns:navMap/xmlns:navPoint')
     nav_point['id'].should == 'c2'
     nav_point['playOrder'].should == '1'
     
-    nav_point.find_first('a:navLabel/a:text').content.should == 'test chapter'
-    nav_point.find_first('a:content')['src'] == 'foobar2.html'
+    nav_point.at_xpath('xmlns:navLabel/xmlns:text').content.should == 'test chapter'
+    nav_point.at_xpath('xmlns:content')['src'] == 'foobar2.html'
 
   end
 
   it "should create correct opf" do
-    opf = LibXML::XML::Parser.string(@generator.opf_xml).parse
-    opf.root.namespaces.default_prefix='a'
-
-    opf.root.name.should == 'package'
-    opf.root.namespaces.namespace.href.should == 'http://www.idpf.org/2007/opf'
-    opf.root['version'] == '2.0'
-    opf.root['unique-identifier'] == 'http://example.jp/foobar/'
+    opf = Nokogiri::XML.parse(@generator.opf_xml).root
+    opf.name.should == 'package'
+    opf.namespaces['xmlns'] == 'http://www.idpf.org/2007/opf'
+    opf['version'] == '2.0'
+    opf['unique-identifier'] == 'http://example.jp/foobar/'
   end
-  
 
   it "should have correct metadata in opf" do
-    opf = LibXML::XML::Parser.string(@generator.opf_xml).parse
-    opf.root.namespaces.default_prefix='a'
-
-    metadata = opf.find_first('a:metadata')
-    metadata.find_first('dc:language').content.should == 'ja'
-    # TODO checking metadatas...
+    opf = Nokogiri::XML.parse(@generator.opf_xml).root
+    metadata = opf.xpath('xmlns:metadata').first
+    metadata.at_xpath('dc:language', metadata.namespaces).content.should == 'ja'
+    #TODO: check metadata
   end
 
   it "should have correct manifest and spine in opf" do
-    opf = LibXML::XML::Parser.string(@generator.opf_xml).parse
-    opf.root.namespaces.default_prefix='a'
+    opf = Nokogiri::XML.parse(@generator.opf_xml).root
 
-    manifest = opf.find_first('a:manifest')
-    manifest.find_first('a:item')['id'].should == 'c1'
-    manifest.find_first('a:item')['href'].should == 'text/foobar.html'    
-    manifest.find_first('a:item')['media-type'].should == 'application/xhtml+xml'
+    manifest = opf.at_xpath('xmlns:manifest')
+    manifest.at_xpath('xmlns:item')['id'].should == 'c1'
+    manifest.at_xpath('xmlns:item')['href'].should == 'text/foobar.html'    
+    manifest.at_xpath('xmlns:item')['media-type'].should == 'application/xhtml+xml'
 
-    spine = opf.find_first('a:spine')
+    spine = opf.at_xpath('xmlns:spine')
     spine['toc'].should == 'ncx'
-    spine.find_first('a:itemref')['idref'].should == 'c1'
-  end
-
-  it "should have correct metadata in opf" do
-    opf = LibXML::XML::Parser.string(@generator.opf_xml).parse
-    opf.root.namespaces.default_prefix='a'
-
-    metadata = opf.find_first('a:metadata')
-    metadata.find_first('dc:language').content.should == 'ja'
-    # TODO checking metadatas...
+    spine.at_xpath('xmlns:itemref')['idref'].should == 'c1'
   end
 
   it "should have correct cover image id" do
     item = @generator.add_ref_to_item("img/img.jpg")
     @generator.specify_cover_image(item)
 
-    opf = LibXML::XML::Parser.string(@generator.opf_xml).parse
-    opf.root.namespaces.default_prefix='a'
+    opf = Nokogiri::XML.parse(@generator.opf_xml).root
 
-    metadata = opf.find_first('a:metadata')
-    metas = metadata.find('a:meta').select {
-      |m| m['name'] == 'cover'
-    }
-    metas.length.should == 1
-    metas[0]['content'].should == item.itemid    
+    metadata = opf.at_xpath('xmlns:metadata')
+    meta = metadata.at_xpath("xmlns:meta[@name='cover']")
+    meta['content'].should == item.itemid        
   end
 
   it "should generate correct epub" do
