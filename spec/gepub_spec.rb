@@ -31,36 +31,36 @@ end
 
 describe GEPUB::Book do
   before do
-    @generator = GEPUB::Book.new('thetitle')
-    @generator.author = "theauthor"
-    @generator.contributor = "contributors contributors!"
-    @generator.publisher = "thepublisher"
-    @generator.date = "2010-05-05"
-    @generator.identifier = "http://example.jp/foobar/"
-    @generator.locale = 'ja'
-    item1 = @generator.add_ref_to_item('text/foobar.html','c1')
+    @book = GEPUB::Book.new('thetitle')
+    @book.author = "theauthor"
+    @book.contributor = "contributors contributors!"
+    @book.publisher = "thepublisher"
+    @book.date = "2010-05-05"
+    @book.identifier = "http://example.jp/foobar/"
+    @book.locale = 'ja'
+    item1 = @book.add_ref_to_item('text/foobar.html','c1')
     item1.add_content(StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c1</title></head><body><p>the first page</p></body></html>'))
-    @generator.spine.push(item1)
+    @book.spine.push(item1)
 
-    item2 = @generator.add_ordered_item('text/barbar.html',
+    item2 = @book.add_ordered_item('text/barbar.html',
                                         StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title></head><body><p>second page, whith is test chapter.</p></body></html>'),
                                         'c2')
-    @generator.add_nav(item2, 'test chapter')
+    @book.add_nav(item2, 'test chapter')
   end
 
   it "should have titile"  do
-    @generator.title.should == 'thetitle' 
+    @book.title.should == 'thetitle' 
   end
 
   it "should generate correct ncx"  do
-    ncx = Nokogiri::XML.parse(@generator.ncx_xml).root
+    ncx = Nokogiri::XML.parse(@book.ncx_xml).root
     ncx.name.should == 'ncx'
     ncx.attributes['version'].value.should == '2005-1'
     ncx.namespaces['xmlns'] == 'http://www.daisy.org/z3986/2005/ncx/'
   end
 
   it "should have correct head in ncx" do
-    head = Nokogiri::XML.parse(@generator.ncx_xml).at_xpath('/xmlns:ncx/xmlns:head')
+    head = Nokogiri::XML.parse(@book.ncx_xml).at_xpath('/xmlns:ncx/xmlns:head')
     head.should_not be_nil
     head.at_xpath("xmlns:meta[@name='dtb:uid']")['content'].should == "http://example.jp/foobar/"
     head.xpath("xmlns:meta[@name='dtb:depth']").size.should > 0
@@ -69,14 +69,14 @@ describe GEPUB::Book do
   end
 
   it "should have correct ncx doctitle" do
-    doctitle = Nokogiri::XML.parse(@generator.ncx_xml).root
+    doctitle = Nokogiri::XML.parse(@book.ncx_xml).root
 
     doctitle.xpath('xmlns:docTitle').size.should > 0 
     doctitle.at_xpath('xmlns:docTitle/xmlns:text').text.should == 'thetitle'
   end
 
   it "should correct ncx navmap" do
-    ncx = Nokogiri::XML::parse(@generator.ncx_xml).root
+    ncx = Nokogiri::XML::parse(@book.ncx_xml).root
 
     ncx.xpath('xmlns:navMap').size.should > 0
     nav_point = ncx.at_xpath('xmlns:navMap/xmlns:navPoint')
@@ -89,7 +89,7 @@ describe GEPUB::Book do
   end
 
   it "should create correct opf" do
-    opf = Nokogiri::XML.parse(@generator.opf_xml).root
+    opf = Nokogiri::XML.parse(@book.opf_xml).root
     opf.name.should == 'package'
     opf.namespaces['xmlns'] == 'http://www.idpf.org/2007/opf'
     opf['version'] == '2.0'
@@ -97,14 +97,14 @@ describe GEPUB::Book do
   end
 
   it "should have correct metadata in opf" do
-    opf = Nokogiri::XML.parse(@generator.opf_xml).root
+    opf = Nokogiri::XML.parse(@book.opf_xml).root
     metadata = opf.xpath('xmlns:metadata').first
     metadata.at_xpath('dc:language', metadata.namespaces).content.should == 'ja'
     #TODO: check metadata
   end
 
   it "should have correct manifest and spine in opf" do
-    opf = Nokogiri::XML.parse(@generator.opf_xml).root
+    opf = Nokogiri::XML.parse(@book.opf_xml).root
 
     manifest = opf.at_xpath('xmlns:manifest')
     manifest.at_xpath('xmlns:item')['id'].should == 'c1'
@@ -117,10 +117,10 @@ describe GEPUB::Book do
   end
 
   it "should have correct cover image id" do
-    item = @generator.add_ref_to_item("img/img.jpg")
-    @generator.specify_cover_image(item)
+    item = @book.add_ref_to_item("img/img.jpg")
+    @book.specify_cover_image(item)
 
-    opf = Nokogiri::XML.parse(@generator.opf_xml).root
+    opf = Nokogiri::XML.parse(@book.opf_xml).root
 
     metadata = opf.at_xpath('xmlns:metadata')
     meta = metadata.at_xpath("xmlns:meta[@name='cover']")
@@ -129,7 +129,7 @@ describe GEPUB::Book do
 
   it "should generate correct epub" do
     epubname = File.join(File.dirname(__FILE__), 'testepub.epub')
-    @generator.generate_epub(epubname)
+    @book.generate_epub(epubname)
     %x( epubcheck #{epubname} )
   end
 

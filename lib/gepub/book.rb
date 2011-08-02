@@ -7,7 +7,7 @@ require 'fileutils'
 
 module GEPUB
   class Book
-    attr_accessor :spine, :locale
+    attr_accessor :spine, :locale, :epub_version, :epub_backword_compat
 
     def self.def_meta(name, key = nil)
       key ||= name
@@ -32,6 +32,8 @@ module GEPUB
       @contents_prefix = @contents_prefix + "/" if contents_prefix != ""
       @itemcount = 0
       @locale = 'en'
+      @epub_version = 2.1
+      @epub_backword_compat = false
     end
 
     def_meta :title

@@ -16,8 +16,7 @@ a good-enough EPUB generator library.
 * ncx: can't nest navPoint elements
 * ...and many other restrictions
 
-* note: GEPUB::Generator is now obsolete. use GEPUB::Book.
-* GEPUB::Book does not create directory. GEPUB::Book accepts IO object, not File.
+* GEPUB::Generator has been removed. Use GEPUB::Book instead.
 
 == SYNOPSIS:
 
@@ -66,11 +65,6 @@ a good-enough EPUB generator library.
 
   epub.generate_epub(epubname)
   
-== REQUIREMENTS: 
-
-* libxml-ruby
-* zipruby
-
 == INSTALL:
 
 * gem install gepub
