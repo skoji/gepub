@@ -4,7 +4,7 @@ require "gepub/version"
 
 Gem::Specification.new do |s|
   s.name        = "gepub"
-  s.version     = Gepub::VERSION
+  s.version     = GEPUB::VERSION
   s.authors     = ["KOJIMA Satoshi"]
   s.email       = ["skoji@mac.com"]
   s.homepage    = %q{http://github.com/skoji/gepub}
