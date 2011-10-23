@@ -20,6 +20,8 @@ module GEPUB
         'application/xhtml+xml'
       when /.css/i
         'text/css'
+      when /.js/i
+        'text/javascript'
       when /.(jpg|jpeg)/i
         'image/jpeg'
       when /.png/i

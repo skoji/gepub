@@ -27,6 +27,16 @@ describe GEPUB::Item do
     item.mediatype.should == 'image/jpeg'
   end
 
+  it "should handle css" do
+    item = GEPUB::Item.new('id', 'img/foo.css')
+    item.mediatype.should == 'text/css'
+  end
+
+  it "should handle javascript" do
+    item = GEPUB::Item.new('id', 'js/jQuery.js')
+    item.mediatype.should == 'text/javascript'
+  end
+
 end
 
 describe GEPUB::Book do
