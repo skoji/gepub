@@ -16,22 +16,22 @@ describe GEPUB::Gepuber do
   it "should read config hash" do
     conf = 
       {
-      locale: 'ja',
-      title: 'theTitle',
-      author: 'theAuthor',
-      publisher: 'thePublisher',
-      date: '2011-03-11',
-      identifier: 'http://skoji.jp/gepuber/2011-03-11.0.0',
-      epubname: 'gepub_00',
-      table_of_contents: {
+      :locale => 'ja',
+      :title => 'theTitle',
+      :author => 'theAuthor',
+      :publisher => 'thePublisher',
+      :date => '2011-03-11',
+      :identifier => 'http://skoji.jp/gepuber/2011-03-11.0.0',
+      :epubname => 'gepub_00',
+      :table_of_contents => {
         '1_.html' => '1st toc',
         '3_.html' => '3rd toc',
         '3_.html#a1' => '3rd toc 2',
         '9_.html' => 'last toc'
       },
-      coverimg: 'cover.gif',
-      texts: [ '*.html' ],
-      resources: ['*.css','*.gif']
+      :coverimg => 'cover.gif',
+      :texts => [ '*.html' ],
+      :resources => ['*.css','*.gif']
     }
 
     gepuber = GEPUB::Gepuber.new(conf )
