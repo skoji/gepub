@@ -6,7 +6,7 @@ require 'rubygems'
 describe GEPUB::Gepuber do
   it "should be initialized with empty conf" do
     gepuber = GEPUB::Gepuber.new({})
-    gepuber.texts.should == ['[0-9]*.x?html']
+    gepuber.texts.should == ['[0-9]*.{xhtml,html}']
     gepuber.resources.should == ['*.css',  'img/*']
     gepuber.title.should == ""
     gepuber.table_of_contents.should == {}
