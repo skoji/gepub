@@ -27,7 +27,7 @@ module GEPUB
         |k,v|
         self.send "#{k}=", v
       }
-      @texts ||= ['[0-9]*.x?html'] 
+      @texts ||= ['[0-9]*.{xhtml,html}'] 
       @resources ||= ['*.css',  'img/*']
       @coverimg ||= 'cover.jpg'
       @table_of_contents ||= {}

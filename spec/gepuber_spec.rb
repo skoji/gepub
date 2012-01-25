@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-# need to install 'epubcheck'.
 
 require File.dirname(__FILE__) + '/spec_helper.rb'
 require 'rubygems'
