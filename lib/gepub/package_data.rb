@@ -4,7 +4,10 @@ require 'nokogiri'
 module GEPUB
   # Holds data in opf file.
   class PackageData
+    include XMLUtil
     attr_accessor :path
+
+    # parse OPF data. opf should be io or string object.
     def self.parse_opf(opf, path)
       PackageData.new(path) {
         |package|
@@ -16,12 +19,14 @@ module GEPUB
             |k|
             @attr[k] = @xml.root[k]
           }
+          @attr['version'] ||= '3.0'
+          @metadata = Metadata.parse(@xml.xpath("//#{prefix(OPF_NS)}:metadata")[0], @attr['version'])
         }
       }
     end
     
     def initialize(path, attr={})
-      @namespaces = {'xmlns' => 'http://www.idpf.org/2007/opf'}
+      @namespaces = {'xmlns' => OPF_NS }
       @attr = attr
       yield self if block_given?
     end

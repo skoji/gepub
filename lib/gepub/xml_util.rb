@@ -6,12 +6,5 @@ module GEPUB
       @namespaces_rev ||= @namespaces.invert
       @namespaces_rev[ns]
     end
-    def dc
-      prefix DC_NS
-    end
-    def opf
-      prefix OPF
-    end
-
   end
 end
