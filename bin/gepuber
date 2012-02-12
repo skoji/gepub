@@ -2,17 +2,17 @@ require 'gepub'
 require 'optparse'
 
 def usage
-  STDERR.print "gepuber [-d destination ] <source-directory>\r\n"
+  STDERR.print "gepuber [-d destination ] [-c configfilename] <source-directory>\r\n"
   exit 1
 end
 
-def srccheck(srcdir)
+def srccheck(srcdir, configfilename)
   if !File.exist?(srcdir) || !File.directory?(srcdir) 
     STDERR.print "#{srcdir} is not a directory"
     exit 1
   end
-  if !File.exist?(File.join(srcdir, 'gepuber.conf'))
-    STDERR.print "gepuber.conf does not exists in#{srcdir}."
+  if !File.exist?(File.join(srcdir, configfilename))
+    STDERR.print "#{configfilename} does not exists in#{srcdir}."
     exit 1
   end
 end
@@ -25,6 +25,7 @@ def destcheck(destdir)
 end
 
 destbasedir = "."
+configfilename = 'gepuber.conf'
 
 opt = OptionParser.new
 
@@ -34,14 +35,18 @@ opt.on('-d [directory]') { |dir|
   destbasedir = dir
 }
 
+opt.on('-c [configfilename]') { |name|
+  configfilename = name
+}
+
 destbasedir = File.expand_path(destbasedir)
 
 srcdir = opt.parse(ARGV)[0]
-srccheck(srcdir)
+srccheck(srcdir, configfilename)
 
 Dir.chdir(srcdir)
 begin
-  File.open('gepuber.conf', 'rb') {
+  File.open(configfilename, 'rb') {
     |io|
     gepuber = GEPUB::Gepuber.new(eval("#{io.read}"))
     gepuber.create destbasedir

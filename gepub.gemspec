@@ -8,8 +8,8 @@ Gem::Specification.new do |s|
   s.authors     = ["KOJIMA Satoshi"]
   s.email       = ["skoji@mac.com"]
   s.homepage    = %q{http://github.com/skoji/gepub}
-  s.summary     = %q{a good-enough EPUB generator.}
-  s.description = %q{an easy-to-use EPUB generator.}
+  s.summary     = %q{a generic EPUB parser/generator.}
+  s.description = %q{gepub is a EPUB parser/generator. Generates EPUB2 opf. will support EPUB3 parse/generation}
 
   s.rubyforge_project = "gepub"
 
@@ -21,5 +21,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rspec", ">= 2"
   s.add_development_dependency "epubcheck", ">= 0.1.0"
   s.add_runtime_dependency "nokogiri", ">= 1.5.0"
-  s.add_runtime_dependency "rubyzip", ">= 0.9.4"
+  s.add_runtime_dependency "rubyzip", ">= 0.9.6"
 end
