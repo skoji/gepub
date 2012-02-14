@@ -19,7 +19,6 @@ module GEPUB
             |k|
             @attr[k] = @xml.root[k]
           }
-          @attr['version'] ||= '3.0'
           @metadata = Metadata.parse(@xml.xpath("//#{prefix(OPF_NS)}:metadata")[0], @attr['version'])
         }
       }
@@ -28,6 +27,7 @@ module GEPUB
     def initialize(path, attr={})
       @namespaces = {'xmlns' => OPF_NS }
       @attr = attr
+      @attr['version'] ||= '3.0'
       yield self if block_given?
     end
 

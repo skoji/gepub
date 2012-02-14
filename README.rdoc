@@ -4,7 +4,7 @@
 
 == DESCRIPTION:
 
-a good-enough EPUB generator library.
+a generic EPUB parser/generator library.
 
 == FEATURES/PROBLEMS:
 

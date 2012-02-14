@@ -5,11 +5,11 @@
 <meta refines="#pub-id" property="identifier-type" scheme="xsd:string">uuid</meta>
 
 <dc:title id="title">TheTitle</dc:title>
-<meta refines="#title" property="title-type">title</meta>
+<meta refines="#title" property="title-type">main</meta>
 <meta refines="#title" property="display-seq">1</meta>
 
 <dc:title id="series">Series Title</dc:title>
-<meta refines="#series" property="title-type">series</meta>
+<meta refines="#series" property="title-type">collection</meta>
 <meta refines="#series" property="display-seq">2</meta>
 <dc:language id="pub-lang">ja</dc:language>
 

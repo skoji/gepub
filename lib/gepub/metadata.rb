@@ -14,6 +14,7 @@ module GEPUB
         metadata.instance_eval {
           @xml = metadata_xml
           @namespaces = @xml.namespaces
+          @titles = parse_title
         }
       }
     end
@@ -21,8 +22,24 @@ module GEPUB
     def initialize(opf_version = '3.0')
       @opf_version = opf_version
       @namespaces = { 'xmlns:dc' =>  DC_NS }
-      @namespaces['xmlns:opf'] = OPF_NS if opf_version.to_f < 3.0 
+      @namespaces['xmlns:opf'] = OPF_NS if @opf_version.to_f < 3.0 
       yield self if block_given?
-   end
+    end
+
+    def main_title
+      @titles[0][:name]
+    end
+
+    private
+
+    def parse_title
+      titles = []
+      @xml.xpath("#{prefix(DC_NS)}:title", @namespaces).each {
+        |title|
+        titles << { :name => title.content, :id => title['id'], :lang => title['lang'], :dir => title['dir'] }
+      }
+      titles
+    end
+
   end
 end
