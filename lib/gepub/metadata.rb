@@ -5,7 +5,7 @@ module GEPUB
   # Holds data in /package/metadata 
   class Metadata
     include XMLUtil
-    attr_reader :opf_version, :other_nodes
+    attr_reader :opf_version, :other_meta
 
     # Holds one metadata with refine meta elements.
     class Meta
@@ -66,7 +66,7 @@ module GEPUB
             @meta[node['property']] = create_meta(node)
           }
 
-          @other_nodes = parse_opf2_meta
+          @other_meta = parse_opf2_meta
         }
       }
     end
@@ -74,7 +74,7 @@ module GEPUB
     def initialize(opf_version = '3.0')
       @content_nodes = {}
       @meta = {}
-      @other_nodes = []
+      @other_meta = []
       @opf_version = opf_version
       @namespaces = { 'xmlns:dc' =>  DC_NS }
       @namespaces['xmlns:opf'] = OPF_NS if @opf_version.to_f < 3.0 
@@ -88,7 +88,7 @@ module GEPUB
     
     CONTENT_NODE_LIST = ['identifier','title', 'language', 'creator', 'coverage','creator','date','description','format ','publisher','relation','rights','source','subject','type'].each {
       |node|
-      define_method('list_' + node) { @content_nodes[node] } 
+      define_method(node + '_list') { @content_nodes[node] } 
 
       define_method(node) {
         if !@content_nodes[node].nil? && @content_nodes[node].size > 0

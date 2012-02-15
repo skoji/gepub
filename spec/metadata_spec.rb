@@ -19,31 +19,31 @@ describe GEPUB::Metadata do
     end
     it 'should parse title' do
       @metadata.main_title.should == 'TheTitle'
-      @metadata.list_title.size.should == 2
+      @metadata.title_list.size.should == 2
       @metadata.title.should == 'TheTitle'
     end
     
     it 'should parse title-type' do
-      @metadata.list_title[0].refiner('title-type').size.should == 1
-      @metadata.list_title[0].refiner('title-type')[0].content.should == 'main'
-      @metadata.list_title[1].refiner('title-type').size.should == 1
-      @metadata.list_title[1].refiner('title-type')[0].content.should == 'collection'
+      @metadata.title_list[0].refiner('title-type').size.should == 1
+      @metadata.title_list[0].refiner('title-type')[0].content.should == 'main'
+      @metadata.title_list[1].refiner('title-type').size.should == 1
+      @metadata.title_list[1].refiner('title-type')[0].content.should == 'collection'
     end
 
     it 'should parse identifier' do
-      @metadata.list_identifier.size.should == 2
+      @metadata.identifier_list.size.should == 2
       @metadata.identifier.should == 'urn:uuid:1234567890'
-      @metadata.list_identifier[0].content.should == 'urn:uuid:1234567890'
-      @metadata.list_identifier[0].first_refiner('identifier-type').content.should == 'uuid'
-      @metadata.list_identifier[1].content.should == 'http://example.jp/epub/test/url'
-      @metadata.list_identifier[1].first_refiner('identifier-type').content.should == 'uri'
+      @metadata.identifier_list[0].content.should == 'urn:uuid:1234567890'
+      @metadata.identifier_list[0].first_refiner('identifier-type').content.should == 'uuid'
+      @metadata.identifier_list[1].content.should == 'http://example.jp/epub/test/url'
+      @metadata.identifier_list[1].first_refiner('identifier-type').content.should == 'uri'
     end
 
     it 'should parse OPF2.0 meta node' do
-      @metadata.other_nodes.size.should == 1
-      @metadata.other_nodes[0].name == 'meta'
-      @metadata.other_nodes[0]['name'] == 'cover'
-      @metadata.other_nodes[0]['content'] == 'cover-image'
+      @metadata.other_meta.size.should == 1
+      @metadata.other_meta[0].name == 'meta'
+      @metadata.other_meta[0]['name'] == 'cover'
+      @metadata.other_meta[0]['content'] == 'cover-image'
     end
   end
 end
