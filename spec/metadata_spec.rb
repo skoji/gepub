@@ -19,22 +19,24 @@ describe GEPUB::Metadata do
     end
     it 'should parse title' do
       @metadata.main_title.should == 'TheTitle'
-      @metadata.titles.size.should == 2
+      @metadata.list_title.size.should == 2
+      @metadata.title.should == 'TheTitle'
     end
     
     it 'should parse title-type' do
-      @metadata.titles[0].refiner('title-type').size.should == 1
-      @metadata.titles[0].refiner('title-type')[0].content.should == 'main'
-      @metadata.titles[1].refiner('title-type').size.should == 1
-      @metadata.titles[1].refiner('title-type')[0].content.should == 'collection'
+      @metadata.list_title[0].refiner('title-type').size.should == 1
+      @metadata.list_title[0].refiner('title-type')[0].content.should == 'main'
+      @metadata.list_title[1].refiner('title-type').size.should == 1
+      @metadata.list_title[1].refiner('title-type')[0].content.should == 'collection'
     end
 
     it 'should parse identifier' do
-      @metadata.identifiers.size.should == 2
-      @metadata.identifiers[0].content.should == 'urn:uuid:1234567890'
-      @metadata.identifiers[0].first_refiner('identifier-type').content.should == 'uuid'
-      @metadata.identifiers[1].content.should == 'http://example.jp/epub/test/url'
-      @metadata.identifiers[1].first_refiner('identifier-type').content.should == 'uri'
+      @metadata.list_identifier.size.should == 2
+      @metadata.identifier.should == 'urn:uuid:1234567890'
+      @metadata.list_identifier[0].content.should == 'urn:uuid:1234567890'
+      @metadata.list_identifier[0].first_refiner('identifier-type').content.should == 'uuid'
+      @metadata.list_identifier[1].content.should == 'http://example.jp/epub/test/url'
+      @metadata.list_identifier[1].first_refiner('identifier-type').content.should == 'uri'
     end
 
     it 'should parse OPF2.0 meta node' do

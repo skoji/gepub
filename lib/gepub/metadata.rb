@@ -1,6 +1,5 @@
 require 'rubygems'
 require 'nokogiri'
-require 'active_support/inflector'
 
 module GEPUB
   # Holds data in /package/metadata 
@@ -41,6 +40,7 @@ module GEPUB
       end
       
       def add_refiner(refiner)
+        raise 'refiner element need property attribute' if refiner['property'].nil? 
         (@refiners[refiner['property']] ||= []) << refiner
       end
     end
@@ -81,16 +81,17 @@ module GEPUB
       yield self if block_given?
     end
 
-    def main_title
+    def main_title # should make it obsolete? 
       @content_nodes['title'][0].content
     end
 
     
     CONTENT_NODE_LIST = ['identifier','title', 'language', 'creator', 'coverage','creator','date','description','format ','publisher','relation','rights','source','subject','type'].each {
       |node|
-      define_method(node.pluralize) { @content_nodes[node] } 
+      define_method('list_' + node) { @content_nodes[node] } 
+
       define_method(node) {
-        if @content_nodes[node].nil? && @content_nodes[node].size > 0
+        if !@content_nodes[node].nil? && @content_nodes[node].size > 0
           @content_nodes[node][0].content
         end
       }
