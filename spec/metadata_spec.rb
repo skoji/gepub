@@ -19,14 +19,14 @@ describe GEPUB::Metadata do
     end
     it 'should parse title' do
       @metadata.main_title.should == 'TheTitle'
-      @metadata.titles.size.should == 2
+      @metadata.title.size.should == 2
     end
     
     it 'should parse title-type' do
-      @metadata.titles[0].refiner('title-type').size.should == 1
-      @metadata.titles[0].refiner('title-type')[0].content.should == 'main'
-      @metadata.titles[1].refiner('title-type').size.should == 1
-      @metadata.titles[1].refiner('title-type')[0].content.should == 'collection'
+      @metadata.title[0].refiner('title-type').size.should == 1
+      @metadata.title[0].refiner('title-type')[0].content.should == 'main'
+      @metadata.title[1].refiner('title-type').size.should == 1
+      @metadata.title[1].refiner('title-type')[0].content.should == 'collection'
     end
 
 
