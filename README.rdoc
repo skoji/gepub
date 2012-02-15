@@ -7,64 +7,7 @@
 a generic EPUB parser/generator library.
 
 == FEATURES/PROBLEMS:
-
-* GEPUB::Book provides functionality to create ncx/opf, and epub file.
-
-* opf: can't specify creators with role
-* opf: can't specify date with event
-* opf: unique-identifier's scheme is fixed to 'URL'
-* ncx: can't nest navPoint elements
-* ...and many other restrictions
-
-* GEPUB::Generator has been removed. Use GEPUB::Book instead.
-
 == SYNOPSIS:
-
-  require 'rubygems'
-  require 'gepub'
-  require 'fileutils'
-
-  epubname = "testepub.epub"
-  title = "samplepub"
-
-  epub = GEPUB::Book.new(title)
-  epub.author="the author"
-  epub.publisher="the publisher"
-  epub.date = "2010-11-27"
-  epub.identifier = "http://www.skoji.jp/testepub/2010-06-26"
-  epub.locale = 'ja' #defaults to 'en'
-
-  # create test contents files
-  contents = {}
-  [ 'coverpage', 'chapter1', 'chapter2' ].each {
-    |name|
-    contents[name] = <<EOF
-  <?xml version="1.0" encoding="UTF-8"?>
-  <html xmlns="http://www.w3.org/1999/xhtml" lang="ja" xml:lang="ja">
-  <head>
-  <title>sample #{name} </title>
-  </head>
-  <body>
-  <h1>#{name}</h1>
-  <p>here comes the contents for #{name}</p>
-  </body>
-  </html>
-  EOF
-  }
-
-  # coverpage won't appear on toc, so do not call addNav
-  epub.add_ordered_item('coverpage.html', StringIO.new(contents['coverpage']))
-  
-  chap1 = epub.add_ordered_item("chapter1.html", StringIO.new(contents['chapter1']))
-  epub.add_nav(chap1, 'Chapter 1')
-  chap2 = epub.add_ordered_item("chapter2.html", StringIO.new(contents['chapter2']))
-  epub.add_nav(chap2, 'Chapter 2')
-
-  # GEPUB::Book#add_ordered_item will added on <manifest> and <spine> section.
-  # if you want to add image file, use GEPUB::Book#add_item instead.
-
-  epub.generate_epub(epubname)
-  
 == INSTALL:
 
 * gem install gepub
@@ -73,7 +16,7 @@ a generic EPUB parser/generator library.
 
 (The New BSD License)
 
-Copyright (c) 2010-2011, KOJIMA Satoshi
+Copyright (c) 2010-2012, KOJIMA Satoshi
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
