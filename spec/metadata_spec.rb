@@ -17,8 +17,18 @@ describe GEPUB::Metadata do
     before do
       @metadata = GEPUB::PackageData.parse_opf(File.open(File.dirname(__FILE__) + '/fixtures/testdata/test.opf'), '/package.opf').instance_eval{ @metadata }
     end
-    it 'should parse main title' do
+    it 'should parse title' do
       @metadata.main_title.should == 'TheTitle'
+      @metadata.titles.size.should == 2
     end
+    
+    it 'should parse title-type' do
+      @metadata.titles[0].refiner('title-type').size.should == 1
+      @metadata.titles[0].refiner('title-type')[0].content.should == 'main'
+      @metadata.titles[1].refiner('title-type').size.should == 1
+      @metadata.titles[1].refiner('title-type')[0].content.should == 'collection'
+    end
+
+
   end
 end
