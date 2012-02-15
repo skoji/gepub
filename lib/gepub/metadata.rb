@@ -1,14 +1,16 @@
 require 'rubygems'
 require 'nokogiri'
+require 'active_support/inflector'
 
 module GEPUB
   # Holds data in /package/metadata 
   class Metadata
     include XMLUtil
-    attr_reader :opf_version
-    
+    attr_reader :opf_version, :other_nodes
+
+    # Holds one metadata with refine meta elements.
     class Meta
-      attr_accessor :content, :attributes
+      attr_accessor :content
       attr_reader :name
       def initialize(name, content, attributes= {}, refiners = {})
         @name = name
@@ -52,18 +54,19 @@ module GEPUB
           @namespaces = @xml.namespaces
           CONTENT_NODE_LIST.each {
             |node|
-            @content_nodes[node] = parse_node(DC_NS, node)
-          }
-          @content_nodes.each {
-            |name, nodelist|
             i = 0
-            @content_nodes[name] = nodelist.sort_by { |v| [(v.first_refiner('display-seq') || Meta.new(nil, '-1')).content.to_i, i+1]}
+            @content_nodes[node] = parse_node(DC_NS, node).sort_by {
+              |v|
+              [(v.first_refiner('display-seq') || Meta.new(nil, 2 ** (0.size * 8 - 2) - 1)).content.to_i, i += 1]
+            }              
           }
+
           @xml.xpath("#{prefix(OPF_NS)}:meta[not(@refines) and @property]", @namespaces).each {
             |node|
             @meta[node['property']] = create_meta(node)
           }
-          # TODO: read OPF2.0 meta
+
+          @other_nodes = parse_opf2_meta
         }
       }
     end
@@ -71,6 +74,7 @@ module GEPUB
     def initialize(opf_version = '3.0')
       @content_nodes = {}
       @meta = {}
+      @other_nodes = []
       @opf_version = opf_version
       @namespaces = { 'xmlns:dc' =>  DC_NS }
       @namespaces['xmlns:opf'] = OPF_NS if @opf_version.to_f < 3.0 
@@ -84,11 +88,16 @@ module GEPUB
     
     CONTENT_NODE_LIST = ['identifier','title', 'language', 'creator', 'coverage','creator','date','description','format ','publisher','relation','rights','source','subject','type'].each {
       |node|
-      define_method(node) { @content_nodes[node] }
+      define_method(node.pluralize) { @content_nodes[node] } 
+      define_method(node) {
+        if @content_nodes[node].nil? && @content_nodes[node].size > 0
+          @content_nodes[node][0].content
+        end
+      }
     }
 
-    private
 
+    private
     def parse_node(ns, node)
       @xml.xpath("#{prefix(ns)}:#{node}", @namespaces).map {
         |node|
@@ -99,7 +108,7 @@ module GEPUB
     def create_meta(node)
       Meta.new(node.name, node.content, node.attributes, collect_refiners(node['id']))
     end
-    
+
     def collect_refiners(id)
       r = {}
       if !id.nil? 
@@ -111,5 +120,11 @@ module GEPUB
       r
     end
 
+    def parse_opf2_meta
+      @xml.xpath("#{prefix(OPF_NS)}:meta[not(@refines) and not(@property)]").map {
+            |node|
+            create_meta(node)
+      }
+    end
   end
 end
