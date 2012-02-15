@@ -46,4 +46,13 @@ describe GEPUB::Metadata do
       @metadata.other_meta[0]['content'] == 'cover-image'
     end
   end
+
+  context 'Generate New OPF' do
+    it 'should write and read identifier' do
+      metadata = GEPUB::Metadata.new
+      metadata.set_identifier 'the_set_identifier', 'pub-id'
+      metadata.identifier.should == 'the_set_identifier'
+      metadata.identifier_list[0]['id'].should == 'pub-id'
+    end
+  end
 end

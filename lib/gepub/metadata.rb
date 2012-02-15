@@ -11,11 +11,13 @@ module GEPUB
     class Meta
       attr_accessor :content
       attr_reader :name
-      def initialize(name, content, attributes= {}, refiners = {})
+      def initialize(name, content, parent, attributes= {}, refiners = {})
         @name = name
         @content = content
         @attributes = attributes
         @refiners = refiners
+        @parent = parent
+        @parent.add_meta(self) unless @parent.nil?
       end
 
       def [](x)
@@ -57,7 +59,7 @@ module GEPUB
             i = 0
             @content_nodes[node] = parse_node(DC_NS, node).sort_by {
               |v|
-              [(v.first_refiner('display-seq') || Meta.new(nil, 2 ** (0.size * 8 - 2) - 1)).content.to_i, i += 1]
+              [(v.first_refiner('display-seq') || Meta.new(nil, 2 ** (0.size * 8 - 2) - 1, nil)).content.to_i, i += 1]
             }              
           }
 
@@ -72,6 +74,7 @@ module GEPUB
     end
     
     def initialize(opf_version = '3.0')
+      @idlist = {}
       @content_nodes = {}
       @meta = {}
       @other_meta = []
@@ -97,7 +100,19 @@ module GEPUB
       }
     }
 
+    def set_identifier(string, id)
+      if !(identifier = @idlist[id]).nil?
+        raise 'id is already in use' if identifier.name != 'identifier'
+        identifier.content = string
+      else
+        @content_nodes['identifier'] ||= [] << Meta.new('identifier', string, self, { 'id' => id })
+      end
+    end
 
+    def add_meta(meta)
+      @idlist[meta['id']] =  meta unless meta['id'].nil?
+    end
+    
     private
     def parse_node(ns, node)
       @xml.xpath("#{prefix(ns)}:#{node}", @namespaces).map {
@@ -107,7 +122,7 @@ module GEPUB
     end
 
     def create_meta(node)
-      Meta.new(node.name, node.content, node.attributes, collect_refiners(node['id']))
+      Meta.new(node.name, node.content, self, node.attributes, collect_refiners(node['id']))
     end
 
     def collect_refiners(id)
