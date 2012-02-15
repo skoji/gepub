@@ -26,9 +26,18 @@ module GEPUB
       end
 
       def refiner(name)
-        return @refiners[name]
+        return @refiners[name] 
       end
 
+      def first_refiner(name)
+        refiner = @refiners[name]
+        if refiner.nil? || refiner.size == 0
+          nil
+        else
+          refiner[0]
+        end
+      end
+      
       def add_refiner(refiner)
         (@refiners[refiner['property']] ||= []) << refiner
       end
@@ -44,6 +53,11 @@ module GEPUB
           CONTENT_NODE_LIST.each {
             |node|
             @content_nodes[node] = parse_node(DC_NS, node)
+          }
+          @content_nodes.each {
+            |name, nodelist|
+            i = 0
+            @content_nodes[name] = nodelist.sort_by { |v| [(v.first_refiner('display-seq') || Meta.new(nil, '-1')).content.to_i, i+1]}
           }
           @xml.xpath("#{prefix(OPF_NS)}:meta[not(@refines) and @property]", @namespaces).each {
             |node|
