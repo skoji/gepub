@@ -17,7 +17,7 @@ module GEPUB
         @attributes = attributes
         @refiners = refiners
         @parent = parent
-        @parent.add_meta(self) unless @parent.nil?
+        @parent.register_meta(self) unless @parent.nil?
       end
 
       def [](x)
@@ -60,9 +60,11 @@ module GEPUB
       def display_seq(seq)
         refine('display-seq', seq)
       end
+
       def file_as(fileas)
         refine('file-as', fileas)
       end
+
       def add_alternates(alternates = {})
         alternates.each {
           |locale, content|
@@ -155,20 +157,15 @@ module GEPUB
       identifier
     end
 
-    def add_person(name, content, id = nil, role = 'aut', seq = 1, file_as = nil, alternates = {})
+    def add_metadata(name, content, id = nil)
+      meta = Meta.new(name, content, self, { 'id' => id })
+      @content_nodes[name] ||= [] << meta
+      meta
+    end
+    
+    def add_person(name, content, id = nil, role = 'aut')
       raise 'id #{id} is already in use' if !@idlist[id].nil?
-      person = Meta.new(name,
-                        content,
-                        self,
-                        { 'id' => id },
-                        { 'alternate-script' =>
-                          alternates.map {
-                            |locale, content|
-                            Meta.new('meta', content, self, { 'property' => 'alternate-script', 'lang' => locale })
-                          }})
-      person.refine('role', role)
-      @content_nodes[name] ||= [] << person
-      person
+      add_metadata(name, content, id).refine('role', role)
     end
 
     def add_creator(content, id = nil, role = 'aut')
@@ -180,8 +177,7 @@ module GEPUB
     end
     
     
-    
-    def add_meta(meta)
+    def register_meta(meta)
       @idlist[meta['id']] =  meta unless meta['id'].nil?
     end
     
