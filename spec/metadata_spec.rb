@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 require File.dirname(__FILE__) + '/spec_helper.rb'
 require 'rubygems'
 require 'nokogiri'
@@ -63,5 +64,11 @@ describe GEPUB::Metadata do
       metadata.identifier_list[0].refiner('identifier-type').to_s.should == 'uri'
     end
 
+    it 'should handle alternate-script metadata of creator' do
+      metadata = GEPUB::Metadata.new
+      metadata.add_creator('TheCreator', 'author', 'aut', 1, 'Creator, The', { 'ja-JP' => '作成者' })
+      metadata.creator.to_s.should == 'TheCreator'
+      metadata.creator.to_s('ja').should == '作成者'
+    end
   end
 end

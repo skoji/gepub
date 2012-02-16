@@ -52,12 +52,25 @@ module GEPUB
 
       # add a 'unique' refiner. all other refiners with same property will be removed.
       def set_refiner(property, content, attributes = {})
-        @refiners[property] = []
+        @refiners[property]= []
         add_refiner(property, content, attributes)
       end
 
       def to_s(locale=nil)
-        @content
+        localized = nil
+        if !locale.nil?
+          prefix = locale.sub(/^(.+?)-.*/, '\1')
+          regex = Regexp.new("^((" + locale.split('-').join(')?-?(') + ")?)")
+          candidates = @refiners['alternate-script'].select {
+            |refiner|
+            refiner['lang'] =~ /^#{prefix}-?.*/
+          }.sort_by {
+            |x|
+            x['lang'] =~ regex; $1.size
+          }.reverse
+          localized = candidates[0].content if candidates.size > 0
+        end
+        localized || @content || super
       end
     end
       
@@ -110,7 +123,7 @@ module GEPUB
       #TODO: should override for 'title'. // for 'main title' not always comes first.
       define_method(node) {
         if !@content_nodes[node].nil? && @content_nodes[node].size > 0
-          @content_nodes[node][0].content
+          @content_nodes[node][0]
         end
       }
     }
@@ -126,6 +139,21 @@ module GEPUB
       identifier.set_refiner('identifier-type', type)
     end
 
+    def add_creator(content, id = nil, role = 'aut', seq = 1, file_as = nil, alternates = {})
+      raise 'id #{id} is already in use' if !(creator = @idlist[id]).nil?
+      creator = Meta.new('creator',
+                         content,
+                         self,
+                         { 'id' => id },
+                         { 'alternate-script' =>
+                           alternates.map {
+                             |locale, content|
+                             Meta.new('meta', content, self, { 'property' => 'alternate-script', 'lang' => locale })
+                           }})
+      creator.set_refiner('role', role)
+      @content_nodes['creator'] ||= [] << creator
+    end
+    
     def add_meta(meta)
       @idlist[meta['id']] =  meta unless meta['id'].nil?
     end
