@@ -28,11 +28,16 @@ module GEPUB
         @attributes[x] = y
       end
 
-      def refiner(name)
+      def refiner_list(name)
         return @refiners[name] 
       end
 
-      def first_refiner(name)
+      def refiner(name)
+        r = refiner_node(name)
+        r.nil? ? nil : r.content 
+      end
+
+      def refiner_node(name)
         refiner = @refiners[name]
         if refiner.nil? || refiner.size == 0
           nil
@@ -63,7 +68,7 @@ module GEPUB
             i = 0
             @content_nodes[node] = parse_node(DC_NS, node).sort_by {
               |v|
-              [(v.first_refiner('display-seq') || Meta.new(nil, 2 ** (0.size * 8 - 2) - 1, nil)).content.to_i, i += 1]
+              [v.refiner('display-seq') || 2 ** (0.size * 8 - 2) - 1, i += 1]
             }              
           }
 
