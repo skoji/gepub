@@ -67,15 +67,15 @@ module GEPUB
         self
       end
 
-      def display_seq(seq)
+      def set_display_seq(seq)
         refine('display-seq', seq)
       end
 
-      def file_as(fileas)
+      def set_file_as(fileas)
         refine('file-as', fileas)
       end
 
-      def group_position(pos)
+      def set_group_position(pos)
         refine('group-position', pos)
       end
       

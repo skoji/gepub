@@ -80,7 +80,7 @@ describe GEPUB::Metadata do
     it 'should write and read multipletitle with type' do
       metadata = GEPUB::Metadata.new
       metadata.add_title('The Main Title', 'maintitle', GEPUB::TITLE_TYPE::MAIN)
-      metadata.add_title('The Book Series', 'series', GEPUB::TITLE_TYPE::COLLECTION).group_position(1)
+      metadata.add_title('The Book Series', 'series', GEPUB::TITLE_TYPE::COLLECTION).set_group_position(1)
       metadata.title.to_s.should == 'The Main Title'
       metadata.title.refiner('title-type').to_s.should == 'main'
 
@@ -91,7 +91,7 @@ describe GEPUB::Metadata do
     
     it 'should handle alternate-script metadata of creator' do
       metadata = GEPUB::Metadata.new
-      metadata.add_creator('TheCreator', 'author', 'aut').display_seq(1).file_as('Creator, The').add_alternates({ 'ja-JP' => '作成者' })
+      metadata.add_creator('TheCreator', 'author', 'aut').set_display_seq(1).set_file_as('Creator, The').add_alternates({ 'ja-JP' => '作成者' })
       metadata.creator.to_s.should == 'TheCreator'
       metadata.creator.to_s('ja').should == '作成者'
     end
