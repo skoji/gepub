@@ -48,12 +48,27 @@ module GEPUB
       # add a refiner.
       def add_refiner(property, content, attributes = {})
         (@refiners[property] ||= []) << Meta.new('meta', content, @parent, { 'property' => property }.merge(attributes))
+        self
       end
 
       # add a 'unique' refiner. all other refiners with same property will be removed.
-      def set_refiner(property, content, attributes = {})
+      def refine(property, content, attributes = {})
         @refiners[property]= []
         add_refiner(property, content, attributes)
+      end
+
+      def display_seq(seq)
+        refine('display-seq', seq)
+      end
+      def file_as(fileas)
+        refine('file-as', fileas)
+      end
+      def add_alternates(alternates = {})
+        alternates.each {
+          |locale, content|
+          add_refiner('alternate-script', content, { 'lang' => locale })
+        }
+        self
       end
 
       def to_s(locale=nil)
@@ -116,7 +131,7 @@ module GEPUB
     end
 
     
-    CONTENT_NODE_LIST = ['identifier','title', 'language', 'creator', 'coverage','creator','date','description','format ','publisher','relation','rights','source','subject','type'].each {
+    CONTENT_NODE_LIST = ['identifier','title', 'language', 'creator', 'coverage', 'date','description','format ','publisher','relation','rights','source','subject','type'].each {
       |node|
       define_method(node + '_list') { @content_nodes[node] } 
 
@@ -136,23 +151,35 @@ module GEPUB
         identifier = Meta.new('identifier', string, self, { 'id' => id })
         @content_nodes['identifier'] ||= [] << identifier
       end
-      identifier.set_refiner('identifier-type', type)
+      identifier.refine('identifier-type', type) unless type.nil?
+      identifier
     end
 
-    def add_creator(content, id = nil, role = 'aut', seq = 1, file_as = nil, alternates = {})
-      raise 'id #{id} is already in use' if !(creator = @idlist[id]).nil?
-      creator = Meta.new('creator',
-                         content,
-                         self,
-                         { 'id' => id },
-                         { 'alternate-script' =>
-                           alternates.map {
-                             |locale, content|
-                             Meta.new('meta', content, self, { 'property' => 'alternate-script', 'lang' => locale })
-                           }})
-      creator.set_refiner('role', role)
-      @content_nodes['creator'] ||= [] << creator
+    def add_person(name, content, id = nil, role = 'aut', seq = 1, file_as = nil, alternates = {})
+      raise 'id #{id} is already in use' if !@idlist[id].nil?
+      person = Meta.new(name,
+                        content,
+                        self,
+                        { 'id' => id },
+                        { 'alternate-script' =>
+                          alternates.map {
+                            |locale, content|
+                            Meta.new('meta', content, self, { 'property' => 'alternate-script', 'lang' => locale })
+                          }})
+      person.refine('role', role)
+      @content_nodes[name] ||= [] << person
+      person
     end
+
+    def add_creator(content, id = nil, role = 'aut')
+      add_person('creator', content, id, role)
+    end
+
+    def add_contributor(content, id=nil, role=nil)
+      add_person('contributor', content, id, role)
+    end
+    
+    
     
     def add_meta(meta)
       @idlist[meta['id']] =  meta unless meta['id'].nil?

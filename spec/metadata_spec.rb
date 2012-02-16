@@ -66,7 +66,7 @@ describe GEPUB::Metadata do
 
     it 'should handle alternate-script metadata of creator' do
       metadata = GEPUB::Metadata.new
-      metadata.add_creator('TheCreator', 'author', 'aut', 1, 'Creator, The', { 'ja-JP' => '作成者' })
+      metadata.add_creator('TheCreator', 'author', 'aut').display_seq(1).file_as('Creator, The').add_alternates({ 'ja-JP' => '作成者' })
       metadata.creator.to_s.should == 'TheCreator'
       metadata.creator.to_s('ja').should == '作成者'
     end
