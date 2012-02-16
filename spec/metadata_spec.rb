@@ -61,7 +61,7 @@ describe GEPUB::Metadata do
       metadata.set_identifier 'http://example.jp/book/url', 'pub-id', 'uri'
       metadata.identifier.to_s.should == 'http://example.jp/book/url'
       metadata.identifier_list[0]['id'].should == 'pub-id'
-      metadata.identifier_list[0].refiner('identifier-type').to_s.should == 'uri'
+      metadata.identifier_list[0].identifier_type.to_s.should == 'uri'
     end
 
     it 'should write and read title' do
@@ -74,7 +74,7 @@ describe GEPUB::Metadata do
       metadata = GEPUB::Metadata.new
       metadata.add_title('The Main Title', 'maintitle', GEPUB::TITLE_TYPE::MAIN)
       metadata.title.to_s.should == 'The Main Title'
-      metadata.title.refiner('title-type').to_s.should == 'main'
+      metadata.title.title_type.to_s.should == 'main'
     end
 
     it 'should write and read multipletitle with type' do
@@ -82,16 +82,27 @@ describe GEPUB::Metadata do
       metadata.add_title('The Main Title', 'maintitle', GEPUB::TITLE_TYPE::MAIN)
       metadata.add_title('The Book Series', 'series', GEPUB::TITLE_TYPE::COLLECTION).set_group_position(1)
       metadata.title.to_s.should == 'The Main Title'
-      metadata.title.refiner('title-type').to_s.should == 'main'
+      metadata.title.title_type.to_s.should == 'main'
 
       metadata.title_list[1].to_s.should == 'The Book Series'
-      metadata.title_list[1].refiner('title-type').to_s.should == 'collection'
-      metadata.title_list[1].refiner('group-position').to_s.should == '1'
+      metadata.title_list[1].title_type.to_s.should == 'collection'
+      metadata.title_list[1].group_position.to_s.should == '1'
     end
-    
-    it 'should handle alternate-script metadata of creator' do
+
+    it 'should handle alternate-script metadata of creator, not using method chain' do
       metadata = GEPUB::Metadata.new
       metadata.add_creator('TheCreator', 'author', 'aut').set_display_seq(1).set_file_as('Creator, The').add_alternates({ 'ja-JP' => '作成者' })
+      metadata.creator.to_s.should == 'TheCreator'
+      metadata.creator.to_s('ja').should == '作成者'
+    end
+    
+    it 'should handle alternate-script metadata of creator, not using method chain' do
+      metadata = GEPUB::Metadata.new
+      m = metadata.add_creator('TheCreator', 'author', 'aut')
+      m.display_seq = 1
+      m.file_as = 'Creator, The'
+      m.add_alternates({ 'ja-JP' => '作成者' })
+
       metadata.creator.to_s.should == 'TheCreator'
       metadata.creator.to_s('ja').should == '作成者'
     end

@@ -67,18 +67,14 @@ module GEPUB
         self
       end
 
-      def set_display_seq(seq)
-        refine('display-seq', seq)
-      end
+      ['title-type', 'identifier-type', 'display-seq', 'file-as', 'group-position'].each {
+        |name|
+        methodbase = name.sub('-','_')
+        define_method(methodbase + '=') { |val| refine(name, val); }
+        define_method('set_' + methodbase) { |val| refine(name, val); }        
+        define_method(methodbase) { refiner(name) }
+      }
 
-      def set_file_as(fileas)
-        refine('file-as', fileas)
-      end
-
-      def set_group_position(pos)
-        refine('group-position', pos)
-      end
-      
       def add_alternates(alternates = {})
         alternates.each {
           |locale, content|
