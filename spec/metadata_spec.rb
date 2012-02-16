@@ -20,7 +20,7 @@ describe GEPUB::Metadata do
     it 'should parse title' do
       @metadata.main_title.should == 'TheTitle'
       @metadata.title_list.size.should == 2
-      @metadata.title.should == 'TheTitle'
+      @metadata.title.to_s.should == 'TheTitle'
     end
     
     it 'should parse title-type' do
@@ -32,11 +32,11 @@ describe GEPUB::Metadata do
 
     it 'should parse identifier' do
       @metadata.identifier_list.size.should == 2
-      @metadata.identifier.should == 'urn:uuid:1234567890'
+      @metadata.identifier.to_s.should == 'urn:uuid:1234567890'
       @metadata.identifier_list[0].content.should == 'urn:uuid:1234567890'
-      @metadata.identifier_list[0].refiner('identifier-type').should == 'uuid'
+      @metadata.identifier_list[0].refiner('identifier-type').to_s.should == 'uuid'
       @metadata.identifier_list[1].content.should == 'http://example.jp/epub/test/url'
-      @metadata.identifier_list[1].refiner('identifier-type').should == 'uri'
+      @metadata.identifier_list[1].refiner('identifier-type').to_s.should == 'uri'
     end
 
     it 'should parse OPF2.0 meta node' do
@@ -51,16 +51,16 @@ describe GEPUB::Metadata do
     it 'should write and read identifier' do
       metadata = GEPUB::Metadata.new
       metadata.set_identifier 'the_set_identifier', 'pub-id'
-      metadata.identifier.should == 'the_set_identifier'
+      metadata.identifier.to_s.should == 'the_set_identifier'
       metadata.identifier_list[0]['id'].should == 'pub-id'
     end
 
     it 'should write and read identifier with identifier-type' do
       metadata = GEPUB::Metadata.new
-      metadata.set_identifier 'http://example.jp/book/url', 'pub-id', 'url'
-      metadata.identifier.should == 'http://example.jp/book/url'
+      metadata.set_identifier 'http://example.jp/book/url', 'pub-id', 'uri'
+      metadata.identifier.to_s.should == 'http://example.jp/book/url'
       metadata.identifier_list[0]['id'].should == 'pub-id'
-      metadata.identifier_list[0].refiner('identifier-type').should == 'url'
+      metadata.identifier_list[0].refiner('identifier-type').to_s.should == 'uri'
     end
 
   end

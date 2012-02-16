@@ -33,8 +33,7 @@ module GEPUB
       end
 
       def refiner(name)
-        r = refiner_node(name)
-        r.nil? ? nil : r.content 
+        refiner_node(name)
       end
 
       def refiner_node(name)
@@ -45,14 +44,20 @@ module GEPUB
           refiner[0]
         end
       end
-      
+
+      # add a refiner.
       def add_refiner(property, content, attributes = {})
         (@refiners[property] ||= []) << Meta.new('meta', content, @parent, { 'property' => property }.merge(attributes))
       end
 
+      # add a 'unique' refiner. all other refiners with same property will be removed.
       def set_refiner(property, content, attributes = {})
         @refiners[property] = []
         add_refiner(property, content, attributes)
+      end
+
+      def to_s(locale=nil)
+        @content
       end
     end
       
@@ -68,7 +73,7 @@ module GEPUB
             i = 0
             @content_nodes[node] = parse_node(DC_NS, node).sort_by {
               |v|
-              [v.refiner('display-seq') || 2 ** (0.size * 8 - 2) - 1, i += 1]
+              [v.refiner('display-seq').to_s.to_i || 2 ** (0.size * 8 - 2) - 1, i += 1]
             }              
           }
 
@@ -102,6 +107,7 @@ module GEPUB
       |node|
       define_method(node + '_list') { @content_nodes[node] } 
 
+      #TODO: should override for 'title'. // for 'main title' not always comes first.
       define_method(node) {
         if !@content_nodes[node].nil? && @content_nodes[node].size > 0
           @content_nodes[node][0].content
