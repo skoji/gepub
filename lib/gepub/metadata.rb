@@ -41,9 +41,13 @@ module GEPUB
         end
       end
       
-      def add_refiner(refiner)
-        raise 'refiner element need property attribute' if refiner['property'].nil? 
-        (@refiners[refiner['property']] ||= []) << refiner
+      def add_refiner(property, content, attributes = {})
+        (@refiners[property] ||= []) << Meta.new('meta', content, @parent, { 'property' => property }.merge(attributes))
+      end
+
+      def set_refiner(property, content, attributes = {})
+        @refiners[property] = []
+        add_refiner(property, content, attributes)
       end
     end
       
@@ -100,13 +104,15 @@ module GEPUB
       }
     }
 
-    def set_identifier(string, id)
+    def set_identifier(string, id, type=nil)
       if !(identifier = @idlist[id]).nil?
-        raise 'id is already in use' if identifier.name != 'identifier'
+        raise 'id #{id} is already in use' if identifier.name != 'identifier'
         identifier.content = string
       else
-        @content_nodes['identifier'] ||= [] << Meta.new('identifier', string, self, { 'id' => id })
+        identifier = Meta.new('identifier', string, self, { 'id' => id })
+        @content_nodes['identifier'] ||= [] << identifier
       end
+      identifier.set_refiner('identifier-type', type)
     end
 
     def add_meta(meta)

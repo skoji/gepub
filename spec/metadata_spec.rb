@@ -54,5 +54,14 @@ describe GEPUB::Metadata do
       metadata.identifier.should == 'the_set_identifier'
       metadata.identifier_list[0]['id'].should == 'pub-id'
     end
+
+    it 'should write and read identifier with identifier-type' do
+      metadata = GEPUB::Metadata.new
+      metadata.set_identifier 'http://example.jp/book/url', 'pub-id', 'url'
+      metadata.identifier.should == 'http://example.jp/book/url'
+      metadata.identifier_list[0]['id'].should == 'pub-id'
+      metadata.identifier_list[0].first_refiner('identifier-type').content.should == 'url'
+    end
+
   end
 end
