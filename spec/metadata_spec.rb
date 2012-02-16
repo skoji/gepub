@@ -64,6 +64,31 @@ describe GEPUB::Metadata do
       metadata.identifier_list[0].refiner('identifier-type').to_s.should == 'uri'
     end
 
+    it 'should write and read title' do
+      metadata = GEPUB::Metadata.new
+      metadata.add_title('The Main Title')
+      metadata.title.to_s.should == 'The Main Title'
+    end
+
+    it 'should write and read title with type' do
+      metadata = GEPUB::Metadata.new
+      metadata.add_title('The Main Title', 'maintitle', GEPUB::TITLE_TYPE::MAIN)
+      metadata.title.to_s.should == 'The Main Title'
+      metadata.title.refiner('title-type').to_s.should == 'main'
+    end
+
+    it 'should write and read multipletitle with type' do
+      metadata = GEPUB::Metadata.new
+      metadata.add_title('The Main Title', 'maintitle', GEPUB::TITLE_TYPE::MAIN)
+      metadata.add_title('The Book Series', 'series', GEPUB::TITLE_TYPE::COLLECTION).group_position(1)
+      metadata.title.to_s.should == 'The Main Title'
+      metadata.title.refiner('title-type').to_s.should == 'main'
+
+      metadata.title_list[1].to_s.should == 'The Book Series'
+      metadata.title_list[1].refiner('title-type').to_s.should == 'collection'
+      metadata.title_list[1].refiner('group-position').to_s.should == '1'
+    end
+    
     it 'should handle alternate-script metadata of creator' do
       metadata = GEPUB::Metadata.new
       metadata.add_creator('TheCreator', 'author', 'aut').display_seq(1).file_as('Creator, The').add_alternates({ 'ja-JP' => '作成者' })

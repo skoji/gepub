@@ -7,6 +7,7 @@ module GEPUB
     include XMLUtil
     attr_accessor :path
 
+
     # parse OPF data. opf should be io or string object.
     def self.parse_opf(opf, path)
       PackageData.new(path) {

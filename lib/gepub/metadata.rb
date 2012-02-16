@@ -2,6 +2,13 @@ require 'rubygems'
 require 'nokogiri'
 
 module GEPUB
+  # metadata constants
+  module TITLE_TYPE
+    ['main','subtitle', 'short', 'collection', 'edition','expanded'].each {
+      |type|
+      const_set(type.upcase, type)
+    }
+  end
   # Holds data in /package/metadata 
   class Metadata
     include XMLUtil
@@ -47,14 +54,17 @@ module GEPUB
 
       # add a refiner.
       def add_refiner(property, content, attributes = {})
-        (@refiners[property] ||= []) << Meta.new('meta', content, @parent, { 'property' => property }.merge(attributes))
+        (@refiners[property] ||= []) << Meta.new('meta', content, @parent, { 'property' => property }.merge(attributes)) unless content.nil?
         self
       end
 
       # add a 'unique' refiner. all other refiners with same property will be removed.
       def refine(property, content, attributes = {})
-        @refiners[property]= []
-        add_refiner(property, content, attributes)
+        if !content.nil?
+          @refiners[property]= []
+          add_refiner(property, content, attributes)
+        end
+        self
       end
 
       def display_seq(seq)
@@ -65,6 +75,10 @@ module GEPUB
         refine('file-as', fileas)
       end
 
+      def group_position(pos)
+        refine('group-position', pos)
+      end
+      
       def add_alternates(alternates = {})
         alternates.each {
           |locale, content|
@@ -87,7 +101,7 @@ module GEPUB
           }.reverse
           localized = candidates[0].content if candidates.size > 0
         end
-        localized || @content || super
+        (localized || @content || super).to_s
       end
     end
       
@@ -150,8 +164,7 @@ module GEPUB
         raise 'id #{id} is already in use' if identifier.name != 'identifier'
         identifier.content = string
       else
-        identifier = Meta.new('identifier', string, self, { 'id' => id })
-        @content_nodes['identifier'] ||= [] << identifier
+        identifier = add_metadata('identifier', string, id)
       end
       identifier.refine('identifier-type', type) unless type.nil?
       identifier
@@ -159,8 +172,13 @@ module GEPUB
 
     def add_metadata(name, content, id = nil)
       meta = Meta.new(name, content, self, { 'id' => id })
-      @content_nodes[name] ||= [] << meta
+      (@content_nodes[name] ||= []) << meta
       meta
+    end
+
+    def add_title(content, id = nil, title_type = nil)
+      raise 'id #{id} is already in use' if !@idlist[id].nil?
+      add_metadata('title', content, id).refine('title-type', title_type)
     end
     
     def add_person(name, content, id = nil, role = 'aut')
