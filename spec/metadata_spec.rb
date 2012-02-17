@@ -118,7 +118,7 @@ describe GEPUB::Metadata do
       metadata = GEPUB::Metadata.new
       builder = Nokogiri::XML::Builder.new { |xml|
         xml.package('xmlns' => "http://www.idpf.org/2007/opf",'version' => "3.0",'unique-identifier' => "pub-id",'xml:lang' => "ja") {
-          metadata.create_xml(xml)
+          metadata.to_xml(xml)
         }
       }
       xml = Nokogiri::XML::Document.parse(builder.to_xml).at_xpath('//xmlns:metadata', { 'xmlns' => GEPUB::XMLUtil::OPF_NS})
@@ -130,7 +130,7 @@ describe GEPUB::Metadata do
       metadata.set_identifier('the_uid', nil)
       builder = Nokogiri::XML::Builder.new { |xml|
         xml.package('xmlns' => "http://www.idpf.org/2007/opf",'version' => "3.0",'unique-identifier' => "pub-id",'xml:lang' => "ja") {
-          metadata.create_xml(xml)
+          metadata.to_xml(xml)
         }
       }
       Nokogiri::XML::Document.parse(builder.to_xml).at_xpath('//dc:identifier', metadata.instance_eval {@namespaces}).content.should == 'the_uid'
@@ -141,7 +141,7 @@ describe GEPUB::Metadata do
       metadata.add_creator('TheCreator', nil, 'aut').set_display_seq(1).set_file_as('Creator, The').add_alternates({ 'ja-JP' => '作成者' })
       builder = Nokogiri::XML::Builder.new { |xml|
         xml.package('xmlns' => "http://www.idpf.org/2007/opf",'version' => "3.0",'unique-identifier' => "pub-id",'xml:lang' => "ja") {
-          metadata.create_xml(xml)
+          metadata.to_xml(xml)
         }
       }
       xml = Nokogiri::XML::Document.parse(builder.to_xml)
@@ -160,7 +160,7 @@ describe GEPUB::Metadata do
       metadata.add_oldstyle_meta(nil, { 'name' => 'cover', 'content' => 'cover.jpg' })
       builder = Nokogiri::XML::Builder.new { |xml|
         xml.package('xmlns' => "http://www.idpf.org/2007/opf",'version' => "3.0",'unique-identifier' => "pub-id",'xml:lang' => "ja") {
-          metadata.create_xml(xml)
+          metadata.to_xml(xml)
         }
       }
       xml = Nokogiri::XML::Document.parse(builder.to_xml)

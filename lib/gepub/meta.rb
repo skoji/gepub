@@ -78,7 +78,7 @@ module GEPUB
       self
     end
 
-    def create_xml(builder, id_pool, ns = nil, additional_attr = {})
+    def to_xml(builder, id_pool, ns = nil, additional_attr = {})
       if @refiners.size > 0 
         @attributes['id'] = id_pool.generate_key(:prefix => name) if @attributes['id'].nil?
         additional_attr['refines'] = "##{@attributes['id']}"
@@ -103,7 +103,7 @@ module GEPUB
         |k, ref_list|
         ref_list.each {
           |ref|
-          ref.create_xml(builder, id_pool, nil, additional_attr)
+          ref.to_xml(builder, id_pool, nil, additional_attr)
         }
       }
     end

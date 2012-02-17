@@ -22,6 +22,11 @@ describe GEPUB::Manifest do
       @manifest.item_list[2].media_type.should == 'image/jpeg'
       @manifest.item_list[2].properties[0].should == 'cover-image'
     end
-    
+  end
+  context 'generate new opf' do
+    it 'should generate xml' do
+      manifest = GEPUB::Manifest.new
+      manifest.add_item('ncx', 'toc.ncx', 'application/x-dtbncx+xml')
+    end
   end
 end

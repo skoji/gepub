@@ -50,18 +50,18 @@ module GEPUB
       yield self if block_given?
     end
 
-    def create_xml(builder)
+    def to_xml(builder)
       builder.metadata(@namespaces) {
         @content_nodes.each {
           |name, list|
           list.each {
             |meta|
-            meta.create_xml(builder, @id_pool, prefix(DC_NS))
+            meta.to_xml(builder, @id_pool, prefix(DC_NS))
           }
         }
         @oldstyle_meta.each {
           |node|
-          node.create_xml(builder, @id_pool, nil)
+          node.to_xml(builder, @id_pool, nil)
         }
       }
       @xml
