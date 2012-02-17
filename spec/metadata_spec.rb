@@ -14,6 +14,7 @@ describe GEPUB::Metadata do
     metadata.prefix(GEPUB::XMLUtil::DC_NS).should == 'dc'
     metadata.prefix(GEPUB::XMLUtil::OPF_NS).should == 'opf'
   end
+
   context 'Parse Existing OPF' do
     before do
       @metadata = GEPUB::PackageData.parse_opf(File.open(File.dirname(__FILE__) + '/fixtures/testdata/test.opf'), '/package.opf').instance_eval{ @metadata }
@@ -106,5 +107,20 @@ describe GEPUB::Metadata do
       metadata.creator.to_s.should == 'TheCreator'
       metadata.creator.to_s('ja').should == '作成者'
     end
+
+    it 'should detect duplicate id' do
+      metadata = GEPUB::Metadata.new
+      metadata.add_creator('TheCreator', 'id', 'aut')
+      lambda { metadata.add_title('TheTitle', 'id') }.should raise_error(RuntimeError, "id 'id' is already in use.")
+    end
+
+    it 'should generate xml' do
+      metadata = GEPUB::Metadata.new
+      parent = Nokogiri::XML::Document.parse '<package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="pub-id" xml:lang="ja"></package>'
+      xml = metadata.create_xml(parent)
+      xml.name.should == 'metadata'
+    end
+
+
   end
 end

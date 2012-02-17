@@ -12,18 +12,18 @@ module GEPUB
   # Holds data in /package/metadata 
   class Metadata
     include XMLUtil
-    attr_reader :opf_version, :other_meta
+    attr_reader :opf_version
 
     # Holds one metadata with refine meta elements.
     class Meta
       attr_accessor :content
       attr_reader :name
       def initialize(name, content, parent, attributes= {}, refiners = {})
+        @parent = parent
         @name = name
         @content = content
         @attributes = attributes
         @refiners = refiners
-        @parent = parent
         @parent.register_meta(self) unless @parent.nil?
       end
 
@@ -36,14 +36,20 @@ module GEPUB
       end
 
       def refiner_list(name)
-        return @refiners[name] 
+        return @refiners[name].dup
+      end
+
+      def refiner_clear(name)
+        if !@refiners[name].nil?
+          @refiners[name].each {
+            |refiner|
+            @parent.unregister_meta(refiner)
+          }
+        end
+        @refiners[name]= []
       end
 
       def refiner(name)
-        refiner_node(name)
-      end
-
-      def refiner_node(name)
         refiner = @refiners[name]
         if refiner.nil? || refiner.size == 0
           nil
@@ -54,14 +60,14 @@ module GEPUB
 
       # add a refiner.
       def add_refiner(property, content, attributes = {})
-        (@refiners[property] ||= []) << Meta.new('meta', content, @parent, { 'property' => property }.merge(attributes)) unless content.nil?
+        (@refiners[property] ||= []) << refiner = Meta.new('meta', content, @parent, { 'property' => property }.merge(attributes)) unless content.nil?
         self
       end
 
-      # add a 'unique' refiner. all other refiners with same property will be removed.
+      # set a 'unique' refiner. all other refiners with same property will be removed.
       def refine(property, content, attributes = {})
         if !content.nil?
-          @refiners[property]= []
+          refiner_clear(property)
           add_refiner(property, content, attributes)
         end
         self
@@ -75,6 +81,7 @@ module GEPUB
         define_method(methodbase) { refiner(name) }
       }
 
+      # add alternate script refiner.
       def add_alternates(alternates = {})
         alternates.each {
           |locale, content|
@@ -127,8 +134,9 @@ module GEPUB
       }
     end
     
-    def initialize(opf_version = '3.0')
-      @idlist = {}
+    def initialize(opf_version = '3.0',id_pool = {})
+      @id_pool = id_pool
+      @metalist = {}
       @content_nodes = {}
       @meta = {}
       @other_meta = []
@@ -138,25 +146,50 @@ module GEPUB
       yield self if block_given?
     end
 
+    def create_xml(parent)
+      @xml = Nokogiri::XML::Node.new('metadata', parent)
+      @namespaces.each {
+        |prefix, ns|
+        @xml.add_namespace(prefix.sub(/^(xmlns:)(.*)/, '\2'), ns)
+      }
+      @xml
+    end
+
     def main_title # should make it obsolete? 
       @content_nodes['title'][0].content
     end
 
+
+    def other_meta
+      @other_meta.dup
+    end
+
+    def other_meta_clear
+      @other_meta.each {
+        |meta|
+        unregister_meta(meta)
+      }
+      @other_meta = []
+    end
     
     CONTENT_NODE_LIST = ['identifier','title', 'language', 'creator', 'coverage', 'date','description','format ','publisher','relation','rights','source','subject','type'].each {
       |node|
-      define_method(node + '_list') { @content_nodes[node] } 
-
+      define_method(node + '_list') { @content_nodes[node].dup }
+      define_method(node + '_clear') { @content_nodes[node].each { |x| unregister_meta(x) }; @content_nodes[node] = [] }
       #TODO: should override for 'title'. // for 'main title' not always comes first.
       define_method(node) {
         if !@content_nodes[node].nil? && @content_nodes[node].size > 0
           @content_nodes[node][0]
         end
       }
+      define_method('set_' + node) {
+        |content, id|
+        add_metadata(node, content, id)
+      }
     }
 
     def set_identifier(string, id, type=nil)
-      if !(identifier = @idlist[id]).nil?
+      if !(identifier = @id_pool[id]).nil?
         raise 'id #{id} is already in use' if identifier.name != 'identifier'
         identifier.content = string
       else
@@ -173,12 +206,10 @@ module GEPUB
     end
 
     def add_title(content, id = nil, title_type = nil)
-      raise 'id #{id} is already in use' if !@idlist[id].nil?
       add_metadata('title', content, id).refine('title-type', title_type)
     end
     
     def add_person(name, content, id = nil, role = 'aut')
-      raise 'id #{id} is already in use' if !@idlist[id].nil?
       add_metadata(name, content, id).refine('role', role)
     end
 
@@ -192,7 +223,18 @@ module GEPUB
     
     
     def register_meta(meta)
-      @idlist[meta['id']] =  meta unless meta['id'].nil?
+      if !meta['id'].nil?
+        raise "id '#{meta['id']}' is already in use." if @id_pool[meta['id']]
+        @metalist[meta['id']] =  meta 
+        @id_pool[meta['id']] = true
+      end
+    end
+
+    def unregister_meta(meta)
+      if meta['id'].nil?
+        @metalist[meta['id']] =  nil
+        @id_pool[meta['id']] = nil
+      end
     end
     
     private
