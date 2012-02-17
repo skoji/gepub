@@ -114,11 +114,12 @@ describe GEPUB::Metadata do
       lambda { metadata.add_title('TheTitle', 'id') }.should raise_error(RuntimeError, "id 'id' is already in use.")
     end
 
-    it 'should generate xml' do
+    it 'should generate empty metadata xml' do
       metadata = GEPUB::Metadata.new
       parent = Nokogiri::XML::Document.parse '<package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="pub-id" xml:lang="ja"></package>'
       xml = metadata.create_xml(parent)
       xml.name.should == 'metadata'
+      xml.namespaces['xmlns:dc'].should == GEPUB::XMLUtil::DC_NS
     end
 
 
