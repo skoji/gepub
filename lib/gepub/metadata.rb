@@ -28,13 +28,12 @@ module GEPUB
               [v.refiner('display-seq').to_s.to_i || 2 ** (0.size * 8 - 2) - 1, i += 1]
             }              
           }
-
           @xml.xpath("#{prefix(OPF_NS)}:meta[not(@refines) and @property]", @namespaces).each {
             |node|
             @meta[node['property']] = create_meta(node)
           }
 
-          @other_meta = parse_opf2_meta
+          @oldstyle_meta = parse_opf2_meta
         }
       }
     end
@@ -44,7 +43,7 @@ module GEPUB
       @metalist = {}
       @content_nodes = {}
       @meta = {}
-      @other_meta = []
+      @oldstyle_meta = []
       @opf_version = opf_version
       @namespaces = { 'xmlns:dc' =>  DC_NS }
       @namespaces['xmlns:opf'] = OPF_NS if @opf_version.to_f < 3.0 
@@ -68,17 +67,16 @@ module GEPUB
       @content_nodes['title'][0].content
     end
 
-
-    def other_meta
-      @other_meta.dup
+    def oldstyle_meta
+      @oldstyle_meta.dup
     end
 
-    def other_meta_clear
-      @other_meta.each {
+    def oldstyle_meta_clear
+      @oldstyle_meta.each {
         |meta|
         unregister_meta(meta)
       }
-      @other_meta = []
+      @oldstyle_meta = []
     end
     
     CONTENT_NODE_LIST = ['identifier','title', 'language', 'creator', 'coverage', 'date','description','format ','publisher','relation','rights','source','subject','type'].each {
@@ -130,6 +128,11 @@ module GEPUB
       add_person('contributor', content, id, role)
     end
     
+    def add_oldstyle_meta(content, attributes = {})
+      meta = Meta.new('meta', content, attributes)
+      (@oldstyle_meta ||= []) << meta
+    end
+
     
     def register_meta(meta)
       if !meta['id'].nil?

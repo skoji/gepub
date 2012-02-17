@@ -42,10 +42,10 @@ describe GEPUB::Metadata do
     end
 
     it 'should parse OPF2.0 meta node' do
-      @metadata.other_meta.size.should == 1
-      @metadata.other_meta[0].name == 'meta'
-      @metadata.other_meta[0]['name'] == 'cover'
-      @metadata.other_meta[0]['content'] == 'cover-image'
+      @metadata.oldstyle_meta.size.should == 1
+      @metadata.oldstyle_meta[0].name == 'meta'
+      @metadata.oldstyle_meta[0]['name'] == 'cover'
+      @metadata.oldstyle_meta[0]['content'] == 'cover-image'
     end
   end
 
