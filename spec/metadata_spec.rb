@@ -146,7 +146,14 @@ describe GEPUB::Metadata do
         }
       }
       xml = Nokogiri::XML::Document.parse(builder.to_xml)
-      xml.at_xpath('//dc:creator', metadata.instance_eval { @namespaces }).content.should == 'TheCreator'
+      puts builder.to_xml
+      ns = metadata.instance_eval { @namespaces }
+      xml.at_xpath('//dc:creator', ns).content.should == 'TheCreator'
+      id = xml.at_xpath('//dc:creator', ns)['id']
+      xml.at_xpath("//xmlns:meta[@refines='##{id}' and @property='role']").content.should == 'aut'
+      xml.at_xpath("//xmlns:meta[@refines='##{id}' and @property='display-seq']").content.should == '1'
+      xml.at_xpath("//xmlns:meta[@refines='##{id}' and @property='file-as']").content.should == 'Creator, The'
+      xml.at_xpath("//xmlns:meta[@refines='##{id}' and @property='alternate-script' and @xml:lang='ja-JP']").content.should == '作成者'
     end
 
   end

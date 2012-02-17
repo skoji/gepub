@@ -158,13 +158,15 @@ module GEPUB
     end
 
     def create_meta(node)
+      node.attributes['xml:lang'] = node.attributes['lang'];
+      node.attributes.delete('lang')
       Meta.new(node.name, node.content, self, node.attributes, collect_refiners(node['id']))
     end
 
     def collect_refiners(id)
       r = {}
       if !id.nil? 
-        @xml.xpath("//#{prefix(OPF_NS)}:meta[@refines='##{id}\']", @namespaces).each {
+        @xml.xpath("//#{prefix(OPF_NS)}:meta[@refines='##{id}']", @namespaces).each {
           |node|
           (r[node['property']] ||= []) << create_meta(node)
         }
