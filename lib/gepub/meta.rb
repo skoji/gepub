@@ -84,21 +84,9 @@ module GEPUB
         additional_attr['refines'] = "##{@attributes['id']}"
       end
 
-      # TODO: what's this!!! want to parametarize with/wo namespace prefix, with/wo content..
-      # should be if within three lines.. 
-      if ns.nil? || @name == 'meta'
-        if @content.nil?
-          builder.send(@name, @attributes.reject{|k,v| v.nil?}.merge(additional_attr))
-        else
-          builder.send(@name, @attributes.reject{|k,v| v.nil?}.merge(additional_attr), @content)
-        end
-      else
-        if @content.nil?
-          builder[ns].send(@name, @attributes.reject{|k,v| v.nil?}.merge(additional_attr))
-        else
-          builder[ns].send(@name, @attributes.reject{|k,v| v.nil?}.merge(additional_attr), @content)
-        end
-      end
+      # using eval to parametarize Namespace and content.
+      eval "builder#{ ns.nil? || @name == 'meta' ? '' : '[ns]'}.send(@name, @attributes.reject{|k,v| v.nil?}.merge(additional_attr)#{@content.nil? ? '' : ', @content'})"
+
       @refiners.each {
         |k, ref_list|
         ref_list.each {
