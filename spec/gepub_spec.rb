@@ -41,7 +41,7 @@ end
 describe GEPUB::Book do
   before do
     @book = GEPUB::Book.new('thetitle')
-    @book.author = "theauthor/著者"
+    @book.author = "theauthor"
     @book.contributor = "contributors contributors!"
     @book.publisher = "thepublisher"
     @book.date = "2010-05-05"

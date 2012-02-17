@@ -30,7 +30,6 @@ describe GEPUB::Manifest do
         }
       }
       xml = Nokogiri::XML::Document.parse(builder.to_xml)
-      puts builder.to_xml
       xml.xpath("//xmlns:item[@id='ncx' and @href='toc.ncx' and @media-type='application/x-dtbncx+xml']").size.should == 1
     end
   end

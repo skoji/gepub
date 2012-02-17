@@ -85,7 +85,7 @@ module GEPUB
       end
 
       # using eval to parametarize Namespace and content.
-      eval "builder#{ ns.nil? || @name == 'meta' ? '' : '[ns]'}.send(@name, @attributes.reject{|k,v| v.nil?}.merge(additional_attr)#{@content.nil? ? '' : ', @content'})"
+      eval "builder#{ ns.nil? || @name == 'meta' ? '' : '[ns]'}.#{@name}(@attributes.reject{|k,v| v.nil?}.merge(additional_attr)#{@content.nil? ? '' : ',  @content'})"
 
       @refiners.each {
         |k, ref_list|

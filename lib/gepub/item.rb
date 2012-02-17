@@ -53,7 +53,7 @@ module GEPUB
     def to_xml(builder)
       builder.item(@attributes)
     end
-    
+
     def guess_mediatype
       case File.extname(href)
       when /.(html|xhtml)/i
@@ -74,6 +74,10 @@ module GEPUB
         'application/oebps-package+xml'
       when /.ncx/i
         'application/x-dtbncx+xml'
+      when /.(otf|ttf|ttc)/i
+        'application/vnd.ms-opentype'
+      when /.woff/i
+        'application/font-woff'
       end
     end
   end
