@@ -10,17 +10,27 @@ module GEPUB
     class IDPool
       def initialize
         @pool = {}
+        @counter = {}
       end
 
+      def counter(prefix,suffix)
+        @counter[prefix + '////' + suffix]
+      end
+
+      def set_counter(prefix,suffix,val)
+        @counter[prefix + '////' + suffix] = val
+      end
+      
       def generate_key(param = {})
         while (true)
           prefix = param[:prefix] || ''
           suffix = param[:suffix] || ''
-          start = param[:start] || 0
-          k = prefix + start.to_s + suffix
+          count = [ param[:start] || 0, counter(prefix,suffix) || 0].max
+          k = prefix + count.to_s + suffix
           return k if @pool[k].nil?
-          start += 1
+          count += 1
         end
+        set_counter(prefix,suffix, count)
       end
       
       def [](k)
