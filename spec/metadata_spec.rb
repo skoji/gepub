@@ -134,9 +134,20 @@ describe GEPUB::Metadata do
         }
       }
       Nokogiri::XML::Document.parse(builder.to_xml).at_xpath('//dc:identifier', metadata.instance_eval {@namespaces}).content.should == 'the_uid'
-
     end
 
+    it 'should generate metadata with creator refiner' do
+      metadata = GEPUB::Metadata.new
+      metadata.add_creator('TheCreator', nil, 'aut').set_display_seq(1).set_file_as('Creator, The').add_alternates({ 'ja-JP' => '作成者' })
+      metadata.creator.to_s.should == 'TheCreator'
+      builder = Nokogiri::XML::Builder.new { |xml|
+        xml.package('xmlns' => "http://www.idpf.org/2007/opf",'version' => "3.0",'unique-identifier' => "pub-id",'xml:lang' => "ja") {
+          metadata.create_xml(xml)
+        }
+      }
+      xml = Nokogiri::XML::Document.parse(builder.to_xml)
+      xml.at_xpath('//dc:creator', metadata.instance_eval { @namespaces }).content.should == 'TheCreator'
+    end
 
   end
 end

@@ -7,7 +7,30 @@ module GEPUB
     include XMLUtil
     attr_accessor :path
 
+    class IDPool
+      def initialize
+        @pool = {}
+      end
 
+      def generate_key(param = {})
+        while (true)
+          prefix = param[:prefix] || ''
+          suffix = param[:suffix] || ''
+          start = param[:start] || 0
+          k = prefix + start.to_s + suffix
+          return k if @pool[k].nil?
+          start += 1
+        end
+      end
+      
+      def [](k)
+        @pool[k]
+      end
+      def []=(k,v)
+        @pool[k] = v
+      end
+    end
+    
     # parse OPF data. opf should be io or string object.
     def self.parse_opf(opf, path)
       PackageData.new(path) {

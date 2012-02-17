@@ -90,8 +90,23 @@ module GEPUB
         self
       end
 
-      def create_xml(builder, ns)
-        builder[ns].send(@name, @attributes.select{|k,v| !v.nil?}, @content)
+      def create_xml(builder, id_pool, ns = nil, additional_attr = {})
+        if @refiners.size > 0 && @attributes['id'] == nil
+          @attributes['id'] = id_pool.generate_key(:prefix => name)
+        end
+        if ns.nil?
+          builder.send(@name, @attributes.select{|k,v| !v.nil?}.merge(additional_attr), @content)
+        else
+          builder[ns].send(@name, @attributes.select{|k,v| !v.nil?}.merge(additional_attr), @content)
+        end
+        @refiners.each {
+          |k, ref_list|
+          ref_list.each {
+            |ref|
+            additional_attr['refines'] = "##{@attributes['id']}"
+            ref.create_xml(builder, id_pool, nil, additional_attr)
+          }
+        }
       end
       
       def to_s(locale=nil)
@@ -138,7 +153,7 @@ module GEPUB
       }
     end
     
-    def initialize(opf_version = '3.0',id_pool = {})
+    def initialize(opf_version = '3.0',id_pool = PackageData::IDPool.new)
       @id_pool = id_pool
       @metalist = {}
       @content_nodes = {}
@@ -156,7 +171,7 @@ module GEPUB
           |name, list|
           list.each {
             |meta|
-            meta.create_xml(builder, prefix(DC_NS))
+            meta.create_xml(builder, @id_pool, prefix(DC_NS))
           }
         }
       }
