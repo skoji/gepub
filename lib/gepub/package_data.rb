@@ -44,6 +44,7 @@ module GEPUB
             @attr[k] = @xml.root[k]
           }
           @metadata = Metadata.parse(@xml.xpath("//#{prefix(OPF_NS)}:metadata")[0], @attr['version'])
+          @manifest = Manifest.parse(@xml.xpath("//#{prefix(OPF_NS)}:manifest")[0], @attr['version'])
         }
       }
     end

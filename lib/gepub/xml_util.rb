@@ -6,8 +6,20 @@ module GEPUB
       prefix = raw_prefix(ns)
       prefix.nil? ? nil : prefix.sub(/^xmlns:/,'')
     end
+
     def raw_prefix(ns)
       @namespaces.key(ns)      
+    end
+
+    def attr_to_hash(nokogiri_attrs)
+      attributes = {}
+      nokogiri_attrs.each {
+        |k,v|
+        attributes[k] = v.to_s
+      }
+      attributes['xml:lang'] = attributes['lang'];
+      attributes.delete('lang')
+      attributes
     end
   end
 end

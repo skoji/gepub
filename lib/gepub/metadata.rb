@@ -14,8 +14,8 @@ module GEPUB
     include XMLUtil
     attr_reader :opf_version
     # parse metadata element. metadata_xml should be Nokogiri::XML::Node object.
-    def self.parse(metadata_xml, opf_version = '3.0')
-      Metadata.new(opf_version) {
+    def self.parse(metadata_xml, opf_version = '3.0', id_pool = PackageData::IDPool.new)
+      Metadata.new(opf_version, id_pool) {
         |metadata|
         metadata.instance_eval {
           @xml = metadata_xml
@@ -162,9 +162,7 @@ module GEPUB
     end
 
     def create_meta(node)
-      node.attributes['xml:lang'] = node.attributes['lang'];
-      node.attributes.delete('lang')
-      Meta.new(node.name, node.content, self, node.attributes, collect_refiners(node['id']))
+      Meta.new(node.name, node.content, self, attr_to_hash(node.attributes), collect_refiners(node['id']))
     end
 
     def collect_refiners(id)

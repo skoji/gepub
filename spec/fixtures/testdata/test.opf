@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
 <package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="pub-id" xml:lang="ja">
 <metadata xmlns:dc="http://purl.org/dc/elements/1.1/" >
 <dc:identifier id="pub-id">urn:uuid:1234567890</dc:identifier>
@@ -19,10 +20,10 @@
 <meta refines="#author1" property="role" scheme="marc:relators">aut</meta>
 <meta refines="#author1" property="display-seq">1</meta>
 <meta refines="#author1" property="file-as">さいしょのちょしゃ</meta>
-<dc:creator id="author2">三人目</dc:creator>
-<meta refines="#author2" property="role" scheme="marc:relators">prg</meta>
-<meta refines="#author2" property="display-seq">3</meta>
-<meta refines="#author2" property="file-as">さんにんめ</meta>
+<dc:creator id="author3">三人目</dc:creator>
+<meta refines="#author3" property="role" scheme="marc:relators">prg</meta>
+<meta refines="#author3" property="display-seq">3</meta>
+<meta refines="#author3" property="file-as">さんにんめ</meta>
 <dc:creator id="author2">ふたりめ</dc:creator>
 <meta refines="#author2" property="role" scheme="marc:relators">aut</meta>
 <meta refines="#author2" property="display-seq">2</meta>
@@ -41,7 +42,6 @@
 <item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml" />
 <item id="cover" href="cover/cover.xhtml" media-type="application/xhtml+xml" />
 <item id="cover-image" href="img/cover.jpg" properties="cover-image" media-type="image/jpeg" />
-
 <item id="toc" href="toc.xhtml" media-type="application/xhtml+xml" />
 <item id="nav" href="nav.xhtml" properties="nav" media-type="application/xhtml+xml" />
 <item id="chap1" href="chap1.xhtml" media-type="application/xhtml+xml" />
