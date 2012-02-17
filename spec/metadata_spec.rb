@@ -122,6 +122,14 @@ describe GEPUB::Metadata do
       xml.namespaces['xmlns:dc'].should == GEPUB::XMLUtil::DC_NS
     end
 
+    it 'should generate metadata with id xml' do
+      metadata = GEPUB::Metadata.new
+      metadata.set_identifier('the_uid')
+      parent = Nokogiri::XML::Document.parse '<package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="pub-id" xml:lang="ja"></package>'
+      xml = metadata.create_xml(parent)
+      xml.xpath('/dc:identifier').content.should == 'the_uid'
+    end
+
 
   end
 end
