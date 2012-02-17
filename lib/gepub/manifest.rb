@@ -12,7 +12,8 @@ module GEPUB
           @items = {}
           @xml.xpath("//#{prefix(OPF_NS)}:manifest/#{prefix(OPF_NS)}:item", @namespaces).map {
             |item|
-            Item.create(self, attr_to_hash(item.attributes))
+            i = Item.create(self, attr_to_hash(item.attributes))
+            @items[i.id] = i
           }
         }
       }
@@ -20,7 +21,7 @@ module GEPUB
 
     def initialize(opf_version = '3.0', id_pool = PackageData::IDPool.new)
       @id_pool = id_pool
-      @items = []
+      @items = {}
       @opf_version = opf_version
       yield self if block_given?
     end
@@ -30,17 +31,18 @@ module GEPUB
     end
 
     def add_item(id,href,media_type, attributes = {})
-      @items << item = Item.new(id,href,media_type,self, attributes)
+      @items[id] = item = Item.new(id,href,media_type,self, attributes)
       item
     end
-    
+
     def register_item(item)
       raise "id '#{item.id}' is already in use." if @id_pool[item.id]
       @id_pool[item.id] = true
     end
 
     def unregister_item(item)
-      @id_pool[item['id']] = nil
+      @items[item.id] = nil
+      @id_pool[item.id] = nil
     end
   end
 end
