@@ -90,6 +90,10 @@ module GEPUB
         self
       end
 
+      def create_xml(builder, ns)
+        builder[ns].send(@name, @attributes.select{|k,v| !v.nil?}, @content)
+      end
+      
       def to_s(locale=nil)
         localized = nil
         if !locale.nil?
@@ -146,11 +150,15 @@ module GEPUB
       yield self if block_given?
     end
 
-    def create_xml(parent)
-      @xml = Nokogiri::XML::Node.new('metadata', parent)
-      @namespaces.each {
-        |prefix, ns|
-        @xml.add_namespace(prefix.sub(/^(xmlns:)(.*)/, '\2'), ns)
+    def create_xml(builder)
+      builder.metadata(@namespaces) {
+        @content_nodes.each {
+          |name, list|
+          list.each {
+            |meta|
+            meta.create_xml(builder, prefix(DC_NS))
+          }
+        }
       }
       @xml
     end

@@ -116,18 +116,25 @@ describe GEPUB::Metadata do
 
     it 'should generate empty metadata xml' do
       metadata = GEPUB::Metadata.new
-      parent = Nokogiri::XML::Document.parse '<package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="pub-id" xml:lang="ja"></package>'
-      xml = metadata.create_xml(parent)
-      xml.name.should == 'metadata'
+      builder = Nokogiri::XML::Builder.new { |xml|
+        xml.package('xmlns' => "http://www.idpf.org/2007/opf",'version' => "3.0",'unique-identifier' => "pub-id",'xml:lang' => "ja") {
+          metadata.create_xml(xml)
+        }
+      }
+      xml = Nokogiri::XML::Document.parse(builder.to_xml).at_xpath('//xmlns:metadata', { 'xmlns' => GEPUB::XMLUtil::OPF_NS})
       xml.namespaces['xmlns:dc'].should == GEPUB::XMLUtil::DC_NS
     end
 
     it 'should generate metadata with id xml' do
       metadata = GEPUB::Metadata.new
-      metadata.set_identifier('the_uid')
-      parent = Nokogiri::XML::Document.parse '<package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="pub-id" xml:lang="ja"></package>'
-      xml = metadata.create_xml(parent)
-      xml.xpath('/dc:identifier').content.should == 'the_uid'
+      metadata.set_identifier('the_uid', nil)
+      builder = Nokogiri::XML::Builder.new { |xml|
+        xml.package('xmlns' => "http://www.idpf.org/2007/opf",'version' => "3.0",'unique-identifier' => "pub-id",'xml:lang' => "ja") {
+          metadata.create_xml(xml)
+        }
+      }
+      Nokogiri::XML::Document.parse(builder.to_xml).at_xpath('//dc:identifier', metadata.instance_eval {@namespaces}).content.should == 'the_uid'
+
     end
 
 
