@@ -49,6 +49,10 @@ module GEPUB
       @content = io.read
       self
     end
+
+    def to_xml(builder)
+      builder.item(@attributes)
+    end
     
     def guess_mediatype
       case File.extname(href)

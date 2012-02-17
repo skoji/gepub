@@ -24,6 +24,14 @@ describe GEPUB::Manifest do
     it 'should generate xml' do
       manifest = GEPUB::Manifest.new
       manifest.add_item('ncx', 'toc.ncx', 'application/x-dtbncx+xml')
+      builder = Nokogiri::XML::Builder.new { |xml|
+        xml.package('xmlns' => "http://www.idpf.org/2007/opf",'version' => "3.0",'unique-identifier' => "pub-id",'xml:lang' => "ja") {
+          manifest.to_xml(xml)
+        }
+      }
+      xml = Nokogiri::XML::Document.parse(builder.to_xml)
+      puts builder.to_xml
+      xml.xpath("//xmlns:item[@id='ncx' and @href='toc.ncx' and @media-type='application/x-dtbncx+xml']").size.should == 1
     end
   end
 end
