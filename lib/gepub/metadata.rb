@@ -59,6 +59,10 @@ module GEPUB
             meta.create_xml(builder, @id_pool, prefix(DC_NS))
           }
         }
+        @oldstyle_meta.each {
+          |node|
+          node.create_xml(builder, @id_pool, nil)
+        }
       }
       @xml
     end
@@ -129,7 +133,7 @@ module GEPUB
     end
     
     def add_oldstyle_meta(content, attributes = {})
-      meta = Meta.new('meta', content, attributes)
+      meta = Meta.new('meta', content, self, attributes)
       (@oldstyle_meta ||= []) << meta
     end
 

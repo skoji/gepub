@@ -83,9 +83,17 @@ module GEPUB
         @attributes['id'] = id_pool.generate_key(:prefix => name)
       end
       if ns.nil? || @name == 'meta'
-        builder.send(@name, @attributes.reject{|k,v| v.nil?}.merge(additional_attr), @content)
+        if @content.nil?
+          builder.send(@name, @attributes.reject{|k,v| v.nil?}.merge(additional_attr))
+        else
+          builder.send(@name, @attributes.reject{|k,v| v.nil?}.merge(additional_attr), @content)
+        end
       else
-        builder[ns].send(@name, @attributes.reject{|k,v| v.nil?}.merge(additional_attr), @content)
+        if @content.nil?
+          builder[ns].send(@name, @attributes.reject{|k,v| v.nil?}.merge(additional_attr))
+        else
+          builder[ns].send(@name, @attributes.reject{|k,v| v.nil?}.merge(additional_attr), @content)
+        end
       end
       @refiners.each {
         |k, ref_list|

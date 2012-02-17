@@ -139,14 +139,12 @@ describe GEPUB::Metadata do
     it 'should generate metadata with creator refiner' do
       metadata = GEPUB::Metadata.new
       metadata.add_creator('TheCreator', nil, 'aut').set_display_seq(1).set_file_as('Creator, The').add_alternates({ 'ja-JP' => '作成者' })
-      metadata.creator.to_s.should == 'TheCreator'
       builder = Nokogiri::XML::Builder.new { |xml|
         xml.package('xmlns' => "http://www.idpf.org/2007/opf",'version' => "3.0",'unique-identifier' => "pub-id",'xml:lang' => "ja") {
           metadata.create_xml(xml)
         }
       }
       xml = Nokogiri::XML::Document.parse(builder.to_xml)
-      puts builder.to_xml
       ns = metadata.instance_eval { @namespaces }
       xml.at_xpath('//dc:creator', ns).content.should == 'TheCreator'
       id = xml.at_xpath('//dc:creator', ns)['id']
@@ -154,6 +152,19 @@ describe GEPUB::Metadata do
       xml.at_xpath("//xmlns:meta[@refines='##{id}' and @property='display-seq']").content.should == '1'
       xml.at_xpath("//xmlns:meta[@refines='##{id}' and @property='file-as']").content.should == 'Creator, The'
       xml.at_xpath("//xmlns:meta[@refines='##{id}' and @property='alternate-script' and @xml:lang='ja-JP']").content.should == '作成者'
+    end
+
+    it 'should generate metadata with old style meta tag' do
+      metadata = GEPUB::Metadata.new
+      metadata.add_creator('TheCreator', nil, 'aut').set_display_seq(1).set_file_as('Creator, The').add_alternates({ 'ja-JP' => '作成者' })
+      metadata.add_oldstyle_meta(nil, { 'name' => 'cover', 'content' => 'cover.jpg' })
+      builder = Nokogiri::XML::Builder.new { |xml|
+        xml.package('xmlns' => "http://www.idpf.org/2007/opf",'version' => "3.0",'unique-identifier' => "pub-id",'xml:lang' => "ja") {
+          metadata.create_xml(xml)
+        }
+      }
+      xml = Nokogiri::XML::Document.parse(builder.to_xml)
+      xml.xpath("//xmlns:meta[@name='cover' and @content='cover.jpg']").size.should == 1
     end
 
   end

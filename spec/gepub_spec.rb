@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 require File.dirname(__FILE__) + '/spec_helper.rb'
 require 'rubygems'
 require 'nokogiri'
@@ -40,7 +41,7 @@ end
 describe GEPUB::Book do
   before do
     @book = GEPUB::Book.new('thetitle')
-    @book.author = "theauthor"
+    @book.author = "theauthor/著者"
     @book.contributor = "contributors contributors!"
     @book.publisher = "thepublisher"
     @book.date = "2010-05-05"
