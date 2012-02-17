@@ -37,6 +37,10 @@ module GEPUB
       def add_property(property)
         (@attributes['properties'] ||=[]) << property
       end
+
+      def to_xml(builder)
+        builder.itemref(@attributes)
+      end
     end    
 
     def self.parse(spine_xml, opf_version = '3.0', id_pool  = PackageData::IDPool.new)
@@ -80,6 +84,15 @@ module GEPUB
       i
     end
     
+    def to_xml(builder)
+      builder.spine(@attributes) {
+        @item_refs.each {
+          |ref|
+          ref.to_xml(builder)
+        }
+      }
+    end
+
     def register_itemref(itemref)
       raise "id '#{itemref.id}' is already in use." if @id_pool[itemref.id]
       @id_pool[itemref.id] = true unless itemref.id.nil?
@@ -89,6 +102,7 @@ module GEPUB
       @item_refs.delete itemref
       @id_pool[itemref.id] = nil
     end
+    
     
   end
 end

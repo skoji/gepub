@@ -22,4 +22,20 @@ describe GEPUB::Spine do
       @spine.itemref_list[3].linear.should == 'no'
     end
   end
+  context 'generate new opf' do
+    it 'should generate xml' do
+      spine = GEPUB::Spine.new
+      spine.toc = 'ncx'
+      spine.push(GEPUB::Item.new('the_id', 'OEBPS/foo.xhtml')).set_linear('no')
+      builder = Nokogiri::XML::Builder.new { |xml|
+        xml.package('xmlns' => "http://www.idpf.org/2007/opf",'version' => "3.0",'unique-identifier' => "pub-id",'xml:lang' => "ja") {
+          spine.to_xml(xml)
+        }
+      }
+      xml = Nokogiri::XML::Document.parse(builder.to_xml)
+      xml.at_xpath('//xmlns:spine')['toc'].should == 'ncx'
+      xml.xpath("//xmlns:itemref[@idref='the_id' and @linear='no']").size.should == 1
+    end
+  end
+  
 end
