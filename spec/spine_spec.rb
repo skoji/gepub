@@ -8,8 +8,9 @@ describe GEPUB::Spine do
     before do
       @spine = GEPUB::PackageData.parse_opf(File.open(File.dirname(__FILE__) + '/fixtures/testdata/test.opf'), '/package.opf').instance_eval{ @spine }
     end
-
     it 'should be parsed' do
+      @spine.toc.should == 'ncx'
+      @spine.page_progression_direction == 'ltr'
       @spine.itemref_list.size.should == 4
       @spine.itemref_list[0].idref.should == 'cover'
       @spine.itemref_list[0].linear.should == 'no'

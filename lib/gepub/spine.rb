@@ -20,7 +20,7 @@ module GEPUB
       end
 
       ['idref', 'linear', 'id', 'properties'].each { |name|
-        methodbase = name.sub('-','_')
+        methodbase = name.gsub('-','_')
         define_method(methodbase + '=') { |val| @attributes[name] = val }
         define_method('set_' + methodbase) { |val| @attributes[name] = val }
         define_method(methodbase) { @attributes[name] }
@@ -64,10 +64,22 @@ module GEPUB
       yield self if block_given?
     end
 
+    ['id', 'toc', 'page-progression-direction'].each { |name|
+      methodbase = name.gsub('-','_')
+      define_method(methodbase + '=') { |val| @attributes[name] = val }
+      define_method('set_' + methodbase) { |val| @attributes[name] = val }
+      define_method(methodbase) { @attributes[name] }
+    }
+    
     def itemref_list
       @item_refs.dup
     end
 
+    def push(item)
+      @item_refs << i = Itemref.new(item.id, self)
+      i
+    end
+    
     def register_itemref(itemref)
       raise "id '#{itemref.id}' is already in use." if @id_pool[itemref.id]
       @id_pool[itemref.id] = true unless itemref.id.nil?
