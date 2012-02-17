@@ -79,9 +79,13 @@ module GEPUB
     end
 
     def create_xml(builder, id_pool, ns = nil, additional_attr = {})
-      if @refiners.size > 0 && @attributes['id'] == nil
-        @attributes['id'] = id_pool.generate_key(:prefix => name)
+      if @refiners.size > 0 
+        @attributes['id'] = id_pool.generate_key(:prefix => name) if @attributes['id'].nil?
+        additional_attr['refines'] = "##{@attributes['id']}"
       end
+
+      # TODO: what's this!!! want to parametarize with/wo namespace prefix, with/wo content..
+      # should be if within three lines.. 
       if ns.nil? || @name == 'meta'
         if @content.nil?
           builder.send(@name, @attributes.reject{|k,v| v.nil?}.merge(additional_attr))
@@ -99,7 +103,6 @@ module GEPUB
         |k, ref_list|
         ref_list.each {
           |ref|
-          additional_attr['refines'] = "##{@attributes['id']}"
           ref.create_xml(builder, id_pool, nil, additional_attr)
         }
       }
