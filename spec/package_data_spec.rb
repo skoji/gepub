@@ -12,6 +12,6 @@ describe GEPUB::PackageData do
     opf.prefix(GEPUB::XMLUtil::OPF_NS).should == 'xmlns'
     opf['version'].should == '3.0'
     opf['unique-identifier'].should == 'pub-id'
-    opf['lang'].should == 'ja'
+    opf['xml:lang'].should == 'ja'
   end
 end

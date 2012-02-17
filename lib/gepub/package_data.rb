@@ -49,30 +49,28 @@ module GEPUB
           @path = path
           @xml = Nokogiri::XML::Document.parse(opf)
           @namespaces = @xml.root.namespaces
-          @xml.root.keys.each {
-            |k|
-            @attr[k] = @xml.root[k]
-          }
-          @metadata = Metadata.parse(@xml.at_xpath("//#{prefix(OPF_NS)}:metadata"), @attr['version'])
-          @manifest = Manifest.parse(@xml.at_xpath("//#{prefix(OPF_NS)}:manifest"), @attr['version'])
-          @spine = Spine.parse(@xml.at_xpath("//#{prefix(OPF_NS)}:spine"), @attr['version'])
+          @attributes = attr_to_hash(@xml.root.attributes)
+          @metadata = Metadata.parse(@xml.at_xpath("//#{prefix(OPF_NS)}:metadata"), @attributes['version'], @id_pool)
+          @manifest = Manifest.parse(@xml.at_xpath("//#{prefix(OPF_NS)}:manifest"), @attributes['version'], @id_pool)
+          @spine = Spine.parse(@xml.at_xpath("//#{prefix(OPF_NS)}:spine"), @attributes['version'], @id_pool)
         }
       }
     end
     
-    def initialize(path, attr={})
+    def initialize(path, attributes={})
       @namespaces = {'xmlns' => OPF_NS }
-      @attr = attr
-      @attr['version'] ||= '3.0'
+      @attributes = attributes
+      @attributes['version'] ||= '3.0'
+      @id_pool = IDPool.new
       yield self if block_given?
     end
 
     def [](x)
-      @attr[x]
+      @attributes[x]
     end
 
     def []=(k,v)
-      @attr[k] = v
+      @attributes[k] = v
     end
   end
 end
