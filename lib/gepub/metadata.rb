@@ -28,7 +28,7 @@ module GEPUB
               [v.refiner('display-seq').to_s.to_i || 2 ** (0.size * 8 - 2) - 1, i += 1]
             }              
           }
-          @xml.xpath("#{prefix(OPF_NS)}:meta[not(@refines) and @property]", @namespaces).each {
+          @xml.xpath("#{ns_prefix(OPF_NS)}:meta[not(@refines) and @property]", @namespaces).each {
             |node|
             @meta[node['property']] = create_meta(node)
           }
@@ -56,7 +56,7 @@ module GEPUB
           |name, list|
           list.each {
             |meta|
-            meta.to_xml(builder, @id_pool, prefix(DC_NS))
+            meta.to_xml(builder, @id_pool, ns_prefix(DC_NS))
           }
         }
         @oldstyle_meta.each {
@@ -155,7 +155,7 @@ module GEPUB
     
     private
     def parse_node(ns, node)
-      @xml.xpath("#{prefix(ns)}:#{node}", @namespaces).map {
+      @xml.xpath("#{ns_prefix(ns)}:#{node}", @namespaces).map {
         |node|
         create_meta(node)
       }
@@ -168,7 +168,7 @@ module GEPUB
     def collect_refiners(id)
       r = {}
       if !id.nil? 
-        @xml.xpath("//#{prefix(OPF_NS)}:meta[@refines='##{id}']", @namespaces).each {
+        @xml.xpath("//#{ns_prefix(OPF_NS)}:meta[@refines='##{id}']", @namespaces).each {
           |node|
           (r[node['property']] ||= []) << create_meta(node)
         }
@@ -177,7 +177,7 @@ module GEPUB
     end
 
     def parse_opf2_meta
-      @xml.xpath("#{prefix(OPF_NS)}:meta[not(@refines) and not(@property)]").map {
+      @xml.xpath("#{ns_prefix(OPF_NS)}:meta[not(@refines) and not(@property)]").map {
             |node|
             create_meta(node)
       }

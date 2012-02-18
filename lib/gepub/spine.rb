@@ -51,7 +51,7 @@ module GEPUB
           @namespaces = @xml.namespaces
           @attributes = attr_to_hash(@xml.attributes)
           @item_refs = []
-          @xml.xpath("//#{prefix(OPF_NS)}:spine/#{prefix(OPF_NS)}:itemref", @namespaces).map {
+          @xml.xpath("//#{ns_prefix(OPF_NS)}:spine/#{ns_prefix(OPF_NS)}:itemref", @namespaces).map {
             |itemref|
             i = Itemref.create(self, attr_to_hash(itemref.attributes))
             @item_refs << i

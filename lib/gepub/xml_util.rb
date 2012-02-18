@@ -2,7 +2,7 @@ module GEPUB
   module XMLUtil
     OPF_NS = 'http://www.idpf.org/2007/opf'
     DC_NS = 'http://purl.org/dc/elements/1.1/'
-    def prefix(ns)
+    def ns_prefix(ns)
       prefix = raw_prefix(ns)
       prefix.nil? ? nil : prefix.sub(/^xmlns:/,'')
     end

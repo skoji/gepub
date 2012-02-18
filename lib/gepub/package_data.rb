@@ -50,9 +50,9 @@ module GEPUB
           @xml = Nokogiri::XML::Document.parse(opf)
           @namespaces = @xml.root.namespaces
           @attributes = attr_to_hash(@xml.root.attributes)
-          @metadata = Metadata.parse(@xml.at_xpath("//#{prefix(OPF_NS)}:metadata"), @attributes['version'], @id_pool)
-          @manifest = Manifest.parse(@xml.at_xpath("//#{prefix(OPF_NS)}:manifest"), @attributes['version'], @id_pool)
-          @spine = Spine.parse(@xml.at_xpath("//#{prefix(OPF_NS)}:spine"), @attributes['version'], @id_pool)
+          @metadata = Metadata.parse(@xml.at_xpath("//#{ns_prefix(OPF_NS)}:metadata"), @attributes['version'], @id_pool)
+          @manifest = Manifest.parse(@xml.at_xpath("//#{ns_prefix(OPF_NS)}:manifest"), @attributes['version'], @id_pool)
+          @spine = Spine.parse(@xml.at_xpath("//#{ns_prefix(OPF_NS)}:spine"), @attributes['version'], @id_pool)
         }
       }
     end
@@ -64,6 +64,14 @@ module GEPUB
       @id_pool = IDPool.new
       yield self if block_given?
     end
+
+    ['version', 'xml:lang', 'dir', 'prefix', 'id'].each {
+      |name|
+      methodbase = name.gsub('-','_').sub('xml:lang', 'lang')
+      define_method(methodbase + '=') { |val| @attributs[name] =  val }
+      define_method('set_' + methodbase) { |val| @attributes[name] = val }        
+      define_method(methodbase) { @attributes[name] }
+    }
 
     def [](x)
       @attributes[x]

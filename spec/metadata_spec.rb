@@ -6,13 +6,13 @@ require 'nokogiri'
 describe GEPUB::Metadata do
   it 'should be initialized' do
     metadata = GEPUB::Metadata.new
-    metadata.prefix(GEPUB::XMLUtil::DC_NS).should == 'dc'
-    metadata.prefix(GEPUB::XMLUtil::OPF_NS).should be_nil
+    metadata.ns_prefix(GEPUB::XMLUtil::DC_NS).should == 'dc'
+    metadata.ns_prefix(GEPUB::XMLUtil::OPF_NS).should be_nil
   end
   it 'should be initialized with version 2.0' do
     metadata = GEPUB::Metadata.new('2.0')
-    metadata.prefix(GEPUB::XMLUtil::DC_NS).should == 'dc'
-    metadata.prefix(GEPUB::XMLUtil::OPF_NS).should == 'opf'
+    metadata.ns_prefix(GEPUB::XMLUtil::DC_NS).should == 'dc'
+    metadata.ns_prefix(GEPUB::XMLUtil::OPF_NS).should == 'opf'
   end
 
   context 'Parse Existing OPF' do

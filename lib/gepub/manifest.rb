@@ -12,7 +12,7 @@ module GEPUB
           @attributes = attr_to_hash(@xml.attributes)
           @items = {}
           @items_by_href = {}
-          @xml.xpath("//#{prefix(OPF_NS)}:manifest/#{prefix(OPF_NS)}:item", @namespaces).map {
+          @xml.xpath("//#{ns_prefix(OPF_NS)}:manifest/#{ns_prefix(OPF_NS)}:item", @namespaces).map {
             |item|
             i = Item.create(self, attr_to_hash(item.attributes))
             @items[i.id] = i
