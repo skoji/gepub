@@ -55,8 +55,11 @@ module GEPUB
       self
     end
 
-    def to_xml(builder)
+    def to_xml(builder, opf_version = '3.0')
       attr = @attributes.dup
+      if opf_version.to_f < 3.0
+        attr.reject!{ |k,v| k == 'properties' }
+      end
       if !attr['properties'].nil?
         attr['properties'] = attr['properties'].join(' ')
       end

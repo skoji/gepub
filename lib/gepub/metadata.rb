@@ -13,7 +13,7 @@ module GEPUB
   # Holds data in /package/metadata 
   class Metadata
     include XMLUtil
-    attr_reader :opf_version
+    attr_accessor :opf_version
     # parse metadata element. metadata_xml should be Nokogiri::XML::Node object.
     def self.parse(metadata_xml, opf_version = '3.0', id_pool = Package::IDPool.new)
       Metadata.new(opf_version, id_pool) {

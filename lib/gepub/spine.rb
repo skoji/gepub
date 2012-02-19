@@ -3,7 +3,7 @@ require 'nokogiri'
 module GEPUB
   class Spine
     include XMLUtil
-
+    attr_accessor :opf_version
     class Itemref
       def self.create(parent, attributes = {})
         Itemref.new(attributes['idref'], parent, attributes.reject{|k,v| k == 'idref'})

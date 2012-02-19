@@ -3,6 +3,7 @@ require 'nokogiri'
 module GEPUB
   class Manifest
     include XMLUtil
+    attr_accessor :opf_version
     def self.parse(manifest_xml, opf_version = '3.0', id_pool = Package::IDPool.new)
       Manifest.new(opf_version, id_pool) {
         |manifest|
@@ -57,7 +58,7 @@ module GEPUB
       builder.manifest(@attributes) {
         @items.each {
           |itemid, item|
-          item.to_xml(builder)
+          item.to_xml(builder, @opf_version)
         }
       }
     end
