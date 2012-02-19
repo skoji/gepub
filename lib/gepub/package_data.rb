@@ -5,7 +5,7 @@ module GEPUB
   # Holds data in opf file.
   class PackageData
     include XMLUtil
-    attr_accessor :path
+    attr_accessor :path, :metadata, :manifest, :spine
 
     class IDPool
       def initialize
@@ -25,12 +25,21 @@ module GEPUB
         while (true)
           prefix = param[:prefix] || ''
           suffix = param[:suffix] || ''
-          count = [ param[:start] || 0, counter(prefix,suffix) || 0].max
-          k = prefix + count.to_s + suffix
-          return k if @pool[k].nil?
+          count = [ param[:start] || 1, counter(prefix,suffix) || 1].max
+          if param[:without_count]
+            k = prefix + suffix
+            count -= 1
+            param[:without_count] = nil
+          else
+            k = prefix + count.to_s + suffix
+          end
+          if @pool[k].nil?
+            set_counter(prefix,suffix, count + 1)
+            return k
+          end
           count += 1
         end
-        set_counter(prefix,suffix, count)
+
       end
       
       def [](k)
@@ -62,10 +71,13 @@ module GEPUB
       @attributes = attributes
       @attributes['version'] ||= '3.0'
       @id_pool = IDPool.new
+      @metadata = Metadata.new(version)
+      @manifest = Manifest.new(version)
+      @spine = Spine.new(version)
       yield self if block_given?
     end
 
-    ['version', 'xml:lang', 'dir', 'prefix', 'id'].each {
+    ['version', 'unique-identifier', 'xml:lang', 'dir', 'prefix', 'id'].each {
       |name|
       methodbase = name.gsub('-','_').sub('xml:lang', 'lang')
       define_method(methodbase + '=') { |val| @attributs[name] =  val }
@@ -79,6 +91,52 @@ module GEPUB
 
     def []=(k,v)
       @attributes[k] = v
+    end
+
+    def set_main_id(identifier, id = nil, type = nil)
+      unique_identifier = id || id_pool.generate_key(:prefix => 'BookId', :without_count => true)
+      @metadata.set_identifier identifier, unique_identifier, type
+    end
+    
+    def specify_cover(item)
+      # ... not smart. should create old-meta on generating xml
+      @metadata.add_oldstyle_meta(nil, { 'name' => 'cover', 'content' => item.id })
+      item.add_properties 'cover-image'
+    end
+
+    def add_item(href, io = nil, id = nil, attributes = {})
+      id ||= @id_pool.generate_key(:prefix=>'item', :suffix=>'_'+ File.basename(href,'.*'), :without_count => true)
+      item = @manifest.add_item(id, href, nil, attributes)
+      item.add_content(io) unless io.nil?
+      spine.push(item) if @ordered
+      yield item if block_given?
+      item
+    end
+
+    def ordered
+      raise 'call with block.' if !block_given?
+      @ordered = true
+      yield
+      @ordered = nil
+    end
+
+    def add_ordered_item(href, io = nil, id = nil, attributes = {})
+      raise 'do not call add_ordered_item within ordered block.' if @ordered
+      item = add_item(href, io, id, attributes)
+      spine.push(item)
+      item
+    end
+
+    def to_xml
+      builder = Nokogiri::XML::Builder.new {
+        |xml|
+        xml.package(@namespaces.merge(@attributes)) {
+          @metadata.to_xml(xml)
+          @manifest.to_xml(xml)
+          @spine.to_xml(xml)
+        }
+      }
+      builder.to_xml
     end
   end
 end

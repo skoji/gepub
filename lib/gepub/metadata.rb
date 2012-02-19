@@ -113,28 +113,38 @@ module GEPUB
     def add_metadata(name, content, id = nil)
       meta = Meta.new(name, content, self, { 'id' => id })
       (@content_nodes[name] ||= []) << meta
+      yield self if block_given?
       meta
     end
 
     def add_title(content, id = nil, title_type = nil)
-      add_metadata('title', content, id).refine('title-type', title_type)
+      meta = add_metadata('title', content, id).refine('title-type', title_type)
+      yield meta if block_given?
+      meta
     end
     
     def add_person(name, content, id = nil, role = 'aut')
-      add_metadata(name, content, id).refine('role', role)
+      meta = add_metadata(name, content, id).refine('role', role)
+      yield meta if block_given?
+      meta
     end
 
     def add_creator(content, id = nil, role = 'aut')
-      add_person('creator', content, id, role)
+      meta = add_person('creator', content, id, role)
+      yield meta if block_given?
+      meta
     end
 
     def add_contributor(content, id=nil, role=nil)
-      add_person('contributor', content, id, role)
+      meta = add_person('contributor', content, id, role)
+      yield meta if block_given?
+      meta
     end
     
     def add_oldstyle_meta(content, attributes = {})
       meta = Meta.new('meta', content, self, attributes)
       (@oldstyle_meta ||= []) << meta
+      meta
     end
 
     

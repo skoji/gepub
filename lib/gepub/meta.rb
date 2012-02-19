@@ -81,19 +81,21 @@ module GEPUB
     def to_xml(builder, id_pool, ns = nil, additional_attr = {})
       if @refiners.size > 0 
         @attributes['id'] = id_pool.generate_key(:prefix => name) if @attributes['id'].nil?
-        additional_attr['refines'] = "##{@attributes['id']}"
       end
 
       # using eval to parametarize Namespace and content.
       eval "builder#{ ns.nil? || @name == 'meta' ? '' : '[ns]'}.#{@name}(@attributes.reject{|k,v| v.nil?}.merge(additional_attr)#{@content.nil? ? '' : ',  @content'})"
 
-      @refiners.each {
-        |k, ref_list|
-        ref_list.each {
-          |ref|
-          ref.to_xml(builder, id_pool, nil, additional_attr)
+      if @refiners.size > 0 
+        additional_attr['refines'] = "##{@attributes['id']}"
+        @refiners.each {
+          |k, ref_list|
+          ref_list.each {
+            |ref|
+            ref.to_xml(builder, id_pool, nil, additional_attr)
+          }
         }
-      }
+      end
     end
     
     def to_s(locale=nil)
