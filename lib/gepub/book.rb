@@ -70,57 +70,38 @@ EOF
     end
 
     def ncx_xml
-      ncx = Nokogiri::XML::Document.new
-      
-      ncx.root = root = Nokogiri::XML::Node.new('ncx', ncx)
-      root.add_namespace(nil, "http://www.daisy.org/z3986/2005/ncx/")
-      root['version'] = "2005-1"
-      root << head = Nokogiri::XML::Node.new('head', ncx)
-      head << uid = Nokogiri::XML::Node.new('meta', ncx)
-      uid['name'] = 'dtb:uid'
-      uid['content'] = "#{self.identifier}"
-
-      head << depth = Nokogiri::XML::Node.new('meta', ncx)
-      depth['name'] = 'dtb:depth'
-      depth['content'] = '1'
-
-      head << totalPageCount = Nokogiri::XML::Node.new('meta', ncx)
-      totalPageCount['name'] = 'dtb:totalPageCount'
-      totalPageCount['content'] = '0'
-
-      head << maxPageNumber = Nokogiri::XML::Node.new('meta', ncx)
-      maxPageNumber['name'] = 'dtb:maxPageNumber'
-      maxPageNumber['content'] = '0'
-
-      root << docTitle = Nokogiri::XML::Node.new('docTitle', ncx)
-      docTitle << docTitleText = Nokogiri::XML::Node.new('text', ncx)
-      docTitleText.content = "#{@package.metadata.title}"
-
-      root << nav_map = Nokogiri::XML::Node.new('navMap', ncx)
-      count = 1
-      @toc.each {
-        |x|
-        nav_point = Nokogiri::XML::Node.new('navPoint', ncx)
-        nav_point['id'] = "#{x[:item].itemid}"
-        nav_point['playOrder'] = "#{count}"
-        
-        nav_label = Nokogiri::XML::Node.new('navLabel', ncx)
-        nav_label << navtxt = Nokogiri::XML::Node.new('text', ncx)
-        navtxt.content = "#{x[:text]}"
-        
-        nav_content = Nokogiri::XML::Node.new('content', ncx)
-        if x[:id].nil?
-          nav_content['src'] = "#{x[:item].href}"
-        else
-          nav_content['src'] = "#{x[:item].href}##{x[:id]}"
-        end
-        
-        count = count + 1
-        nav_map << nav_point
-        nav_point << nav_label
-        nav_point << nav_content
+      builder = Nokogiri::XML::Builder.new {
+        |xml|
+        xml.ncx('xmlns' => 'http://www.daisy.org/z3986/2005/ncx/', 'version' => '2005-1') {
+          xml.head {
+            xml.meta('name' => 'dtb:uid', 'content' => "#{self.identifier}") 
+            xml.meta('name' => 'dtb:depth', 'content' => '1')
+            xml.meta('name' => 'dtb:totalPageCount','content' => '0')
+            xml.meta('name' => 'dtb:maxPageNumber', 'content' => '0')
+          }
+          xml.docTitle {
+            xml.text_ "#{@package.metadata.title}"
+          }
+          count = 1
+          xml.navMap {
+            @toc.each {
+              |x|
+              xml.navPoint('id' => "#{x[:item].itemid}", 'playOrder' => "#{count}") {
+                xml.navLabel {
+                  xml.text_  "#{x[:text]}"
+                }
+                if x[:id].nil?
+                  xml.content('src' => "#{x[:item].href}")
+                else
+                  xml.content('src' => "#{x[:item].href}##{x[:id]}")
+                end
+              }
+              count += 1
+            }
+          }
+        }
       }
-      ncx.to_s
+      builder.to_xml
     end
 
   end
