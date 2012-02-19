@@ -8,7 +8,7 @@ describe GEPUB::Gepuber do
     gepuber = GEPUB::Gepuber.new({})
     gepuber.texts.should == ['[0-9]*.{xhtml,html}']
     gepuber.resources.should == ['*.css',  'img/*']
-    gepuber.title.should == ""
+    gepuber.title.to_s.should == ""
     gepuber.table_of_contents.should == {}
   end
 
@@ -34,11 +34,11 @@ describe GEPUB::Gepuber do
     }
 
     gepuber = GEPUB::Gepuber.new(conf )
-    gepuber.title.should == "theTitle"
-    gepuber.locale.should == "ja"
-    gepuber.author.should == "theAuthor"
-    gepuber.publisher.should == "thePublisher"
-    gepuber.date.should == "2011-03-11"
+    gepuber.title.to_s.should == "theTitle"
+    gepuber.locale.to_s.should == "ja"
+    gepuber.author.to_s.should == "theAuthor"
+    gepuber.publisher.to_s.should == "thePublisher"
+    gepuber.date.to_s.should == "2011-03-11"
     gepuber.identifier.should == 'http://skoji.jp/gepuber/2011-03-11.0.0'
     gepuber.epubname.should == 'gepub_00'
     gepuber.coverimg.should == 'cover.gif'

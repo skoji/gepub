@@ -67,10 +67,14 @@ module GEPUB
     end
 
     def initialize(path, attributes={})
-      if File.extname(path) != ''
-        path = File.dirname(path) + '/package.opf'
+      @path = path
+      if File.extname(@path) != '.opf'
+        if @path.size > 0
+          @path = [path,'package.opf'].join('/')
+        end
       end
-      @contents_prefix = File.dirname(path)
+      @contents_prefix = File.dirname(@path).sub(/^\.$/,'')
+      @contents_prefix = @contents_prefix + '/' if @contents_prefix.size > 0
       @namespaces = {'xmlns' => OPF_NS }
       @attributes = attributes
       @attributes['version'] ||= '3.0'
@@ -79,6 +83,7 @@ module GEPUB
       @manifest = Manifest.new(version)
       @spine = Spine.new(version)
       @epub_backword_compat = true
+      @toc = []
       yield self if block_given?
     end
 
@@ -100,7 +105,7 @@ module GEPUB
 
 
     def identifier
-      unique_identifier
+      @metadata.identifier_by_id(unique_identifier)
     end
     
     def identifier=(identifier)
@@ -108,7 +113,7 @@ module GEPUB
     end
     
     def set_main_id(identifier, id = nil, type = nil)
-      unique_identifier = id || id_pool.generate_key(:prefix => 'BookId', :without_count => true)
+      set_unique_identifier(id || @id_pool.generate_key(:prefix => 'BookId', :without_count => true))
       @metadata.add_identifier identifier, unique_identifier, type
     end
     
@@ -147,13 +152,10 @@ module GEPUB
 
 
     def method_missing(name, *args) 
-      CONTENT_NODE_LIST.each {
+      Metadata::CONTENT_NODE_LIST.each {
         |x|
         case name.to_s
-        when x
-        when "#{x}_list"
-        when "set_#{x}"
-        when "#{x}="
+        when x, "#{x}_list", "set_#{x}", "#{x}="
           return @metadata.send(name, *args)
         end
       }
@@ -161,38 +163,41 @@ module GEPUB
     end
 
     def author=(val)
-      warn 'do not use this method. use #creator'
+      warn 'do not use author=. use #creator'
       @metadata.creator= val
     end
 
-    
+    def author
+      warn 'do not use #author. use #creator'
+      @metadata.creator
+    end      
 
     def specify_cover_image(item)
-      warn 'do not use this method. use Item#cover_image'
+      warn 'do not use specify_cover_image. use Item#cover_image'
       item.cover_image
     end
 
     def locale=(val)
-      warn 'do not use this method. use #lang='
-      @attribute['lang'] = val
+      warn 'do not use locale=. use #language='
+      @metadata.language = val
     end
 
     def locale 
-      warn 'do not use this method. use #lang'
-      lang
+      warn 'do not use #locale. use #language'
+      @metadata.language
     end
 
     def epub_version=(val)
-      warn 'do not use this method. use #version='
-      @attribute['version'] = val
+      warn 'do not use epub_version. use #version='
+      @attributes['version'] = val
     end
 
     def epub_version
-      warn 'do not use this method. use #version'
+      warn 'do not use this epub_version. use #version'
       version
     end
 
-    def to_xml
+    def opf_xml
       if version.to_f < 3.0 || @epub_backword_compat
         spine.toc  ||= 'ncx'
         if @metadata.oldstyle_meta.select {
@@ -236,12 +241,11 @@ module GEPUB
         epub.put_next_entry('META-INF/container.xml')
         epub << container_xml
 
-        epub.put_next_entry(@contents_prefix + 'content.opf')
+        epub.put_next_entry(@path)
         epub << opf_xml
 
-        # create items
-        @manifest.each {
-          |item|
+        @manifest.item_list.each {
+          |k, item|
           epub.put_next_entry(@contents_prefix + item.href)
           epub << item.content
         }
@@ -253,7 +257,7 @@ module GEPUB
 <?xml version="1.0" encoding="UTF-8"?>
 <container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">
   <rootfiles>
-    <rootfile full-path="#{@contents_prefix}content.opf" media-type="application/oebps-package+xml"/>
+    <rootfile full-path="#{@path}" media-type="application/oebps-package+xml"/>
   </rootfiles>
 </container>
 EOF
@@ -267,7 +271,7 @@ EOF
       root << head = Nokogiri::XML::Node.new('head', ncx)
       head << uid = Nokogiri::XML::Node.new('meta', ncx)
       uid['name'] = 'dtb:uid'
-      uid['content'] = "#{@main_identifier}"
+      uid['content'] = "#{self.identifier}"
 
       head << depth = Nokogiri::XML::Node.new('meta', ncx)
       depth['name'] = 'dtb:depth'
@@ -283,7 +287,7 @@ EOF
 
       root << docTitle = Nokogiri::XML::Node.new('docTitle', ncx)
       docTitle << docTitleText = Nokogiri::XML::Node.new('text', ncx)
-      docTitleText.content = "#{@metadata[:title]}"
+      docTitleText.content = "#{@metadata.title}"
 
       root << nav_map = Nokogiri::XML::Node.new('navMap', ncx)
       count = 1

@@ -86,7 +86,12 @@ module GEPUB
     CONTENT_NODE_LIST = ['identifier','title', 'language', 'contributor', 'creator', 'coverage', 'date','description','format ','publisher','relation','rights','source','subject','type'].each {
       |node|
       define_method(node + '_list') { @content_nodes[node].dup }
-      define_method(node + '_clear') { @content_nodes[node].each { |x| unregister_meta(x) }; @content_nodes[node] = [] }
+      define_method(node + '_clear') {
+        if !@content_nodes[node].nil?
+          @content_nodes[node].each { |x| unregister_meta(x) };
+          @content_nodes[node] = []
+        end
+      }
 
       #TODO: should override for 'title'. // for 'main title' not always comes first.
       define_method(node) {
@@ -100,7 +105,6 @@ module GEPUB
         add_metadata(node, content, id)
       }
       
-
       define_method('set_' + node) {
         |content, id|
         send(node + "_clear")
@@ -108,23 +112,26 @@ module GEPUB
       }
       
       define_method(node+'=') {
-        |content, id|
+        |content|
         send(node + "_clear")
-        add_metadata(node, content, id)
+        add_metadata(node, content)
       }
     }
 
     def add_identifier(string, id, type=nil)
-      if !(identifier = @id_pool[id]).nil?
-        raise 'id #{id} is already in use' if identifier.name != 'identifier'
-        identifier.content = string
-      else
-        identifier = add_metadata('identifier', string, id)
-      end
+      raise 'id #{id} is already in use' if @id_pool[id]
+      identifier = add_metadata('identifier', string, id)
       identifier.refine('identifier-type', type) unless type.nil?
       identifier
     end
 
+    def identifier_by_id(id)
+      @content_nodes['identifier'].each {
+        |x|
+        return x.content if x['id'] == id
+      }
+    end
+    
     def add_metadata(name, content, id = nil)
       meta = Meta.new(name, content, self, { 'id' => id })
       (@content_nodes[name] ||= []) << meta

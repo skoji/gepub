@@ -48,7 +48,7 @@ describe GEPUB::Package do
           opf.add_item('text/chapter2.xhtml')
         }
       }
-      xml = Nokogiri::XML::Document.parse opf.to_xml
+      xml = Nokogiri::XML::Document.parse opf.opf_xml
       xml.root.name.should == 'package'
       xml.root.namespaces.size.should == 1
       xml.root.namespaces['xmlns'].should == GEPUB::XMLUtil::OPF_NS
@@ -86,7 +86,7 @@ describe GEPUB::Package do
           opf.add_item('text/chapter2.xhtml')
         }
       }
-      xml = Nokogiri::XML::Document.parse opf.to_xml
+      xml = Nokogiri::XML::Document.parse opf.opf_xml
       xml.root.name.should == 'package'
       xml.root.namespaces.size.should == 1
       xml.root.namespaces['xmlns'].should == GEPUB::XMLUtil::OPF_NS

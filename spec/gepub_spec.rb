@@ -40,14 +40,14 @@ end
 
 describe GEPUB::Book do
   before do
-    @book = GEPUB::Book.new('thetitle')
+    @book = GEPUB::Book.new('thetitle','OEPBS')
     @book.author = "theauthor"
     @book.contributor = "contributors contributors!"
     @book.publisher = "thepublisher"
     @book.date = "2010-05-05"
     @book.identifier = "http://example.jp/foobar/"
     @book.locale = 'ja'
-    item1 = @book.add_ref_to_item('text/foobar.html','c1')
+    item1 = @book.add_item('text/foobar.html',nil, 'c1')
     item1.add_content(StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c1</title></head><body><p>the first page</p></body></html>'))
     @book.spine.push(item1)
 
@@ -58,7 +58,7 @@ describe GEPUB::Book do
   end
 
   it "should have titile"  do
-    @book.title.should == 'thetitle' 
+    @book.title.to_s.should == 'thetitle' 
   end
 
   it "should generate correct ncx"  do
@@ -99,10 +99,11 @@ describe GEPUB::Book do
 
   it "should create correct opf" do
     opf = Nokogiri::XML.parse(@book.opf_xml).root
+    puts opf.to_s
     opf.name.should == 'package'
-    opf.namespaces['xmlns'] == 'http://www.idpf.org/2007/opf'
-    opf['version'] == '2.0'
-    opf['unique-identifier'] == 'http://example.jp/foobar/'
+    opf.namespaces['xmlns'].should == 'http://www.idpf.org/2007/opf'
+    opf['version'].should == '3.0'
+    opf['unique-identifier'].should == 'BookId'
   end
 
   it "should have correct metadata in opf" do
@@ -126,7 +127,7 @@ describe GEPUB::Book do
   end
 
   it "should have correct cover image id" do
-    item = @book.add_ref_to_item("img/img.jpg")
+    item = @book.add_item("img/img.jpg")
     @book.specify_cover_image(item)
 
     opf = Nokogiri::XML.parse(@book.opf_xml).root
@@ -138,6 +139,7 @@ describe GEPUB::Book do
 
   it "should generate correct epub" do
     epubname = File.join(File.dirname(__FILE__), 'testepub.epub')
+    puts @book.opf_xml.to_s
     @book.generate_epub(epubname)
     %x( epubcheck #{epubname} )
   end
