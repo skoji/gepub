@@ -56,7 +56,7 @@ module GEPUB
           |name, list|
           list.each {
             |meta|
-            meta.to_xml(builder, @id_pool, ns_prefix(DC_NS))
+            meta.to_xml(builder, @id_pool, ns_prefix(DC_NS), nil, @opf_version)
           }
         }
         @oldstyle_meta.each {

@@ -51,7 +51,11 @@ module GEPUB
     end
 
     def to_xml(builder)
-      builder.item(@attributes)
+      attr = @attributes.dup
+      if !attr['properties'].nil?
+        attr['properties'] = attr['properties'].join(' ')
+      end
+      builder.item(attr)
     end
 
     def guess_mediatype

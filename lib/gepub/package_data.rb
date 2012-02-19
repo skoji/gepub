@@ -5,7 +5,7 @@ module GEPUB
   # Holds data in opf file.
   class PackageData
     include XMLUtil
-    attr_accessor :path, :metadata, :manifest, :spine
+    attr_accessor :path, :metadata, :manifest, :spine, :epub2_compat
 
     class IDPool
       def initialize
@@ -74,6 +74,7 @@ module GEPUB
       @metadata = Metadata.new(version)
       @manifest = Manifest.new(version)
       @spine = Spine.new(version)
+      @epub2_compat = true
       yield self if block_given?
     end
 
@@ -128,6 +129,21 @@ module GEPUB
     end
 
     def to_xml
+      if version.to_f < 3.0 || @epub2_compat
+        spine.toc  ||= 'ncx'
+        if @metadata.oldstyle_meta.select {
+          |meta|
+          meta['name'] == 'cover'
+          }.length == 0
+          
+          @manifest.item_list.each {
+            |k, item|
+            if item.properties && item.properties.member?('cover-image')
+              @metadata.add_oldstyle_meta(nil, 'name' => 'cover', 'content' => item.id)
+            end
+          }
+        end
+      end
       builder = Nokogiri::XML::Builder.new {
         |xml|
         xml.package(@namespaces.merge(@attributes)) {
