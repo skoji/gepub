@@ -5,7 +5,7 @@ module GEPUB
   # Holds data in opf file.
   class PackageData
     include XMLUtil
-    attr_accessor :path, :metadata, :manifest, :spine, :epub2_compat
+    attr_accessor :path, :metadata, :manifest, :spine, :epub_backward_compat
 
     class IDPool
       def initialize
@@ -74,7 +74,7 @@ module GEPUB
       @metadata = Metadata.new(version)
       @manifest = Manifest.new(version)
       @spine = Spine.new(version)
-      @epub2_compat = true
+      @epub_backword_compat = true
       yield self if block_given?
     end
 
@@ -129,7 +129,7 @@ module GEPUB
     end
 
     def to_xml
-      if version.to_f < 3.0 || @epub2_compat
+      if version.to_f < 3.0 || @epub_backword_compat
         spine.toc  ||= 'ncx'
         if @metadata.oldstyle_meta.select {
           |meta|
