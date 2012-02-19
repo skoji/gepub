@@ -6,27 +6,37 @@ require 'fileutils'
 
 
 module GEPUB
-  class Book < Package
+  class Book
 
     def initialize(path='OEBPS/package.opf', attributes = {})
       if File.extname(path) != '.opf'
         warn 'GEPUB::Book#new interface changed. you must supply path to package.opf as first argument. if you want to set title, use GEPUB::Book.title='
       end
-      super(path, attributes)
+      @package = Package.new(path, attributes)
+      @toc = []
       yield book if block_given?
     end
 
+    def add_nav(item, text, id = nil)
+      @toc.push({ :item => item, :text => text, :id => id})      
+    end
+
+
+    def method_missing(name,*args)
+      @package.send(name, *args)
+    end
+    
     def generate_epub(path_to_epub)
       if (@toc.size == 0)
-        @toc << { :item => @spine.itemref_list[0] }
+        @toc << { :item => @package.spine.itemref_list[0] }
       end
 
-      if version.to_f < 3.0 || @epub_backword_compat
+      if version.to_f < 3.0 || @package.epub_backward_compat
         add_item('toc.ncx', StringIO.new(ncx_xml), 'ncx')
       end
 
       if version.to_f >=3.0
-        @metadata.set_lastmodified
+        @package.metadata.set_lastmodified
       end
 
       File.delete(path_to_epub) if File.exist?(path_to_epub)
@@ -37,12 +47,12 @@ module GEPUB
         epub.put_next_entry('META-INF/container.xml')
         epub << container_xml
 
-        epub.put_next_entry(@path)
+        epub.put_next_entry(@package.path)
         epub << opf_xml
 
-        @manifest.item_list.each {
+        @package.manifest.item_list.each {
           |k, item|
-          epub.put_next_entry(@contents_prefix + item.href)
+          epub.put_next_entry(@package.contents_prefix + item.href)
           epub << item.content
         }
       }
@@ -53,7 +63,7 @@ module GEPUB
 <?xml version="1.0" encoding="UTF-8"?>
 <container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">
   <rootfiles>
-    <rootfile full-path="#{@path}" media-type="application/oebps-package+xml"/>
+    <rootfile full-path="#{@package.path}" media-type="application/oebps-package+xml"/>
   </rootfiles>
 </container>
 EOF
@@ -61,6 +71,7 @@ EOF
 
     def ncx_xml
       ncx = Nokogiri::XML::Document.new
+      
       ncx.root = root = Nokogiri::XML::Node.new('ncx', ncx)
       root.add_namespace(nil, "http://www.daisy.org/z3986/2005/ncx/")
       root['version'] = "2005-1"
@@ -83,7 +94,7 @@ EOF
 
       root << docTitle = Nokogiri::XML::Node.new('docTitle', ncx)
       docTitle << docTitleText = Nokogiri::XML::Node.new('text', ncx)
-      docTitleText.content = "#{@metadata.title}"
+      docTitleText.content = "#{@package.metadata.title}"
 
       root << nav_map = Nokogiri::XML::Node.new('navMap', ncx)
       count = 1

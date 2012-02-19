@@ -5,7 +5,7 @@ module GEPUB
   # Holds data in opf file.
   class Package
     include XMLUtil
-    attr_accessor :path, :metadata, :manifest, :spine, :epub_backward_compat
+    attr_accessor :path, :metadata, :manifest, :spine, :epub_backward_compat, :contents_prefix
 
     class IDPool
       def initialize
@@ -82,8 +82,7 @@ module GEPUB
       @metadata = Metadata.new(version)
       @manifest = Manifest.new(version)
       @spine = Spine.new(version)
-      @epub_backword_compat = true
-      @toc = []
+      @epub_backward_compat = true
       yield self if block_given?
     end
 
@@ -146,10 +145,6 @@ module GEPUB
       item
     end
 
-    def add_nav(item, text, id = nil)
-      @toc.push({ :item => item, :text => text, :id => id})      
-    end
-
 
     def method_missing(name, *args) 
       Metadata::CONTENT_NODE_LIST.each {
@@ -205,7 +200,7 @@ module GEPUB
     end
 
     def opf_xml
-      if version.to_f < 3.0 || @epub_backword_compat
+      if version.to_f < 3.0 || @epub_backward_compat
         spine.toc  ||= 'ncx'
         if @metadata.oldstyle_meta.select {
           |meta|
