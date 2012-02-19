@@ -42,6 +42,7 @@ module GEPUB
     
     def add_property(property)
       (@attributes['properties'] ||=[]) << property
+      self
     end
 
     def cover_image

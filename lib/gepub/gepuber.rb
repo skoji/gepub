@@ -1,7 +1,7 @@
 require 'rubygems'
 
 module GEPUB
-  class Gepuber < GEPUB::Book
+  class Gepuber
     class FileProvider
       include Enumerable
       def initialize(pattern)
@@ -21,8 +21,12 @@ module GEPUB
 
     attr_accessor :texts, :resources, :epubname, :coverimg, :table_of_contents, :provider
     
+    def method_missing(name, *args)
+      @package.send(name, *args)
+    end
+    
     def initialize(param)
-      super('', 'OEBPS')
+      @package = GEPUB::Package.new()
       param.each {
         |k,v|
         self.send "#{k}=", v

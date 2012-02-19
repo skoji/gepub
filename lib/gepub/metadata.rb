@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'nokogiri'
+require 'time'
 
 module GEPUB
   # metadata constants
@@ -163,6 +164,17 @@ module GEPUB
       meta
     end
     
+    def set_lastmodified(date=nil)
+      date ||= Time.now
+      (@content_nodes['meta'] ||= []).each {
+        |meta|
+        if (meta['property'] == 'dcterms:modified')
+          @content_nodes['meta'].delete meta
+        end
+      }
+      add_metadata('meta', date.utc.strftime('%Y-%m-%dT%H:%M:%SZ'))['property'] = 'dcterms:modified'
+    end
+
     def add_oldstyle_meta(content, attributes = {})
       meta = Meta.new('meta', content, self, attributes)
       (@oldstyle_meta ||= []) << meta

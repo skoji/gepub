@@ -15,9 +15,9 @@ describe GEPUB::Gepuber do
   it "should read config hash" do
     conf = 
       {
-      :locale => 'ja',
+      :language => 'ja',
       :title => 'theTitle',
-      :author => 'theAuthor',
+      :creator => 'theAuthor',
       :publisher => 'thePublisher',
       :date => '2011-03-11',
       :identifier => 'http://skoji.jp/gepuber/2011-03-11.0.0',
@@ -35,8 +35,8 @@ describe GEPUB::Gepuber do
 
     gepuber = GEPUB::Gepuber.new(conf )
     gepuber.title.to_s.should == "theTitle"
-    gepuber.locale.to_s.should == "ja"
-    gepuber.author.to_s.should == "theAuthor"
+    gepuber.language.to_s.should == "ja"
+    gepuber.creator.to_s.should == "theAuthor"
     gepuber.publisher.to_s.should == "thePublisher"
     gepuber.date.to_s.should == "2011-03-11"
     gepuber.identifier.should == 'http://skoji.jp/gepuber/2011-03-11.0.0'

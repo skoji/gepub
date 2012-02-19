@@ -66,7 +66,7 @@ module GEPUB
       }
     end
 
-    def initialize(path, attributes={})
+    def initialize(path='OEBPS/package.opf', attributes={})
       @path = path
       if File.extname(@path) != '.opf'
         if @path.size > 0
@@ -231,6 +231,10 @@ module GEPUB
 
       if version.to_f < 3.0 || @epub_backword_compat
         add_item('toc.ncx', StringIO.new(ncx_xml), 'ncx')
+      end
+
+      if version.to_f >=3.0
+        @metadata.set_lastmodified
       end
 
       File.delete(path_to_epub) if File.exist?(path_to_epub)

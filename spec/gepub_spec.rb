@@ -40,21 +40,38 @@ end
 
 describe GEPUB::Book do
   before do
-    @book = GEPUB::Book.new('thetitle','OEPBS')
-    @book.author = "theauthor"
+    @book = GEPUB::Book::generate('OEPBS') 
+    @book.title = 'thetitle'
+    @book.creator = "theauthor"
     @book.contributor = "contributors contributors!"
     @book.publisher = "thepublisher"
     @book.date = "2010-05-05"
     @book.identifier = "http://example.jp/foobar/"
-    @book.locale = 'ja'
-    item1 = @book.add_item('text/foobar.html',nil, 'c1')
+    @book.language = 'ja'
+    item1 = @book.add_item('text/foobar.xhtml',nil, 'c1')
     item1.add_content(StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c1</title></head><body><p>the first page</p></body></html>'))
     @book.spine.push(item1)
 
-    item2 = @book.add_ordered_item('text/barbar.html',
+    item2 = @book.add_ordered_item('text/barbar.xhtml',
                                         StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title></head><body><p>second page, whith is test chapter.</p></body></html>'),
                                         'c2')
     @book.add_nav(item2, 'test chapter')
+
+    nav_string = <<EOF
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops">
+<head></head>
+<body>
+<nav epub:type="toc" id="toc">
+  <h1>Table of contents</h1>
+  <ol>
+    <li><a href="foobar.xhtml">Chapter 1</a> </li>
+    <li> <a href="barbar.xhtml">Chapter 2</a></li>
+  </ol>
+</nav>
+</body>
+</html>
+EOF
+    item3 = @book.add_ordered_item('text/nav.html', StringIO.new(nav_string), 'nav').add_property('nav')
   end
 
   it "should have titile"  do
@@ -99,7 +116,6 @@ describe GEPUB::Book do
 
   it "should create correct opf" do
     opf = Nokogiri::XML.parse(@book.opf_xml).root
-    puts opf.to_s
     opf.name.should == 'package'
     opf.namespaces['xmlns'].should == 'http://www.idpf.org/2007/opf'
     opf['version'].should == '3.0'
@@ -118,7 +134,7 @@ describe GEPUB::Book do
 
     manifest = opf.at_xpath('xmlns:manifest')
     manifest.at_xpath('xmlns:item')['id'].should == 'c1'
-    manifest.at_xpath('xmlns:item')['href'].should == 'text/foobar.html'    
+    manifest.at_xpath('xmlns:item')['href'].should == 'text/foobar.xhtml'    
     manifest.at_xpath('xmlns:item')['media-type'].should == 'application/xhtml+xml'
 
     spine = opf.at_xpath('xmlns:spine')
@@ -127,8 +143,7 @@ describe GEPUB::Book do
   end
 
   it "should have correct cover image id" do
-    item = @book.add_item("img/img.jpg")
-    @book.specify_cover_image(item)
+    item = @book.add_item("img/img.jpg").cover_image
 
     opf = Nokogiri::XML.parse(@book.opf_xml).root
 
@@ -139,7 +154,6 @@ describe GEPUB::Book do
 
   it "should generate correct epub" do
     epubname = File.join(File.dirname(__FILE__), 'testepub.epub')
-    puts @book.opf_xml.to_s
     @book.generate_epub(epubname)
     %x( epubcheck #{epubname} )
   end
