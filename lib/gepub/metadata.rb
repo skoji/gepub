@@ -14,7 +14,7 @@ module GEPUB
     include XMLUtil
     attr_reader :opf_version
     # parse metadata element. metadata_xml should be Nokogiri::XML::Node object.
-    def self.parse(metadata_xml, opf_version = '3.0', id_pool = PackageData::IDPool.new)
+    def self.parse(metadata_xml, opf_version = '3.0', id_pool = Package::IDPool.new)
       Metadata.new(opf_version, id_pool) {
         |metadata|
         metadata.instance_eval {
@@ -38,7 +38,7 @@ module GEPUB
       }
     end
     
-    def initialize(opf_version = '3.0',id_pool = PackageData::IDPool.new)
+    def initialize(opf_version = '3.0',id_pool = Package::IDPool.new)
       @id_pool = id_pool
       @metalist = {}
       @content_nodes = {}
@@ -87,19 +87,34 @@ module GEPUB
       |node|
       define_method(node + '_list') { @content_nodes[node].dup }
       define_method(node + '_clear') { @content_nodes[node].each { |x| unregister_meta(x) }; @content_nodes[node] = [] }
+
       #TODO: should override for 'title'. // for 'main title' not always comes first.
       define_method(node) {
         if !@content_nodes[node].nil? && @content_nodes[node].size > 0
           @content_nodes[node][0]
         end
       }
+
+      define_method('add_' + node) {
+        |content, id|
+        add_metadata(node, content, id)
+      }
+      
+
       define_method('set_' + node) {
         |content, id|
+        send(node + "_clear")
+        add_metadata(node, content, id)
+      }
+      
+      define_method(node+'=') {
+        |content, id|
+        send(node + "_clear")
         add_metadata(node, content, id)
       }
     }
 
-    def set_identifier(string, id, type=nil)
+    def add_identifier(string, id, type=nil)
       if !(identifier = @id_pool[id]).nil?
         raise 'id #{id} is already in use' if identifier.name != 'identifier'
         identifier.content = string

@@ -6,7 +6,7 @@ require 'nokogiri'
 describe GEPUB::Spine do
   context 'parse existing opf' do
     before do
-      @spine = GEPUB::PackageData.parse_opf(File.open(File.dirname(__FILE__) + '/fixtures/testdata/test.opf'), '/package.opf').instance_eval{ @spine }
+      @spine = GEPUB::Package.parse_opf(File.open(File.dirname(__FILE__) + '/fixtures/testdata/test.opf'), '/package.opf').instance_eval{ @spine }
     end
     it 'should be parsed' do
       @spine.toc.should == 'ncx'

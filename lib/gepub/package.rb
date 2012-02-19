@@ -3,7 +3,7 @@ require 'nokogiri'
 
 module GEPUB
   # Holds data in opf file.
-  class PackageData
+  class Package
     include XMLUtil
     attr_accessor :path, :metadata, :manifest, :spine, :epub_backward_compat
 
@@ -52,7 +52,7 @@ module GEPUB
     
     # parse OPF data. opf should be io or string object.
     def self.parse_opf(opf, path)
-      PackageData.new(path) {
+      Package.new(path) {
         |package|
         package.instance_eval {
           @path = path
@@ -65,8 +65,12 @@ module GEPUB
         }
       }
     end
-    
+
     def initialize(path, attributes={})
+      if File.extname(path) != ''
+        path = File.dirname(path) + '/package.opf'
+      end
+      @contents_prefix = File.dirname(path)
       @namespaces = {'xmlns' => OPF_NS }
       @attributes = attributes
       @attributes['version'] ||= '3.0'
@@ -94,9 +98,18 @@ module GEPUB
       @attributes[k] = v
     end
 
+
+    def identifier
+      unique_identifier
+    end
+    
+    def identifier=(identifier)
+      set_main_id(identifier, nil, 'URL')
+    end
+    
     def set_main_id(identifier, id = nil, type = nil)
       unique_identifier = id || id_pool.generate_key(:prefix => 'BookId', :without_count => true)
-      @metadata.set_identifier identifier, unique_identifier, type
+      @metadata.add_identifier identifier, unique_identifier, type
     end
     
     def specify_cover(item)
@@ -128,6 +141,57 @@ module GEPUB
       item
     end
 
+    def add_nav(item, text, id = nil)
+      @toc.push({ :item => item, :text => text, :id => id})      
+    end
+
+
+    def method_missing(name, *args) 
+      CONTENT_NODE_LIST.each {
+        |x|
+        case name.to_s
+        when x
+        when "#{x}_list"
+        when "set_#{x}"
+        when "#{x}="
+          return @metadata.send(name, *args)
+        end
+      }
+      super
+    end
+
+    def author=(val)
+      warn 'do not use this method. use #creator'
+      @metadata.creator= val
+    end
+
+    
+
+    def specify_cover_image(item)
+      warn 'do not use this method. use Item#cover_image'
+      item.cover_image
+    end
+
+    def locale=(val)
+      warn 'do not use this method. use #lang='
+      @attribute['lang'] = val
+    end
+
+    def locale 
+      warn 'do not use this method. use #lang'
+      lang
+    end
+
+    def epub_version=(val)
+      warn 'do not use this method. use #version='
+      @attribute['version'] = val
+    end
+
+    def epub_version
+      warn 'do not use this method. use #version'
+      version
+    end
+
     def to_xml
       if version.to_f < 3.0 || @epub_backword_compat
         spine.toc  ||= 'ncx'
@@ -154,5 +218,99 @@ module GEPUB
       }
       builder.to_xml
     end
+
+    def generate_epub(path_to_epub)
+      if (@toc.size == 0)
+        @toc << { :item => @spine.itemref_list[0] }
+      end
+
+      if version.to_f < 3.0 || @epub_backword_compat
+        add_item('toc.ncx', StringIO.new(ncx_xml), 'ncx')
+      end
+
+      File.delete(path_to_epub) if File.exist?(path_to_epub)
+      Zip::ZipOutputStream::open(path_to_epub) {
+        |epub|
+        epub.put_next_entry('mimetype', '', '', Zip::ZipEntry::STORED)
+        epub << "application/epub+zip"
+        epub.put_next_entry('META-INF/container.xml')
+        epub << container_xml
+
+        epub.put_next_entry(@contents_prefix + 'content.opf')
+        epub << opf_xml
+
+        # create items
+        @manifest.each {
+          |item|
+          epub.put_next_entry(@contents_prefix + item.href)
+          epub << item.content
+        }
+      }
+    end
+    
+    def container_xml
+      <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">
+  <rootfiles>
+    <rootfile full-path="#{@contents_prefix}content.opf" media-type="application/oebps-package+xml"/>
+  </rootfiles>
+</container>
+EOF
+    end
+
+    def ncx_xml
+      ncx = Nokogiri::XML::Document.new
+      ncx.root = root = Nokogiri::XML::Node.new('ncx', ncx)
+      root.add_namespace(nil, "http://www.daisy.org/z3986/2005/ncx/")
+      root['version'] = "2005-1"
+      root << head = Nokogiri::XML::Node.new('head', ncx)
+      head << uid = Nokogiri::XML::Node.new('meta', ncx)
+      uid['name'] = 'dtb:uid'
+      uid['content'] = "#{@main_identifier}"
+
+      head << depth = Nokogiri::XML::Node.new('meta', ncx)
+      depth['name'] = 'dtb:depth'
+      depth['content'] = '1'
+
+      head << totalPageCount = Nokogiri::XML::Node.new('meta', ncx)
+      totalPageCount['name'] = 'dtb:totalPageCount'
+      totalPageCount['content'] = '0'
+
+      head << maxPageNumber = Nokogiri::XML::Node.new('meta', ncx)
+      maxPageNumber['name'] = 'dtb:maxPageNumber'
+      maxPageNumber['content'] = '0'
+
+      root << docTitle = Nokogiri::XML::Node.new('docTitle', ncx)
+      docTitle << docTitleText = Nokogiri::XML::Node.new('text', ncx)
+      docTitleText.content = "#{@metadata[:title]}"
+
+      root << nav_map = Nokogiri::XML::Node.new('navMap', ncx)
+      count = 1
+      @toc.each {
+        |x|
+        nav_point = Nokogiri::XML::Node.new('navPoint', ncx)
+        nav_point['id'] = "#{x[:item].itemid}"
+        nav_point['playOrder'] = "#{count}"
+        
+        nav_label = Nokogiri::XML::Node.new('navLabel', ncx)
+        nav_label << navtxt = Nokogiri::XML::Node.new('text', ncx)
+        navtxt.content = "#{x[:text]}"
+        
+        nav_content = Nokogiri::XML::Node.new('content', ncx)
+        if x[:id].nil?
+          nav_content['src'] = "#{x[:item].href}"
+        else
+          nav_content['src'] = "#{x[:item].href}##{x[:id]}"
+        end
+        
+        count = count + 1
+        nav_map << nav_point
+        nav_point << nav_label
+        nav_point << nav_content
+      }
+      ncx.to_s
+    end
+
   end
 end

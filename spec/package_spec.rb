@@ -3,14 +3,14 @@ require File.dirname(__FILE__) + '/spec_helper.rb'
 require 'rubygems'
 require 'nokogiri'
 
-describe GEPUB::PackageData do
+describe GEPUB::Package do
   it 'should be initialized' do
-    opf = GEPUB::PackageData.new('/package.opf')
+    opf = GEPUB::Package.new('/package.opf')
     opf.ns_prefix(GEPUB::XMLUtil::OPF_NS).should == 'xmlns'
   end
   context 'parse existing opf' do
     it 'should be initialized with opf' do
-      opf = GEPUB::PackageData.parse_opf(File.open(File.dirname(__FILE__) + '/fixtures/testdata/test.opf'), '/package.opf')
+      opf = GEPUB::Package.parse_opf(File.open(File.dirname(__FILE__) + '/fixtures/testdata/test.opf'), '/package.opf')
       opf.ns_prefix(GEPUB::XMLUtil::OPF_NS).should == 'xmlns'
       opf['version'].should == '3.0'
       opf['unique-identifier'].should == 'pub-id'
@@ -19,7 +19,7 @@ describe GEPUB::PackageData do
   end
   context 'generate new opf' do
     it 'should generate opf' do
-      opf = GEPUB::PackageData.new('OEBPS/package.opf') {
+      opf = GEPUB::Package.new('OEBPS/package.opf') {
         |opf|
         opf.set_main_id('http://example.jp', 'BookID', 'url')
         opf['xml:lang'] = 'ja'
@@ -58,7 +58,7 @@ describe GEPUB::PackageData do
     end
 
     it 'should generate opf2.0' do
-      opf = GEPUB::PackageData.new('OEBPS/package.opf', { 'version' => '2.0'}) {
+      opf = GEPUB::Package.new('OEBPS/package.opf', { 'version' => '2.0'}) {
         |opf|
         opf.set_main_id('http://example.jp', 'BookID', 'url')
         opf['xml:lang'] = 'ja'

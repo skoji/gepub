@@ -43,7 +43,7 @@ module GEPUB
       end
     end    
 
-    def self.parse(spine_xml, opf_version = '3.0', id_pool  = PackageData::IDPool.new)
+    def self.parse(spine_xml, opf_version = '3.0', id_pool  = Package::IDPool.new)
       Spine.new(opf_version, id_pool) {
         |spine|
         spine.instance_eval {
@@ -60,7 +60,7 @@ module GEPUB
       }
     end
 
-    def initialize(opf_version = '3.0', id_pool  = PackageData::IDPool.new)
+    def initialize(opf_version = '3.0', id_pool  = Package::IDPool.new)
       @id_pool = id_pool
       @attributes = {}
       @item_refs = []
@@ -82,6 +82,10 @@ module GEPUB
     def push(item)
       @item_refs << i = Itemref.new(item.id, self)
       i
+    end
+
+    def <<(item)
+      push item
     end
     
     def to_xml(builder)

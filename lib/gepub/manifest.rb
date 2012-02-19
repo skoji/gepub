@@ -3,7 +3,7 @@ require 'nokogiri'
 module GEPUB
   class Manifest
     include XMLUtil
-    def self.parse(manifest_xml, opf_version = '3.0', id_pool = PackageData::IDPool.new)
+    def self.parse(manifest_xml, opf_version = '3.0', id_pool = Package::IDPool.new)
       Manifest.new(opf_version, id_pool) {
         |manifest|
         manifest.instance_eval {
@@ -30,7 +30,7 @@ module GEPUB
       @attributes['id']
     end
 
-    def initialize(opf_version = '3.0', id_pool = PackageData::IDPool.new)
+    def initialize(opf_version = '3.0', id_pool = Package::IDPool.new)
       @id_pool = id_pool
       @attributes = {}
       @items = {}

@@ -17,7 +17,7 @@ describe GEPUB::Metadata do
 
   context 'Parse Existing OPF' do
     before do
-      @metadata = GEPUB::PackageData.parse_opf(File.open(File.dirname(__FILE__) + '/fixtures/testdata/test.opf'), '/package.opf').instance_eval{ @metadata }
+      @metadata = GEPUB::Package.parse_opf(File.open(File.dirname(__FILE__) + '/fixtures/testdata/test.opf'), '/package.opf').instance_eval{ @metadata }
     end
     it 'should parse title' do
       @metadata.main_title.should == 'TheTitle'
@@ -52,14 +52,14 @@ describe GEPUB::Metadata do
   context 'Generate New OPF' do
     it 'should write and read identifier' do
       metadata = GEPUB::Metadata.new
-      metadata.set_identifier 'the_set_identifier', 'pub-id'
+      metadata.add_identifier 'the_set_identifier', 'pub-id'
       metadata.identifier.to_s.should == 'the_set_identifier'
       metadata.identifier_list[0]['id'].should == 'pub-id'
     end
 
     it 'should write and read identifier with identifier-type' do
       metadata = GEPUB::Metadata.new
-      metadata.set_identifier 'http://example.jp/book/url', 'pub-id', 'uri'
+      metadata.add_identifier 'http://example.jp/book/url', 'pub-id', 'uri'
       metadata.identifier.to_s.should == 'http://example.jp/book/url'
       metadata.identifier_list[0]['id'].should == 'pub-id'
       metadata.identifier_list[0].identifier_type.to_s.should == 'uri'
@@ -127,7 +127,7 @@ describe GEPUB::Metadata do
 
     it 'should generate metadata with id xml' do
       metadata = GEPUB::Metadata.new
-      metadata.set_identifier('the_uid', nil)
+      metadata.add_identifier('the_uid', nil)
       builder = Nokogiri::XML::Builder.new { |xml|
         xml.package('xmlns' => "http://www.idpf.org/2007/opf",'version' => "3.0",'unique-identifier' => "pub-id",'xml:lang' => "ja") {
           metadata.to_xml(xml)
@@ -166,6 +166,5 @@ describe GEPUB::Metadata do
       xml = Nokogiri::XML::Document.parse(builder.to_xml)
       xml.xpath("//xmlns:meta[@name='cover' and @content='cover.jpg']").size.should == 1
     end
-
   end
 end
