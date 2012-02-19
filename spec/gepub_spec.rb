@@ -155,7 +155,7 @@ EOF
   it "should generate correct epub" do
     epubname = File.join(File.dirname(__FILE__), 'testepub.epub')
     @book.generate_epub(epubname)
-    %x( epubcheck #{epubname} )
+    jar = File.join(File.dirname(__FILE__), 'fixtures/epubcheck-3.0b4/epubcheck-3.0b4.jar')
+    system 'java', '-jar', jar, epubname
   end
-
 end
