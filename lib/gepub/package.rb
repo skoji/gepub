@@ -90,7 +90,7 @@ module GEPUB
     ['version', 'unique-identifier', 'xml:lang', 'dir', 'prefix', 'id'].each {
       |name|
       methodbase = name.gsub('-','_').sub('xml:lang', 'lang')
-      define_method(methodbase + '=') { |val| @attributs[name] =  val }
+      define_method(methodbase + '=') { |val| @attributes[name] =  val }
       define_method('set_' + methodbase) { |val| @attributes[name] = val }        
       define_method(methodbase) { @attributes[name] }
     }

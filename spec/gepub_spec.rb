@@ -40,7 +40,7 @@ end
 
 describe GEPUB::Book do
   before do
-    @book = GEPUB::Book::generate('OEPBS') 
+    @book = GEPUB::Book.new('OEPBS/package.opf') 
     @book.title = 'thetitle'
     @book.creator = "theauthor"
     @book.contributor = "contributors contributors!"
@@ -133,9 +133,8 @@ EOF
     opf = Nokogiri::XML.parse(@book.opf_xml).root
 
     manifest = opf.at_xpath('xmlns:manifest')
-    manifest.at_xpath('xmlns:item')['id'].should == 'c1'
-    manifest.at_xpath('xmlns:item')['href'].should == 'text/foobar.xhtml'    
-    manifest.at_xpath('xmlns:item')['media-type'].should == 'application/xhtml+xml'
+    manifest.at_xpath('xmlns:item[@id="c1"]')['href'].should == 'text/foobar.xhtml'    
+    manifest.at_xpath('xmlns:item[@id="c1"]')['media-type'].should == 'application/xhtml+xml'
 
     spine = opf.at_xpath('xmlns:spine')
     spine['toc'].should == 'ncx'
