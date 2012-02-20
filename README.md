@@ -1,4 +1,4 @@
-# gepub {<img src="https://secure.travis-ci.org/skoji/gepub.png" />}[http://travis-ci.org/skoji/gepub]
+# gepub [<img src="https://secure.travis-ci.org/skoji/gepub.png" />](http://travis-ci.org/skoji/gepub)
 
 * http://github.com/skoji/gepub
 
