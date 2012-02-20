@@ -7,7 +7,56 @@ require 'fileutils'
 
 module GEPUB
   class Book
+    MIMETYPE='mimetype'
+    MIMETYPE_CONTENTS='application/epub+zip'
+    CONTAINER='META-INF/container.xml'
+    ROOTFILE_PATTERN=/^.+\.opf$/
+    CONTAINER_NS='urn:oasis:names:tc:opendocument:xmlns:container'
 
+    def self.rootfile_from_container(rootfile)
+      doc = Nokogiri::XML::Document.parse(rootfile)
+      ns = doc.root.namespaces
+      defaultns = ns.select{ |name, value| value == CONTAINER_NS }.keys[0]
+      doc.css("#{defaultns}|rootfiles > #{defaultns}|rootfile")[0]['full-path']
+    end
+
+    def self.parse(io)
+      files = {}
+      package = nil
+      package_path = nil
+      Zip::ZipInputStream::open_buffer(io) {
+        |zis|
+        while entry = zis.get_next_entry
+          if !entry.directory?
+            files[entry.name] = zis.read
+            case entry.name
+            when MIMETYPE then
+              files[MIMETYPE] = nil 
+            when CONTAINER then
+              package_path = rootfile_from_container(files[entry.name])
+              files[CONTAINER] = nil
+            when ROOTFILE_PATTERN then
+              package = Package.parse_opf(files[entry.name], entry.name)
+            end
+          end
+        end
+        if package_path != package.path
+          warn 'inconsistend EPUB file: container says opf is #{package_path}, but actually #{package.path}'
+        end
+        files.each {
+          |k, content|
+          item = package.manifest.item_by_href(k.sub(/^#{package.contents_prefix}/,''))
+          if !item.nil?
+            files[k] = nil
+            item.add_raw_content(content)
+          end
+        }
+        book = Book.new(package.path)
+        book.instance_eval { @package = package; @stray_files = files }
+        book
+      }
+    end
+    
     def initialize(path='OEBPS/package.opf', attributes = {})
       if File.extname(path) != '.opf'
         warn 'GEPUB::Book#new interface changed. You must supply path to package.opf as first argument. If you want to set title, please use GEPUB::Book#title='

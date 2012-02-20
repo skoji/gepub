@@ -48,7 +48,10 @@ module GEPUB
     def cover_image
       add_property('cover-image')
     end
-    
+
+    def add_raw_content(data)
+      @content = data
+    end
     def add_content(io)
       io.binmode
       @content = io.read
