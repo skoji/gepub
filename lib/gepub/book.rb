@@ -10,7 +10,7 @@ module GEPUB
 
     def initialize(path='OEBPS/package.opf', attributes = {})
       if File.extname(path) != '.opf'
-        warn 'GEPUB::Book#new interface changed. you must supply path to package.opf as first argument. if you want to set title, use GEPUB::Book.title='
+        warn 'GEPUB::Book#new interface changed. You must supply path to package.opf as first argument. If you want to set title, please use GEPUB::Book#title='
       end
       @package = Package.new(path, attributes)
       @toc = []
@@ -18,14 +18,41 @@ module GEPUB
     end
 
     def add_nav(item, text, id = nil)
+      warn 'add_nav is deprecated: please use Item#toc_text'
       @toc.push({ :item => item, :text => text, :id => id})      
     end
 
+    def add_item(href, io = nil, id = nil, attributes = {})
+      item = @package.add_item(href,io,id,attributes)
+      toc = @toc
+      (class << item;self;end).send(:define_method, :toc_text,
+                                    lambda { |text, id = nil|
+                                      toc.push(:item => item, :text => text, :id => id)
+                                      item
+                                    })
+      yield item if block_given?
+      item
+    end
 
+    def add_ordered_item(href, io = nil, id = nil, attributes = {})
+      item = @package.add_ordered_item(href,io,id,attributes)
+      toc = @toc
+      (class << item;self;end).send(:define_method, :toc_text,
+                                    lambda { |text, id = nil|
+                                      toc.push(:item => item, :text => text, :id => id)
+                                      item
+                                    })
+      yield item if block_given?
+      item
+    end
+    
     def method_missing(name,*args)
       @package.send(name, *args)
     end
     
+    def ordered(&block)
+      @package.ordered(&block)
+    end
     def generate_epub(path_to_epub)
       if (@toc.size == 0)
         @toc << { :item => @package.spine.itemref_list[0] }

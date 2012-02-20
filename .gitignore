@@ -21,6 +21,7 @@ pkg
 ## PROJECT::SPECIFIC
 testepub.epub
 testepub2.epub
+example_test.epub
 
 ## BUNDLER
 Gemfile.lock

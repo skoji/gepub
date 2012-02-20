@@ -54,8 +54,8 @@ describe GEPUB::Book do
 
     item2 = @book.add_ordered_item('text/barbar.xhtml',
                                         StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title></head><body><p>second page, whith is test chapter.</p></body></html>'),
-                                        'c2')
-    @book.add_nav(item2, 'test chapter')
+                                   'c2')
+    item2.toc_text 'test chapter'
 
     nav_string = <<EOF
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops">
@@ -175,7 +175,7 @@ EOF
     item2 = @book.add_ordered_item('text/barbar.xhtml',
                                         StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title></head><body><p>second page, whith is test chapter.</p></body></html>'),
                                         'c2')
-    @book.add_nav(item2, 'test chapter')
+    item2.toc_text 'test chapter'
     @book.generate_epub(epubname)
     jar = File.join(File.dirname(__FILE__), 'fixtures/epubcheck-3.0b4/epubcheck-3.0b4.jar')
     system 'java', '-jar', jar, epubname

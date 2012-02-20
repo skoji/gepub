@@ -126,13 +126,13 @@ module GEPUB
       id ||= @id_pool.generate_key(:prefix=>'item', :suffix=>'_'+ File.basename(href,'.*'), :without_count => true)
       item = @manifest.add_item(id, href, nil, attributes)
       item.add_content(io) unless io.nil?
-      spine.push(item) if @ordered
+      @spine.push(item) if @ordered
       yield item if block_given?
       item
     end
 
     def ordered
-      raise 'call with block.' if !block_given?
+      raise 'need block.' if !block_given?
       @ordered = true
       yield
       @ordered = nil
@@ -141,7 +141,8 @@ module GEPUB
     def add_ordered_item(href, io = nil, id = nil, attributes = {})
       raise 'do not call add_ordered_item within ordered block.' if @ordered
       item = add_item(href, io, id, attributes)
-      spine.push(item)
+      @spine.push(item)
+      
       item
     end
 
@@ -150,7 +151,7 @@ module GEPUB
       Metadata::CONTENT_NODE_LIST.each {
         |x|
         case name.to_s
-        when x, "#{x}_list", "set_#{x}", "#{x}="
+        when x, "#{x}_list", "set_#{x}", "#{x}=", "add_#{x}"
           return @metadata.send(name, *args)
         end
       }
@@ -158,27 +159,27 @@ module GEPUB
     end
 
     def author=(val)
-      warn 'do not use author=. use #creator'
+      warn 'author= is deprecated. please use #creator'
       @metadata.creator= val
     end
 
     def author
-      warn 'do not use #author. use #creator'
+      warn '#author is deprecated. please use #creator'
       @metadata.creator
     end      
 
     def specify_cover_image(item)
-      warn 'do not use specify_cover_image. use Item#cover_image'
+      warn 'specify_cover_image is deprecated. please use Item#cover_image'
       item.cover_image
     end
 
     def locale=(val)
-      warn 'do not use locale=. use #language='
+      warn 'locale= is deprecated. please use #language='
       @metadata.language = val
     end
 
     def locale 
-      warn 'do not use #locale. use #language'
+      warn '#locale is deprecated. please use #language'
       @metadata.language
     end
 
@@ -190,12 +191,12 @@ module GEPUB
     end
     
     def epub_version=(val)
-      warn 'do not use epub_version. use #version='
+      warn 'epub_version= is deprecated. please use #version='
       @attributes['version'] = val
     end
 
     def epub_version
-      warn 'do not use this epub_version. use #version'
+      warn 'epub_version is deprecated. please use #version'
       version
     end
 
