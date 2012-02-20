@@ -17,6 +17,8 @@ a generic EPUB parser/generator library.
 
 == SYNOPSIS:
 
+see examples directory.
+
 == INSTALL:
 
 * gem install gepub

@@ -26,7 +26,7 @@ module GEPUB
       item = @package.add_item(href,io,id,attributes)
       toc = @toc
       (class << item;self;end).send(:define_method, :toc_text,
-                                    lambda { |text, id = nil|
+                                    Proc.new { |text, id = nil|
                                       toc.push(:item => item, :text => text, :id => id)
                                       item
                                     })
@@ -38,7 +38,7 @@ module GEPUB
       item = @package.add_ordered_item(href,io,id,attributes)
       toc = @toc
       (class << item;self;end).send(:define_method, :toc_text,
-                                    lambda { |text, id = nil|
+                                    Proc.new { |text, id = nil|
                                       toc.push(:item => item, :text => text, :id => id)
                                       item
                                     })
@@ -64,6 +64,12 @@ module GEPUB
 
       if version.to_f >=3.0
         @package.metadata.set_lastmodified
+        if @package.manifest.item_list.select {
+          |href, item|
+          (item.properties||[]).member? 'nav'
+          }.size == 0
+          generate_nav_doc
+        end
       end
 
       File.delete(path_to_epub) if File.exist?(path_to_epub)
@@ -94,6 +100,33 @@ module GEPUB
   </rootfiles>
 </container>
 EOF
+    end
+
+    def generate_nav_doc(title = 'Table of Contents')
+      add_item('nav.html', StringIO.new(nav_doc(title)), 'nav').add_property('nav')
+    end
+
+    def nav_doc(title = 'Table of Contents')
+      builder = Nokogiri::XML::Builder.new {
+        |doc|
+        doc.html('xmlns' => "http://www.w3.org/1999/xhtml",'xmlns:epub' => "http://www.idpf.org/2007/ops") {
+          doc.head { doc.text ' ' }
+          doc.body {
+            doc.nav('epub:type' => 'toc', 'id' => 'toc') {
+              doc.h1 "#{title}"
+              doc.ol {
+                @toc.each {
+                  |x|
+                  doc.li {
+                    doc.a({'href' => x[:item].href} ,x[:text])
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      builder.to_xml
     end
 
     def ncx_xml
