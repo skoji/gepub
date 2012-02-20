@@ -102,13 +102,19 @@ module GEPUB
     def ordered(&block)
       @package.ordered(&block)
     end
+
     def generate_epub(path_to_epub)
-      if (@toc.size == 0)
-        @toc << { :item => @package.spine.itemref_list[0] }
-      end
 
       if version.to_f < 3.0 || @package.epub_backward_compat
-        add_item('toc.ncx', StringIO.new(ncx_xml), 'ncx')
+        if @package.manifest.item_list.select {
+          |x,item|
+          item.media_type == 'application/x-dtbncx+xml'
+        }.size == 0
+          if (@toc.size == 0)
+            @toc << { :item => @package.manifest.item_list[@package.spine.itemref_list[0].idref] }
+          end
+          add_item('toc.ncx', StringIO.new(ncx_xml), 'ncx')
+        end
       end
 
       if version.to_f >=3.0

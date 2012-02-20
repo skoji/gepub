@@ -17,8 +17,10 @@ module GEPUB
         |k,v|
         attributes[k] = v.to_s
       }
-      attributes['xml:lang'] = attributes['lang'];
-      attributes.delete('lang')
+      if attributes['lang']
+        attributes['xml:lang'] = attributes['lang'];
+        attributes.delete('lang')
+      end
       attributes
     end
   end
