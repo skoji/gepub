@@ -75,8 +75,8 @@ module GEPUB
       item = @package.add_item(href,io,id,attributes)
       toc = @toc
       (class << item;self;end).send(:define_method, :toc_text,
-                                    Proc.new { |text, id = nil|
-                                      toc.push(:item => item, :text => text, :id => id)
+                                    Proc.new { |text|
+                                      toc.push(:item => item, :text => text, :id => nil)
                                       item
                                     })
       yield item if block_given?
@@ -87,8 +87,8 @@ module GEPUB
       item = @package.add_ordered_item(href,io,id,attributes)
       toc = @toc
       (class << item;self;end).send(:define_method, :toc_text,
-                                    Proc.new { |text, id = nil|
-                                      toc.push(:item => item, :text => text, :id => id)
+                                    Proc.new { |text|
+                                      toc.push(:item => item, :text => text, :id => nil)
                                       item
                                     })
       yield item if block_given?
