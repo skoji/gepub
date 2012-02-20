@@ -3,18 +3,6 @@ require File.dirname(__FILE__) + '/spec_helper.rb'
 require 'rubygems'
 
 describe 'GEPUB usage' do
-  context 'On parsing EPUB' do
-    it 'should parse EPUB3' do
-      epub = File.join(File.dirname(__FILE__),  'fixtures', 'testdata', 'mymedia_epub3_sample_1_0.epub')
-      File.open(epub) do
-        |io|
-        book = GEPUB::Book.parse(io)
-        book.title.to_s.should=='小さなメディアの必要（EPUB3作成サンプル版）'
-        epubname = File.join(File.dirname(__FILE__), 'example_2test.epub')
-        book.generate_epub(epubname)
-      end
-    end
-  end
   context 'On generating EPUB' do
     it 'should generate simple EPUB3 with rather complicated matadata' do
       book = GEPUB::Book.new
