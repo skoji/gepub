@@ -21,7 +21,7 @@ describe 'GEPUB usage' do
                              'th' => 'GEPUB ตัวอย่าง (ญี่ปุ่น)')
       }
       # you can do the same thing using method chain
-      book.add_title('これはあくまでサンプルです',nil, GEPUB::TITLE_TYPE::SUBTITLE).set_display_seq(1).add_alternates('en' => 'this book is just a sample.')
+      book.add_title('これはあくまでサンプルです',nil, GEPUB::TITLE_TYPE::SUBTITLE).set_display_seq(2).add_alternates('en' => 'this book is just a sample.')
       book.add_creator('小嶋智') {
         |creator|
         creator.display_seq = 1

@@ -31,23 +31,33 @@ module GEPUB
             files[entry.name] = zis.read
             case entry.name
             when MIMETYPE then
-              files[MIMETYPE] = nil 
+              if files[MIMETYPE] != MIMETYPE_CONTENTS
+                warn "#{MIMETYPE} is not valid: should be #{MIMETYPE_CONTENTS} but was #{files[MIMETYPE]}"
+              end
+              files.delete(MIMETYPE)
             when CONTAINER then
-              package_path = rootfile_from_container(files[entry.name])
-              files[CONTAINER] = nil
+              package_path = rootfile_from_container(files[CONTAINER])
+              files.delete(CONTAINER)
             when ROOTFILE_PATTERN then
               package = Package.parse_opf(files[entry.name], entry.name)
+              files.delete(entry.name)
             end
           end
         end
+
+        if package.nil?
+          raise 'this container do not cotains publication information file'
+        end
+        
         if package_path != package.path
           warn 'inconsistend EPUB file: container says opf is #{package_path}, but actually #{package.path}'
         end
+        
         files.each {
           |k, content|
           item = package.manifest.item_by_href(k.sub(/^#{package.contents_prefix}/,''))
           if !item.nil?
-            files[k] = nil
+            files.delete(k)
             item.add_raw_content(content)
           end
         }
