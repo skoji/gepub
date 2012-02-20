@@ -1,29 +1,29 @@
-= gepub
-{<img src="https://secure.travis-ci.org/skoji/gepub.png" />}[http://travis-ci.org/skoji/gepub]
+# gepub {<img src="https://secure.travis-ci.org/skoji/gepub.png" />}[http://travis-ci.org/skoji/gepub]
 
 * http://github.com/skoji/gepub
 
-== DESCRIPTION:
+## DESCRIPTION:
 
 a generic EPUB parser/generator library.
 
-== FEATURES/PROBLEMS:
+## FEATURES/PROBLEMS:
 
 * GEPUB::Book provides functionality to create EPUB file, and parsing EPUB file
 * from version 0.6, GEPUB::Book will be able handle almost every metadata in EPUB2/EPUB3.
   .. but is still beta version. Please inform me when you find bugs.
-
 * Will provide easy to generate EPUB class, like Nokogiri::XML::Generator.
 
-== SYNOPSIS:
+* See [issues](https://github.com/skoji/gepub/issues/) for known problems.
+
+## SYNOPSIS:
 
 see examples directory.
 
-== INSTALL:
+## INSTALL:
 
 * gem install gepub
 
-== LICENSE:
+## LICENSE:
 
 (The New BSD License)
 
