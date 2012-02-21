@@ -16,7 +16,7 @@ a generic EPUB parser/generator library.
 
 ## SYNOPSIS:
 
-see [examples](https://github.com/skoji/gepub/examples/) 
+see [examples](https://github.com/skoji/gepub/tree/master/examples/)
 
 ## INSTALL:
 
