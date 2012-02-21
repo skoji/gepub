@@ -81,8 +81,8 @@ module GEPUB
       @toc.push({ :item => item, :text => text, :id => id})      
     end
 
-    def add_item(href, io = nil, id = nil, attributes = {})
-      item = @package.add_item(href,io,id,attributes)
+    def add_item(href, io_or_filename = nil, id = nil, attributes = {})
+      item = @package.add_item(href,io_or_filename,id,attributes)
       toc = @toc
       (class << item;self;end).send(:define_method, :toc_text,
                                     Proc.new { |text|
@@ -93,8 +93,8 @@ module GEPUB
       item
     end
 
-    def add_ordered_item(href, io = nil, id = nil, attributes = {})
-      item = @package.add_ordered_item(href,io,id,attributes)
+    def add_ordered_item(href, io_or_filename = nil, id = nil, attributes = {})
+      item = @package.add_ordered_item(href,io_or_filename,id,attributes)
       toc = @toc
       (class << item;self;end).send(:define_method, :toc_text,
                                     Proc.new { |text|

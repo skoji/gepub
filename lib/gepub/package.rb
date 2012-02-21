@@ -122,10 +122,10 @@ module GEPUB
       item.add_properties 'cover-image'
     end
 
-    def add_item(href, io = nil, id = nil, attributes = {})
+    def add_item(href, io_or_filename = nil, id = nil, attributes = {})
       id ||= @id_pool.generate_key(:prefix=>'item', :suffix=>'_'+ File.basename(href,'.*'), :without_count => true)
       item = @manifest.add_item(id, href, nil, attributes)
-      item.add_content(io) unless io.nil?
+      item.add_content(io_or_filename) unless io_or_filename.nil?
       @spine.push(item) if @ordered
       yield item if block_given?
       item
@@ -138,9 +138,9 @@ module GEPUB
       @ordered = nil
     end
 
-    def add_ordered_item(href, io = nil, id = nil, attributes = {})
+    def add_ordered_item(href, io_or_filename = nil, id = nil, attributes = {})
       raise 'do not call add_ordered_item within ordered block.' if @ordered
-      item = add_item(href, io, id, attributes)
+      item = add_item(href, io_or_filename, id, attributes)
       @spine.push(item)
       
       item

@@ -52,7 +52,12 @@ module GEPUB
     def add_raw_content(data)
       @content = data
     end
-    def add_content(io)
+    
+    def add_content(io_or_filename)
+      io = io_or_filename
+      if io_or_filename.class == String
+        io = File.new(io_or_filename)
+      end
       io.binmode
       @content = io.read
       self
