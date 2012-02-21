@@ -9,15 +9,14 @@ a generic EPUB parser/generator library.
 ## FEATURES/PROBLEMS:
 
 * GEPUB::Book provides functionality to create EPUB file, and parsing EPUB file
-* from version 0.6, GEPUB::Book will be able handle almost every metadata in EPUB2/EPUB3.
-  .. but is still beta version. Please inform me when you find bugs.
-* Will provide easy to generate EPUB class, like Nokogiri::XML::Generator.
+* Handle every metadata in EPUB2/EPUB3.
+* Soon, I will provide easy to generate EPUB class, like Nokogiri::XML::Generator.
 
 * See [issues](https://github.com/skoji/gepub/issues/) for known problems.
 
 ## SYNOPSIS:
 
-see examples directory.
+see [examples](https://github.com/skoji/gepub/examples/) 
 
 ## INSTALL:
 
