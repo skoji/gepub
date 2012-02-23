@@ -146,7 +146,17 @@ module GEPUB
       item
     end
 
+    def spine_items
+      spine.itemref_list.map {
+        |itemref|
+        @manifest.item_list[itemref.idref]
+      }
+    end
 
+    def items
+      @manifest.item_list
+    end
+    
     def method_missing(name, *args) 
       Metadata::CONTENT_NODE_LIST.each {
         |x|

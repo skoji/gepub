@@ -44,6 +44,10 @@ module GEPUB
       @items.dup
     end
 
+    def items
+      @items.dup      
+    end
+    
     def item_by_href(href)
       @items_by_href[href]
     end
