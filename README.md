@@ -50,8 +50,9 @@ a generic EPUB parser/generator library.
     epubname = File.join(File.dirname(__FILE__), 'example_test_with_builder.epub')
     builder.generate_epub(epubname)
 
- [more builder examples](https://gist.github.com/1878995)
- [examples in this repository](https://github.com/skoji/gepub/tree/master/examples/) 
+[more builder examples](https://gist.github.com/1878995)
+ 
+[examples in this repository](https://github.com/skoji/gepub/tree/master/examples/) 
 
 ## INSTALL:
 
