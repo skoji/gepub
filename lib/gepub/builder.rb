@@ -121,7 +121,7 @@ module GEPUB
     end
     
     def generate_epub_stream
-      # TODO should implement
+      @book.generate_epub_stream
     end
   end
 end

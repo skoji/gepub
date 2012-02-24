@@ -7,6 +7,38 @@ describe 'GEPUB usage' do
   end
   
   context 'On generating EPUB' do
+    it 'should generate simple EPUB3 with Builder and buffer' do
+      workdir = File.join(File.dirname(__FILE__),  'fixtures', 'testdata')
+      builder = GEPUB::Builder.new {
+        unique_identifier 'http:/example.jp/bookid_in_url', 'BookID', 'URL'
+        language 'ja'
+        title 'GEPUBサンプル文書'
+        file_as 'GEPUB Sample Book'
+        alt 'en' => 'GEPUB Sample Book (Japanese)',
+        'el' => 'GEPUB δείγμα (Ιαπωνικά)',
+        'th' => 'GEPUB ตัวอย่าง (ญี่ปุ่น)'
+
+        subtitle 'これはあくまでサンプルです'
+        alt 'en' => 'This book is just a sample'
+        creator '小嶋智'
+        contributors 'Denshobu', 'Asagaya Densho', 'Shonan Densho Teidan', 'eMagazine Torutaru'
+        resources(:workdir => workdir) {
+          cover_image 'img/image1.jpg' => 'image1.jpg'
+          ordered {
+            file 'text/chap1.xhtml' => StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c1</title></head><body><p>the first page</p></body></html>')
+            heading 'Chapter 1'
+            file 'text/chap1-1.xhtml' => StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title></head><body><p>the second page</p></body></html>')
+            file 'text/chap2.html' => StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c3</title></head><body><p>the third page</p></body></html>')
+            heading 'Chapter 2'
+          }
+        }
+      }
+      epubname = File.join(File.dirname(__FILE__), 'example_test_with_builder_buffer.epub')
+      File.open(epubname, 'wb') { |io| io.write builder.generate_epub_stream.string }
+      jar = File.join(File.dirname(__FILE__), 'fixtures/epubcheck-3.0b4/epubcheck-3.0b4.jar')    
+      system 'java' '-jar', jar, epubname
+    end
+
     it 'should generate simple EPUB3 with Builder' do
       workdir = File.join(File.dirname(__FILE__),  'fixtures', 'testdata')
       builder = GEPUB::Builder.new {
