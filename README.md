@@ -20,7 +20,6 @@ a generic EPUB parser/generator library.
 
     require 'rubygem'
     require 'gepub'
-    workdir = 'epub/example/'
     builder = GEPUB::Builder.new {
       unique_identifier 'http:/example.jp/bookid_in_url', 'BookID', 'URL'
       language 'en'
