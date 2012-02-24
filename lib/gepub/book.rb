@@ -186,7 +186,7 @@ EOF
               doc.ol {
                 @toc.each {
                   |x|
-                  id = "##{x[:id]}" || ""
+                  id = x[:id].nil? ? "" : "##{x[:id]}"
                   doc.li {
                     doc.a({'href' => x[:item].href + id} ,x[:text])
                   }

@@ -83,7 +83,7 @@ module GEPUB
       @last_defined_item = vals.map {
         |v|
         name = v
-        role = ''
+        role = nil
         name,role = v[0], v[1] if Array === name
         MetaItem.new(@book.add_contributor(name, nil, role))
       }
@@ -123,7 +123,5 @@ module GEPUB
     def generate_epub_stream
       # TODO should implement
     end
-
-# memo: multivalue language def 
   end
 end

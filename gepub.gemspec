@@ -8,8 +8,8 @@ Gem::Specification.new do |s|
   s.authors     = ["KOJIMA Satoshi"]
   s.email       = ["skoji@mac.com"]
   s.homepage    = %q{http://github.com/skoji/gepub}
-  s.summary     = %q{a generic EPUB parser/generator.}
-  s.description = %q{gepub is a EPUB parser/generator. Generates EPUB2 opf. will support EPUB3 parse/generation}
+  s.summary     = %q{a generic EPUB library for Ruby.}
+  s.description = %q{gepub is a generic EPUB parser/generator. Generates and parse EPUB2 and EPUB3}
 
   s.rubyforge_project = "gepub"
 
