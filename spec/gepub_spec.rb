@@ -158,6 +158,16 @@ EOF
     system 'java', '-jar', jar, epubname
   end
 
+  it "should generate correct epub with buffer" do
+    epubname = File.join(File.dirname(__FILE__), 'testepub_buf.epub')
+    File.open(epubname, 'wb') {
+      |io|
+      io.write @book.generate_epub_stream.string
+    }
+    jar = File.join(File.dirname(__FILE__), 'fixtures/epubcheck-3.0b4/epubcheck-3.0b4.jar')
+    system 'java', '-jar', jar, epubname
+  end
+
   it "should generate correct epub2.0" do
     epubname = File.join(File.dirname(__FILE__), 'testepub2.epub')
 

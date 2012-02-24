@@ -19,8 +19,7 @@ rdoc
 pkg
 
 ## PROJECT::SPECIFIC
-testepub.epub
-testepub2.epub
+testepub*.epub
 example_test*.epub
 
 ## BUNDLER
