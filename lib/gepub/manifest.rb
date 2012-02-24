@@ -53,6 +53,7 @@ module GEPUB
     end
     
     def add_item(id,href,media_type, attributes = {})
+      id ||= @id_pool.generate_key(:prefix=>'item_'+ File.basename(href,'.*'), :without_count => true)
       @items[id] = item = Item.new(id,href,media_type,self, attributes)
       @items_by_href[href] = item
       item

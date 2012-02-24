@@ -3,6 +3,9 @@ require File.dirname(__FILE__) + '/spec_helper.rb'
 require 'rubygems'
 
 describe 'GEPUB usage' do
+  context 'On using Builder' do
+  end
+  
   context 'On generating EPUB' do
     it 'should generate simple EPUB3 with rather complicated matadata' do
       book = GEPUB::Book.new

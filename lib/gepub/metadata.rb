@@ -5,7 +5,7 @@ require 'time'
 module GEPUB
   # metadata constants
   module TITLE_TYPE
-    ['main','subtitle', 'short', 'collection', 'edition','expanded'].each {
+    TYPES = ['main','subtitle', 'short', 'collection', 'edition','expanded'].each {
       |type|
       const_set(type.upcase, type)
     }
@@ -142,6 +142,13 @@ module GEPUB
 
     def add_title(content, id = nil, title_type = nil)
       meta = add_metadata('title', content, id).refine('title-type', title_type)
+      yield meta if block_given?
+      meta
+    end
+
+    def set_title(content, id = nil, title_type = nil)
+      title_clear
+      add_title(content, id, title_type)
       yield meta if block_given?
       meta
     end

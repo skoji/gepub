@@ -4,7 +4,6 @@ require 'nokogiri'
 require 'zip/zip'
 require 'fileutils'
 
-
 module GEPUB
   class Book
     MIMETYPE='mimetype'
@@ -87,6 +86,11 @@ module GEPUB
       (class << item;self;end).send(:define_method, :toc_text,
                                     Proc.new { |text|
                                       toc.push(:item => item, :text => text, :id => nil)
+                                      item
+                                    })
+      (class << item;self;end).send(:define_method, :toc_text_with_id,
+                                    Proc.new { |text, id|
+                                      toc.push(:item => item, :text => text, :id => id)
                                       item
                                     })
       yield item if block_given?
@@ -182,8 +186,9 @@ EOF
               doc.ol {
                 @toc.each {
                   |x|
+                  id = "##{x[:id]}" || ""
                   doc.li {
-                    doc.a({'href' => x[:item].href} ,x[:text])
+                    doc.a({'href' => x[:item].href + id} ,x[:text])
                   }
                 }
               }

@@ -61,7 +61,7 @@ module GEPUB
       self
     end
 
-    ['title-type', 'identifier-type', 'display-seq', 'file-as', 'group-position'].each {
+    ['title-type', 'identifier-type', 'display-seq', 'file-as', 'group-position', 'role'].each {
       |name|
       methodbase = name.sub('-','_')
       define_method(methodbase + '=') { |val| refine(name, val); }
@@ -76,6 +76,14 @@ module GEPUB
         add_refiner('alternate-script', content, { 'xml:lang' => locale })
       }
       self
+    end
+
+    def list_alternates
+      list = refiner_list('alternate-script').map {
+        |refiner|
+        [ refiner['xml:lang'], refiner.content ]
+      }
+      Hash[*list.flatten]
     end
 
     def to_xml(builder, id_pool, ns = nil, additional_attr = {}, opf_version = '3.0')

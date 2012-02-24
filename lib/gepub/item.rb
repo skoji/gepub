@@ -49,6 +49,10 @@ module GEPUB
       add_property('cover-image')
     end
 
+    def nav
+      add_property('nav')
+    end
+
     def add_raw_content(data)
       @content = data
     end

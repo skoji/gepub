@@ -29,7 +29,7 @@ module GEPUB
           if param[:without_count]
             k = prefix + suffix
             count -= 1
-            param[:without_count] = nil
+            param.delete(:without_count)
           else
             k = prefix + count.to_s + suffix
           end
@@ -123,7 +123,6 @@ module GEPUB
     end
 
     def add_item(href, io_or_filename = nil, id = nil, attributes = {})
-      id ||= @id_pool.generate_key(:prefix=>'item', :suffix=>'_'+ File.basename(href,'.*'), :without_count => true)
       item = @manifest.add_item(id, href, nil, attributes)
       item.add_content(io_or_filename) unless io_or_filename.nil?
       @spine.push(item) if @ordered
@@ -157,7 +156,8 @@ module GEPUB
       @manifest.item_list
     end
     
-    def method_missing(name, *args) 
+    def method_missing(name, *args)
+      return @manifest.send(name.to_sym, *args) if [:item_by_href].member? name
       Metadata::CONTENT_NODE_LIST.each {
         |x|
         case name.to_s

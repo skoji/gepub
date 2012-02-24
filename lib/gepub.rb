@@ -16,6 +16,10 @@ require 'gepub/package'
 require 'gepub/item'
 require 'gepub/book'
 require 'gepub/gepuber'
+require 'gepub/builder_mixin'
+require 'gepub/resource_builder'
+require 'gepub/builder'
+
 
 
 
