@@ -106,7 +106,13 @@ module GEPUB
       @item_refs.delete itemref
       @id_pool[itemref.id] = nil
     end
-    
+
+    def remove_with_idlist(ids)
+      @item_refs = @item_refs.select {
+        |ref|
+        !ids.member? ref.idref
+      }
+    end
     
   end
 end

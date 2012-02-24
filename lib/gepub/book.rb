@@ -83,16 +83,18 @@ module GEPUB
     def add_item(href, io_or_filename = nil, id = nil, attributes = {})
       item = @package.add_item(href,io_or_filename,id,attributes)
       toc = @toc
-      (class << item;self;end).send(:define_method, :toc_text,
+      metaclass = (class << item;self;end)
+      metaclass.send(:define_method, :toc_text,
                                     Proc.new { |text|
                                       toc.push(:item => item, :text => text, :id => nil)
                                       item
-                                    })
-      (class << item;self;end).send(:define_method, :toc_text_with_id,
+                     })
+      metaclass.send(:define_method, :toc_text_with_id,
                                     Proc.new { |text, id|
                                       toc.push(:item => item, :text => text, :id => id)
                                       item
-                                    })
+                     })
+      
       yield item if block_given?
       item
     end
@@ -117,7 +119,7 @@ module GEPUB
       @package.ordered(&block)
     end
 
-    def before_generate
+    def cleanup
       if version.to_f < 3.0 || @package.epub_backward_compat
         if @package.manifest.item_list.select {
           |x,item|
@@ -132,12 +134,19 @@ module GEPUB
 
       if version.to_f >=3.0
         @package.metadata.set_lastmodified
+        
         if @package.manifest.item_list.select {
           |href, item|
           (item.properties||[]).member? 'nav'
           }.size == 0
           generate_nav_doc
         end
+        
+        @package.spine.remove_with_idlist @package.manifest.item_list.map {
+          |href, item|
+          item.fallback
+        }.reject(&:nil?)
+
       end
     end
 
@@ -158,7 +167,7 @@ module GEPUB
     end
 
     def generate_epub_stream
-      before_generate
+      cleanup
       Zip::ZipOutputStream::write_buffer {
         |epub|
         write_to_epub_container(epub)
@@ -166,7 +175,7 @@ module GEPUB
     end
     
     def generate_epub(path_to_epub)
-      before_generate
+      cleanup
       File.delete(path_to_epub) if File.exist?(path_to_epub)
       Zip::ZipOutputStream::open(path_to_epub) {
         |epub|

@@ -291,12 +291,11 @@ describe GEPUB::Builder do
     end
 
     it 'should handle fallback chain' do
-      # in this test, do not supply 
       workdir = File.join(File.dirname(__FILE__),'fixtures', 'builder')
       builder = GEPUB::Builder.new {
         resources(:workdir => workdir)  {
           fallback_group {
-            file 'chap3_docbook.xhtml' => nil
+            file 'chap3_docbook.xml' => nil
             media_type('application/docbook+xml')
             file 'chap3.xml' => nil
             media_type("application/z3986-auth+xml")
@@ -305,7 +304,7 @@ describe GEPUB::Builder do
         }
       }
       builder.instance_eval {
-        fallbackid = @book.item_by_href('chap3_docbook.xhtml').fallback
+        fallbackid = @book.item_by_href('chap3_docbook.xml').fallback
         @book.items[fallbackid].href.should == 'chap3.xml'
 
         fallbackid = @book.items[fallbackid].fallback
@@ -318,11 +317,11 @@ describe GEPUB::Builder do
       workdir = File.join(File.dirname(__FILE__),'fixtures', 'builder')
       builder = GEPUB::Builder.new {
         resources(:workdir => workdir)  {
-          fallback_chain_files({'chap3_docbook.xhtml' => nil}, {'chap3.xml' => nil}, {'chap3.xhtml' => nil})
+          fallback_chain_files({'chap3_docbook.xml' => nil}, {'chap3.xml' => nil}, {'chap3.xhtml' => nil})
         }
       }
       builder.instance_eval {
-        fallbackid = @book.item_by_href('chap3_docbook.xhtml').fallback
+        fallbackid = @book.item_by_href('chap3_docbook.xml').fallback
         @book.items[fallbackid].href.should == 'chap3.xml'
 
         fallbackid = @book.items[fallbackid].fallback
@@ -331,24 +330,53 @@ describe GEPUB::Builder do
     end
 
     it 'should handle fallback chain with fallback_chain_files in with_media_type' do
-      # in this test, do not supply 
       workdir = File.join(File.dirname(__FILE__),'fixtures', 'builder')
       builder = GEPUB::Builder.new {
         resources(:workdir => workdir)  {
           with_media_type('application/docbook+xml', 'application/z3986-auth+xml', 'application/xhtml+xml') {
-            fallback_chain_files({'chap3_docbook.xhtml' => nil}, {'chap3.xml' => nil}, {'chap3.xhtml' => nil})
+            fallback_chain_files({'chap3_docbook.xml' => nil}, {'chap3.xml' => nil}, {'chap3.xhtml' => nil})
           }
         }
       }
       builder.instance_eval {
-        @book.item_by_href('chap3_docbook.xhtml').media_type.should == 'application/docbook+xml'
-        fallbackid = @book.item_by_href('chap3_docbook.xhtml').fallback
+        @book.item_by_href('chap3_docbook.xml').media_type.should == 'application/docbook+xml'
+        fallbackid = @book.item_by_href('chap3_docbook.xml').fallback
         @book.items[fallbackid].href.should == 'chap3.xml'
         @book.items[fallbackid].media_type.should == 'application/z3986-auth+xml'
 
         fallbackid = @book.items[fallbackid].fallback
         @book.items[fallbackid].href.should == 'chap3.xhtml'        
         @book.items[fallbackid].media_type.should == 'application/xhtml+xml'
+      }
+    end
+
+    it 'should handle fallback chain in spine' do
+      workdir = File.join(File.dirname(__FILE__),'fixtures', 'builder')
+      builder = GEPUB::Builder.new {
+        unique_identifier 'uid'
+
+        resources(:workdir => workdir)  {
+          ordered {
+            fallback_group {
+              file 'chap3_docbook.xml' => nil
+              media_type('application/docbook+xml')
+              file 'chap3.xml' => nil
+              media_type("application/z3986-auth+xml")
+              file 'chap3.xhtml' => nil
+            }
+          }
+        }
+      }
+      builder.instance_eval {
+        @book.cleanup
+        fallbackid = @book.item_by_href('chap3_docbook.xml').fallback
+        @book.items[fallbackid].href.should == 'chap3.xml'
+        fallbackid = @book.items[fallbackid].fallback
+        @book.items[fallbackid].href.should == 'chap3.xhtml'
+
+        @book.spine_items.size.should == 1
+        @book.spine_items[0].href == 'chap3_docbook.xhtml'
+
       }
     end
 
