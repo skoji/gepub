@@ -36,7 +36,7 @@ a generic EPUB parser/generator library.
 
       date '2012-02-29T00:00:00Z'
 
-      resources(:workdir => workdir) {
+      resources(:workdir => '~/epub/sample_book_source/') {
         cover_image 'img/image1.jpg' => 'image1.jpg'
         ordered {
           file 'text/chap1.xhtml'
