@@ -117,7 +117,7 @@ module GEPUB
       @package.ordered(&block)
     end
 
-    def generate_epub_stream
+    def before_generate
       if version.to_f < 3.0 || @package.epub_backward_compat
         if @package.manifest.item_list.select {
           |x,item|
@@ -139,64 +139,38 @@ module GEPUB
           generate_nav_doc
         end
       end
+    end
 
+    def write_to_epub_container(epub) 
+      epub.put_next_entry('mimetype', '', '', Zip::ZipEntry::STORED)
+      epub << "application/epub+zip"
+      epub.put_next_entry('META-INF/container.xml')
+      epub << container_xml
+
+      epub.put_next_entry(@package.path)
+      epub << opf_xml
+
+      @package.manifest.item_list.each {
+        |k, item|
+        epub.put_next_entry(@package.contents_prefix + item.href)
+        epub << item.content
+      }
+    end
+
+    def generate_epub_stream
+      before_generate
       Zip::ZipOutputStream::write_buffer {
         |epub|
-        epub.put_next_entry('mimetype', '', '', Zip::ZipEntry::STORED)
-        epub << "application/epub+zip"
-        epub.put_next_entry('META-INF/container.xml')
-        epub << container_xml
-
-        epub.put_next_entry(@package.path)
-        epub << opf_xml
-
-        @package.manifest.item_list.each {
-          |k, item|
-          epub.put_next_entry(@package.contents_prefix + item.href)
-          epub << item.content
-        }
+        write_to_epub_container(epub)
       }
     end
     
     def generate_epub(path_to_epub)
-      if version.to_f < 3.0 || @package.epub_backward_compat
-        if @package.manifest.item_list.select {
-          |x,item|
-          item.media_type == 'application/x-dtbncx+xml'
-        }.size == 0
-          if (@toc.size == 0)
-            @toc << { :item => @package.manifest.item_list[@package.spine.itemref_list[0].idref] }
-          end
-          add_item('toc.ncx', StringIO.new(ncx_xml), 'ncx')
-        end
-      end
-
-      if version.to_f >=3.0
-        @package.metadata.set_lastmodified
-        if @package.manifest.item_list.select {
-          |href, item|
-          (item.properties||[]).member? 'nav'
-          }.size == 0
-          generate_nav_doc
-        end
-      end
-
+      before_generate
       File.delete(path_to_epub) if File.exist?(path_to_epub)
       Zip::ZipOutputStream::open(path_to_epub) {
         |epub|
-        epub.put_next_entry('mimetype', '', '', Zip::ZipEntry::STORED)
-        epub << "application/epub+zip"
-        epub.put_next_entry('META-INF/container.xml')
-        epub << container_xml
-
-        epub.put_next_entry(@package.path)
-        epub << opf_xml
-
-        @package.manifest.item_list.each {
-          |k, item|
-          epub.put_next_entry(@package.contents_prefix + item.href)
-          epub << item.content
-        }
+        write_to_epub_container(epub)
       }
     end
     
