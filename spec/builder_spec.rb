@@ -318,7 +318,7 @@ describe GEPUB::Builder do
       workdir = File.join(File.dirname(__FILE__),'fixtures', 'builder')
       builder = GEPUB::Builder.new {
         resources(:workdir => workdir)  {
-          fallback_chain_files 'chap3_docbook.xhtml' => nil, 'chap3.xml' => nil, 'chap3.xhtml' => nil
+          fallback_chain_files({'chap3_docbook.xhtml' => nil}, {'chap3.xml' => nil}, {'chap3.xhtml' => nil})
         }
       }
       builder.instance_eval {
@@ -336,7 +336,7 @@ describe GEPUB::Builder do
       builder = GEPUB::Builder.new {
         resources(:workdir => workdir)  {
           with_media_type('application/docbook+xml', 'application/z3986-auth+xml', 'application/xhtml+xml') {
-            fallback_chain_files 'chap3_docbook.xhtml' => nil, 'chap3.xml' => nil, 'chap3.xhtml' => nil
+            fallback_chain_files({'chap3_docbook.xhtml' => nil}, {'chap3.xml' => nil}, {'chap3.xhtml' => nil})
           }
         }
       }
