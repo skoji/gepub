@@ -44,12 +44,45 @@ destbasedir = File.expand_path(destbasedir)
 srcdir = opt.parse(ARGV)[0]
 srccheck(srcdir, configfilename)
 
+epubname_to_generate = 'gepuber_generated.epub'
+
 Dir.chdir(srcdir)
 begin
   File.open(configfilename, 'rb') {
     |io|
-    gepuber = GEPUB::Gepuber.new(eval("#{io.read}"))
-    gepuber.create destbasedir
+    GEPUB::Builder.new {
+      table_of_contents = {}
+      (class<< self;self;end).send(
+                                   :define_method,
+                                   :epub_name, Proc.new { |name|
+                                     epubname_to_generate = name
+                                   })
+      eval "#{io.read}"
+      resources  {
+        Dir.glob('*.css') {
+          |f|
+          file f
+        }
+        Dir.glob('img/*') {
+          |f|
+          if File.basename(f) == 'cover.jpg'
+            cover_image f
+          else
+            file f
+          end
+        }
+        ordered {
+          Dir.glob('[0-9]*.{xhtml,html}') {
+            |f|
+            file f
+            if table_of_contents[f]
+              heading table_of_contents[f]
+            end
+          }
+        }
+      }
+    }.generate_epub(File.join(destbasedir, epubname_to_generate))
   }
 end
+  
 
