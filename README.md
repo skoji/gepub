@@ -21,15 +21,12 @@ a generic EPUB parser/generator library.
     require 'rubygem'
     require 'gepub'
     builder = GEPUB::Builder.new {
-      unique_identifier 'http:/example.jp/bookid_in_url', 'BookID', 'URL'
       language 'en'
-
+      unique_identifier 'http:/example.jp/bookid_in_url', 'BookID', 'URL'
       title 'GEPUB Sample Book'
       subtitle 'This book is just a sample'
-      alt 'ja' => 'これはあくまでサンプルです'
 
       creator 'KOJIMA Satoshi'
-      alt 'ja' => '小嶋智'
 
       contributors 'Denshobu', 'Asagaya Densho', 'Shonan Densho Teidan', 'eMagazine Torutaru'
 
@@ -40,7 +37,9 @@ a generic EPUB parser/generator library.
         ordered {
           file 'text/chap1.xhtml'
           heading 'Chapter 1'
+
           file 'text/chap1-1.xhtml'
+
           file 'text/chap2.html'
           heading 'Chapter 2'
         }
