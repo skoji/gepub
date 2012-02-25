@@ -153,7 +153,7 @@ module GEPUB
       meta
     end
     
-    def add_person(name, content, id = nil, role = 'aut')
+    def add_person(name, content, id = nil, role = nil)
       meta = add_metadata(name, content, id).refine('role', role)
       yield meta if block_given?
       meta

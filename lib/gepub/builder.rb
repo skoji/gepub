@@ -73,7 +73,7 @@ module GEPUB
       @last_defined_item = vals.map {
         |v|
         name = v
-        role = ''
+        role = 'aut'
         name,role = v[0], v[1] if Array === name
         MetaItem.new(@book.add_creator(name, nil, role))
       }
