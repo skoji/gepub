@@ -1,0 +1,65 @@
+require 'gepub'
+require 'optparse'
+
+def usage
+  STDERR.print "gepubgen [-d destination ] [-c configfilename] <source-directory>\r\n"
+  exit 1
+end
+
+def srccheck(srcdir, configfilename)
+  if !File.exist?(srcdir) || !File.directory?(srcdir) 
+    STDERR.print "#{srcdir} is not a directory"
+    exit 1
+  end
+  if !File.exist?(File.join(srcdir, configfilename))
+    STDERR.print "#{configfilename} does not exists in#{srcdir}."
+    exit 1
+  end
+end
+
+def destcheck(destdir)
+  if (File.exist?(destdir) && !File.directory?(destdir))
+    STDERR.print "#{destdir} is not a directory\n"
+    exit 1
+  end
+end
+
+destbasedir = "."
+configfilename = 'gepubgen.conf'
+
+opt = OptionParser.new
+
+usage if ARGV.length < 1
+
+opt.on('-d [directory]') { |dir|
+  destbasedir = dir
+}
+
+opt.on('-c [configfilename]') { |name|
+  configfilename = name
+}
+
+destbasedir = File.expand_path(destbasedir)
+
+srcdir = opt.parse(ARGV)[0]
+srccheck(srcdir, configfilename)
+
+epubname_to_generate = 'gepub_generated.epub'
+
+Dir.chdir(srcdir)
+begin
+  File.open(configfilename, 'rb') {
+    |io|
+    GEPUB::Builder.new {
+      table_of_contents = {}
+      (class<< self;self;end).send(
+                                   :define_method,
+                                   :epub_name, Proc.new { |name|
+                                     epubname_to_generate = name
+                                   })
+      eval "#{io.read}"
+    }.generate_epub(File.join(destbasedir, epubname_to_generate))
+  }
+end
+  
+
