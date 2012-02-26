@@ -4,7 +4,76 @@ require 'nokogiri'
 require 'zip/zip'
 require 'fileutils'
 
+# = GEPUB 
+# Author:: KOJIMA Satoshi
+# namespace for gepub library.
+# GEPUB::Book for parsing/generating, GEPUB::Builder for generating.
+# GEPUB::Item holds data of resources like xhtml text, css, scripts, images, videos, etc.
+# GEPUB::Meta holds metadata(title, creator, publisher, etc.) with its information (alternate script, display sequence, etc.)
+
 module GEPUB
+  # Book is the basic class to hold data in EPUB files.
+  # 
+  # It can generate and parse EPUB2/EPUB3 files. For generating a new EPUB file,
+  # consider to use GEPUB::Builder. Builder is specialized for generating EPUB, 
+  # very easy to use and can handle almost every metadata of EPUB3.
+  # 
+  # Book delegates many methods to objects in other class, so you can't find
+  # them in Book#methods or in ri/rdoc documentation. Their description is below.
+  #
+  # == \Package Attributes
+  # === Book#version (delegated to Package#version)
+  # returns OPF version.
+  # === Book#version=, Book#set_version (delegated to Package#version=)
+  # set OPF version
+  # === Book#unique_identifier (delegated to Package#unique_identifier)
+  # return unique_identifier ID value. identifier itself can be get by Book#identifier
+  # == \Metadata
+  # \Metadata items(title, creator, publisher, etc) are GEPUB::Meta objects.
+  # === Book#identifier (delegated to Package#identifier)
+  # return GEPUB::Meta object of unique identifier.
+  # === Book#identifier=(identifier)   (delegated to Package#identifier=)
+  # set identifier (i.e. url, uuid, ISBN) as unique-identifier of EPUB.
+  # === Book#set_main_id(identifier, id = nil, type = nil)   (delegated to Package#set_main_id)
+  # same as identifier=, but can specify id (in the opf xml) and identifier type(i.e. URL, uuid, ISBN, etc)
+  # === Book#add_identifier(string, id, type=nil) (delegated to Metadata#add_identifier)
+  # set identifier. it it not set as unique-identifier of EPUB.
+  # === Book#add_title(content, id = nil, title_type = nil) (delegated to Metadata#add_title)
+  # add title metadata. default title_type is defined in TITLE_TYPES.
+  # === Book#set_title(content, id = nil, title_type = nil) (delegated to Metadata#set_title)
+  # clear all titles and then add title.
+  # === Book#title (delegated to Metadata)
+  # returns 'main' title Meta object. 'main' title is determined by this order:
+  # 1. title-type is  'main'
+  # 2. display-seq is smallest
+  # 3. appears first in opf file
+  # === Book#title_list (delegated to Metadata)
+  # returns titles list by display-seq or defined order.
+  # the title without display-seq is appear after titles with display-seq.
+  # === Book#add_creator(content, id = nil, role = 'aut') (delegated to Metadata#add_creator)
+  # add creator.
+  # === Book#creator
+  # returns 'main' creator Meta object. 'main' creatoris determined by this order:
+  # 1. display-seq is smallest
+  # 2. appears first in opf file
+  # === Book#creator_list (delegated to Metadata)
+  # returns creators list by display-seq or defined order.
+  # the creators without display-seq is appear after creators with display-seq.
+  # === Book#add_contributor(content, id = nil, role = 'aut') (delegated to Metadata#add_contributor)
+  # add contributor.
+  # === Book#contributor(content, id = nil, role = 'aut') (delegated to Metadata#contributor)
+  # returns 'main' contributor. 'main' contributor determined by this order:
+  # 1. display-seq is smallest
+  # 2. appears first in opf file
+  # === Book#contributors_list (delegated to Metadata)
+  # returns contributors list by display-seq or defined order.
+  # the contributors without display-seq is appear after contributors with display-seq.
+  # === Book#set_lastmodified(date=nil) (delegated to Metadata#set_lastmodified)
+  # set last modified date.if date is nil, it sets current time.
+  # === Book#lastmodified (delegated to Metadata#lastmodified)
+  # returns Meta object contains last modified time.
+  # === setting and reading other metadata: publisher, language, coverage, date, description, format, relation, rights, source, subject, type (delegated to Metadata)
+  # they all have methods like: publisher(which returns 'main' publisher), add_publisher(content, id) (which add publisher), set_publisher or publisher= (clears and set publisher), and publisher_list(returns publisher Meta object in display-seq order). 
   class Book
     MIMETYPE='mimetype'
     MIMETYPE_CONTENTS='application/epub+zip'
@@ -18,6 +87,9 @@ module GEPUB
       defaultns = ns.select{ |name, value| value == CONTAINER_NS }.keys[0]
       doc.css("#{defaultns}|rootfiles > #{defaultns}|rootfile")[0]['full-path']
     end
+
+    # Parses existing EPUB2/EPUB3 files from an IO object, and creates new Book object.
+    #   book = self.parse(File.new('some.epub'))
 
     def self.parse(io)
       files = {}
@@ -65,7 +137,10 @@ module GEPUB
         book
       }
     end
-    
+
+    # creates new empty Book object.
+    # usually you do not need to specify any arguments.
+
     def initialize(path='OEBPS/package.opf', attributes = {})
       if File.extname(path) != '.opf'
         warn 'GEPUB::Book#new interface changed. You must supply path to package.opf as first argument. If you want to set title, please use GEPUB::Book#title='
@@ -75,11 +150,16 @@ module GEPUB
       yield book if block_given?
     end
 
+    # add navigation text (which will appear on navigation document or table of contents) to an item.
+    # DEPRECATED: please use Item#toc_text or Item#toc_text_with_id, or Builder#heading
+
     def add_nav(item, text, id = nil)
       warn 'add_nav is deprecated: please use Item#toc_text'
       @toc.push({ :item => item, :text => text, :id => id})      
     end
 
+    # add an item(i.e. html, images, audios, etc)  to Book.
+    # the added item will be referenced by the first argument in the EPUB container.
     def add_item(href, io_or_filename = nil, id = nil, attributes = {})
       item = @package.add_item(href,io_or_filename,id,attributes)
       toc = @toc
@@ -99,6 +179,8 @@ module GEPUB
       item
     end
 
+    # same as add_item, but the item will be added to spine of the EPUB.
+
     def add_ordered_item(href, io_or_filename = nil, id = nil, attributes = {})
       item = @package.add_ordered_item(href,io_or_filename,id,attributes)
       toc = @toc
@@ -114,11 +196,15 @@ module GEPUB
     def method_missing(name,*args)
       @package.send(name, *args)
     end
-    
+
+    # should call ordered() with block.
+    # within the block, all item added by add_item will be added to spine also.
     def ordered(&block)
       @package.ordered(&block)
     end
 
+    # clenup and maintain consistency of metadata and items included in the Book
+    # object. 
     def cleanup
       if version.to_f < 3.0 || @package.epub_backward_compat
         if @package.manifest.item_list.select {
@@ -150,6 +236,7 @@ module GEPUB
       end
     end
 
+    # write EPUB to stream specified by the argument.
     def write_to_epub_container(epub) 
       epub.put_next_entry('mimetype', '', '', Zip::ZipEntry::STORED)
       epub << "application/epub+zip"
@@ -166,6 +253,7 @@ module GEPUB
       }
     end
 
+    # generates and returns StringIO contains EPUB.
     def generate_epub_stream
       cleanup
       Zip::ZipOutputStream::write_buffer {
@@ -173,7 +261,8 @@ module GEPUB
         write_to_epub_container(epub)
       }
     end
-    
+
+    # writes EPUB to file. if file exists, it will be overwritten.
     def generate_epub(path_to_epub)
       cleanup
       File.delete(path_to_epub) if File.exist?(path_to_epub)
@@ -182,7 +271,7 @@ module GEPUB
         write_to_epub_container(epub)
       }
     end
-    
+
     def container_xml
       <<EOF
 <?xml version="1.0" encoding="UTF-8"?>

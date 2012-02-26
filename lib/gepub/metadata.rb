@@ -170,6 +170,14 @@ module GEPUB
       yield meta if block_given?
       meta
     end
+
+    def lastmodified
+      ret = (@content_nodes['meta'] ||=[]).select {
+        |meta|
+        meta['property'] == 'dcterms:modified'
+      }
+      ret.size == 0 ? nil : ret[0]
+    end
     
     def set_lastmodified(date=nil)
       date ||= Time.now

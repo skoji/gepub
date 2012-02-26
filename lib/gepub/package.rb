@@ -86,7 +86,7 @@ module GEPUB
       yield self if block_given?
     end
 
-    ['version', 'unique-identifier', 'xml:lang', 'dir', 'prefix', 'id'].each {
+    ['unique-identifier', 'xml:lang', 'dir', 'prefix', 'id'].each {
       |name|
       methodbase = name.gsub('-','_').sub('xml:lang', 'lang')
       define_method(methodbase + '=') { |val| @attributes[name] =  val }
@@ -187,11 +187,19 @@ module GEPUB
       @metadata.language
     end
 
-    def version=(val)
+    def version
+      @attributes['version']
+    end
+
+    def set_version(val)
       @attributes['version'] = val
       @metadata.opf_version = val
       @manifest.opf_version = val
       @spine.opf_version = val
+    end
+
+    def version=(val)
+      set_version(val)
     end
     
     def epub_version=(val)

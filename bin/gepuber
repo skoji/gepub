@@ -63,6 +63,10 @@ begin
           |f|
           file f
         }
+        Dir.glob('css/*.css') {
+          |f|
+          file f
+        }
         Dir.glob('img/*') {
           |f|
           if File.basename(f) == 'cover.jpg'
