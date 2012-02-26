@@ -125,6 +125,13 @@ describe GEPUB::Metadata do
       xml.namespaces['xmlns:dc'].should == GEPUB::XMLUtil::DC_NS
     end
 
+    it 'should handle date with Time object' do
+      metadata = GEPUB::Metadata.new
+      a = Time.parse '2012-02-27 20:00:00 UTC'
+      metadata.add_date(a, 'date')
+      metadata.date.to_s.should ==  '2012-02-27T20:00:00Z'
+    end
+    
     it 'should generate metadata with id xml' do
       metadata = GEPUB::Metadata.new
       metadata.add_identifier('the_uid', nil)

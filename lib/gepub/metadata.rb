@@ -96,9 +96,7 @@ module GEPUB
 
       #TODO: should override for 'title'. // for 'main title' not always comes first.
       define_method(node) {
-        if !@content_nodes[node].nil? && @content_nodes[node].size > 0
-          @content_nodes[node][0]
-        end
+        get_first_node(node)
       }
 
       define_method('add_' + node) {
@@ -114,10 +112,24 @@ module GEPUB
       
       define_method(node+'=') {
         |content|
-        send(node + "_clear")
-        add_metadata(node, content)
+        send('set_' + node, content, nil)
       }
     }
+
+    def get_first_node(node)
+      if !@content_nodes[node].nil? && @content_nodes[node].size > 0
+        @content_nodes[node][0]
+      end
+    end
+
+    def add_date(date, id)
+      if date.is_a? Time
+        date = date.iso8601
+      else
+        date = Time.parse(date).utc.iso8601
+      end
+      add_metadata('date', date, id)
+    end
 
     def add_identifier(string, id, type=nil)
       raise 'id #{id} is already in use' if @id_pool[id]
@@ -148,7 +160,7 @@ module GEPUB
 
     def set_title(content, id = nil, title_type = nil)
       title_clear
-      add_title(content, id, title_type)
+      meta = add_title(content, id, title_type)
       yield meta if block_given?
       meta
     end
