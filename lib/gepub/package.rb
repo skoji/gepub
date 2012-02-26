@@ -115,12 +115,6 @@ module GEPUB
       set_unique_identifier(id || @id_pool.generate_key(:prefix => 'BookId', :without_count => true))
       @metadata.add_identifier identifier, unique_identifier, type
     end
-    
-    def specify_cover(item)
-      # ... not smart. should create old-meta on generating xml
-      @metadata.add_oldstyle_meta(nil, { 'name' => 'cover', 'content' => item.id })
-      item.add_properties 'cover-image'
-    end
 
     def add_item(href, io_or_filename = nil, id = nil, attributes = {})
       item = @manifest.add_item(id, href, nil, attributes)
