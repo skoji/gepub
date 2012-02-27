@@ -134,7 +134,7 @@ describe GEPUB::Metadata do
 
     it 'should handle date with a not W3C-DTF string' do
       metadata = GEPUB::Metadata.new
-      metadata.add_date('2012/02/28 05:00:00 JST', 'date')
+      metadata.add_date('2012-02-28 05:00:00 +0900', 'date')
       metadata.date.to_s.should ==  '2012-02-27T20:00:00Z'
     end
     
