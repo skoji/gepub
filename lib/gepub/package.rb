@@ -236,7 +236,7 @@ module GEPUB
           @spine.to_xml(xml)
         }
       }
-      builder.to_xml
+      builder.to_xml(:encoding => 'utf-8')
     end
 
 

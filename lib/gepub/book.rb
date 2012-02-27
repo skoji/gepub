@@ -29,7 +29,7 @@ module GEPUB
   # === Book#unique_identifier (delegated to Package#unique_identifier)
   # return unique_identifier ID value. identifier itself can be get by Book#identifier
   # == \Metadata
-  # \Metadata items(title, creator, publisher, etc) are GEPUB::Meta objects.
+  # \Metadata items(e.g. title, creator, publisher, etc) are GEPUB::Meta objects.
   # === Book#identifier (delegated to Package#identifier)
   # return GEPUB::Meta object of unique identifier.
   # === Book#identifier=(identifier)   (delegated to Package#identifier=)
@@ -37,9 +37,9 @@ module GEPUB
   # === Book#set_main_id(identifier, id = nil, type = nil)   (delegated to Package#set_main_id)
   # same as identifier=, but can specify id (in the opf xml) and identifier type(i.e. URL, uuid, ISBN, etc)
   # === Book#add_identifier(string, id, type=nil) (delegated to Metadata#add_identifier)
-  # set identifier. it it not set as unique-identifier of EPUB.
+  # Set an identifier metadata. It it not unique-identifier in opf. Many EPUB files do not set identifier other than unique-identifier.
   # === Book#add_title(content, id = nil, title_type = nil) (delegated to Metadata#add_title)
-  # add title metadata. default title_type is defined in TITLE_TYPES.
+  # add title metadata. title_type candidates is defined in TITLE_TYPES.
   # === Book#set_title(content, id = nil, title_type = nil) (delegated to Metadata#set_title)
   # clear all titles and then add title.
   # === Book#title (delegated to Metadata)
@@ -53,7 +53,7 @@ module GEPUB
   # === Book#add_creator(content, id = nil, role = 'aut') (delegated to Metadata#add_creator)
   # add creator.
   # === Book#creator
-  # returns 'main' creator Meta object. 'main' creatoris determined by this order:
+  # returns 'main' creator Meta object. 'main' creator is determined as following:
   # 1. display-seq is smallest
   # 2. appears first in opf file
   # === Book#creator_list (delegated to Metadata)
@@ -62,7 +62,7 @@ module GEPUB
   # === Book#add_contributor(content, id = nil, role = 'aut') (delegated to Metadata#add_contributor)
   # add contributor.
   # === Book#contributor(content, id = nil, role = 'aut') (delegated to Metadata#contributor)
-  # returns 'main' contributor. 'main' contributor determined by this order:
+  # returns 'main' contributor. 'main' contributor determined as following:
   # 1. display-seq is smallest
   # 2. appears first in opf file
   # === Book#contributors_list (delegated to Metadata)
@@ -308,7 +308,7 @@ EOF
           }
         }
       }
-      builder.to_xml
+      builder.to_xml(:encoding => 'utf-8')
     end
 
     def ncx_xml
@@ -343,7 +343,7 @@ EOF
           }
         }
       }
-      builder.to_xml
+      builder.to_xml(:encoding => 'utf-8')
     end
 
   end
