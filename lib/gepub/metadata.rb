@@ -122,20 +122,15 @@ module GEPUB
       end
     end
 
-    def add_date(date, id)
-      if date.is_a? Time
-        date = date.iso8601
-      else
-        date = Time.parse(date).utc.iso8601
-      end
-      add_metadata('date', date, id)
-    end
-
     def add_identifier(string, id, type=nil)
       raise 'id #{id} is already in use' if @id_pool[id]
       identifier = add_metadata('identifier', string, id)
       identifier.refine('identifier-type', type) unless type.nil?
       identifier
+    end
+
+    def add_date(date, id)
+      add_metadata('date', date, id, DateMeta)
     end
 
     def identifier_by_id(id)
@@ -145,8 +140,8 @@ module GEPUB
       }
     end
     
-    def add_metadata(name, content, id = nil)
-      meta = Meta.new(name, content, self, { 'id' => id })
+    def add_metadata(name, content, id = nil, itemclass = Meta)
+      meta = itemclass.new(name, content, self, { 'id' => id })
       (@content_nodes[name] ||= []) << meta
       yield self if block_given?
       meta
@@ -199,7 +194,7 @@ module GEPUB
           @content_nodes['meta'].delete meta
         end
       }
-      add_metadata('meta', date.utc.strftime('%Y-%m-%dT%H:%M:%SZ'))['property'] = 'dcterms:modified'
+      add_metadata('meta', date.utc.strftime('%Y-%m-%dT%H:%M:%SZ'), nil, DateMeta)['property'] = 'dcterms:modified'
     end
 
     def add_oldstyle_meta(content, attributes = {})

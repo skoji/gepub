@@ -9,6 +9,7 @@ end
 require 'gepub/version'
 require 'gepub/xml_util'
 require 'gepub/meta'
+require 'gepub/datemeta'
 require 'gepub/metadata'
 require 'gepub/manifest'
 require 'gepub/spine'

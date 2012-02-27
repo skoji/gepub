@@ -93,7 +93,7 @@ module GEPUB
       end
 
       # using eval to parametarize Namespace and content.
-      eval "builder#{ ns.nil? || @name == 'meta' ? '' : '[ns]'}.#{@name}(@attributes.reject{|k,v| v.nil?}.merge(additional_attr)#{@content.nil? ? '' : ',  @content'})"
+      eval "builder#{ ns.nil? || @name == 'meta' ? '' : '[ns]'}.#{@name}(@attributes.reject{|k,v| v.nil?}.merge(additional_attr)#{@content.nil? ? '' : ',  self.to_s'})"
 
       if @refiners.size > 0 && opf_version.to_f >= 3.0
         additional_attr['refines'] = "##{@attributes['id']}"
@@ -121,7 +121,7 @@ module GEPUB
         }.reverse
         localized = candidates[0].content if candidates.size > 0
       end
-      (localized || @content || super).to_s
+      (localized || self.content || super).to_s
     end
   end
 end
