@@ -161,7 +161,7 @@ module GEPUB
     # add an item(i.e. html, images, audios, etc)  to Book.
     # the added item will be referenced by the first argument in the EPUB container.
     def add_item(href, io_or_filename = nil, id = nil, attributes = {})
-      item = @package.add_item(href,io_or_filename,id,attributes)
+      item = @package.add_item(href,nil,id,attributes)
       toc = @toc
       metaclass = (class << item;self;end)
       metaclass.send(:define_method, :toc_text,
@@ -174,8 +174,17 @@ module GEPUB
                                       toc.push(:item => item, :text => text, :id => id)
                                       item
                      })
-      
-      yield item if block_given?
+      item.push_content_callback {
+        |i|
+        if File.extname(i.href) =~ /.x?html/
+          videos = Nokogiri::XML::Document.parse(i.content).xpath('//video[starts-with(@src,"http")]')
+          audios = Nokogiri::XML::Document.parse(i.content).xpath('//audio[starts-with(@src,"http")]')
+          if videos.size > 0 || audios.size > 0
+            i.add_property('remote-resources')
+          end
+        end
+      }
+      item.add_content io_or_filename unless io_or_filename.nil?
       item
     end
 

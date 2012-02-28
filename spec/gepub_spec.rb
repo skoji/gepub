@@ -170,7 +170,6 @@ EOF
 
   it "should generate correct epub2.0" do
     epubname = File.join(File.dirname(__FILE__), 'testepub2.epub')
-
     @book = GEPUB::Book.new('OEPBS/package.opf', { 'version' => '2.0'} ) 
     @book.title = 'thetitle'
     @book.creator = "theauthor"
@@ -190,5 +189,6 @@ EOF
     jar = File.join(File.dirname(__FILE__), 'fixtures/epubcheck-3.0b4/epubcheck-3.0b4.jar')
     system 'java', '-jar', jar, epubname
   end
+
 
 end

@@ -131,7 +131,7 @@ module GEPUB
 
     def create_one_file(val)
       name = val
-      io = val
+      io = val if (String === val && !val.start_with?('http'))
       if Hash === val 
         name = val.first[0]
         io = val.first[1]

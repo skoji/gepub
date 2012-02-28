@@ -380,5 +380,26 @@ describe GEPUB::Builder do
       }
     end
 
+    it 'should create remote-resources' do
+      builder = GEPUB::Builder.new {
+        unique_identifier 'uid'
+        resources {
+          file 'with_remote.xhtml' => StringIO.new('<html><head></head><body><div><p><video src="http://foo.bar">no video</video></p></div></body></html>')
+        }
+      }
+      builder.instance_eval {
+        @book.item_by_href('with_remote.xhtml').properties[0].should == 'remote-resources'
+      }
+    end
+
+    it 'should handle remote resource URL' do
+      builder = GEPUB::Builder.new {
+        unique_identifier 'uid'
+        resources {
+          file 'http://foo.bar'
+        }
+      }
+      # this should not raise 'No such file or directory'
+    end
   end
 end

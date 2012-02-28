@@ -14,6 +14,7 @@ module GEPUB
       @attributes['media-type'] =  guess_mediatype if media_type.nil?
       @parent = parent
       @parent.register_item(self) unless @parent.nil?
+      @content_callback = []
       self
     end
 
@@ -56,7 +57,11 @@ module GEPUB
     def add_raw_content(data)
       @content = data
     end
-    
+
+    def push_content_callback(&block)
+      @content_callback << block
+    end
+
     def add_content(io_or_filename)
       io = io_or_filename
       if io_or_filename.class == String
@@ -64,6 +69,10 @@ module GEPUB
       end
       io.binmode
       @content = io.read
+      @content_callback.each {
+        |p|
+        p.call self
+      }
       self
     end
 
