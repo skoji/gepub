@@ -25,7 +25,7 @@ def destcheck(destdir)
 end
 
 destbasedir = "."
-configfilename = 'gepubgen.conf'
+configfilename = 'genepub.conf'
 
 opt = OptionParser.new
 
