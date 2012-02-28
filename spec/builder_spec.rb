@@ -384,7 +384,7 @@ describe GEPUB::Builder do
       builder = GEPUB::Builder.new {
         unique_identifier 'uid'
         resources {
-          file 'with_remote.xhtml' => StringIO.new('<html><head></head><body><div><p><video src="http://foo.bar">no video</video></p></div></body></html>')
+          file 'with_remote.xhtml' => StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops"><head></head><body><div><p><video src="http://foo.bar">no video</video></p></div></body></html>')
         }
       }
       builder.instance_eval {

@@ -177,8 +177,15 @@ module GEPUB
       item.push_content_callback {
         |i|
         if File.extname(i.href) =~ /.x?html/
-          videos = Nokogiri::XML::Document.parse(i.content).xpath('//video[starts-with(@src,"http")]')
-          audios = Nokogiri::XML::Document.parse(i.content).xpath('//audio[starts-with(@src,"http")]')
+          parsed = Nokogiri::XML::Document.parse(i.content)
+          ns_prefix =  parsed.namespaces.invert['http://www.w3.org/1999/xhtml']
+          if ns_prefix.nil?
+            prefix = ''
+          else
+            prefix = "#{ns_prefix}:"
+          end
+          videos = parsed.xpath("//#{prefix}video[starts-with(@src,'http')]")
+          audios = parsed.xpath("//#{prefix}audio[starts-with(@src,'http')]")
           if videos.size > 0 || audios.size > 0
             i.add_property('remote-resources')
           end
@@ -257,8 +264,10 @@ module GEPUB
 
       @package.manifest.item_list.each {
         |k, item|
-        epub.put_next_entry(@package.contents_prefix + item.href)
-        epub << item.content
+        if item.content != nil
+          epub.put_next_entry(@package.contents_prefix + item.href)
+          epub << item.content
+        end
       }
     end
 
