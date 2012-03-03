@@ -6,7 +6,7 @@ if RUBY_VERSION < '1.9'
     end
   end
   class String
-    def force_encodeing(x)
+    def force_encoding(x)
       self
     end
   end
