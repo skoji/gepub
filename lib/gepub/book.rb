@@ -240,16 +240,16 @@ module GEPUB
       epub.put_next_entry('mimetype', '', '', Zip::ZipEntry::STORED)
       epub << "application/epub+zip"
       epub.put_next_entry('META-INF/container.xml')
-      epub << container_xml
+      epub << container_xml.force_encoding('us-ascii')
 
       epub.put_next_entry(@package.path)
-      epub << opf_xml
+      epub << opf_xml.force_encoding('us-ascii')
 
       @package.manifest.item_list.each {
         |k, item|
         if item.content != nil
           epub.put_next_entry(@package.contents_prefix + item.href)
-          epub << item.content
+          epub << item.content.force_encoding('us-ascii')
         end
       }
     end

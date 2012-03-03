@@ -1,7 +1,13 @@
-if !({}.respond_to? 'key')
+if RUBY_VERSION < '1.9'
+  # hash.key
   class Hash
     def key(x)
       index(x)
+    end
+  end
+  class String
+    def force_encodeing(x)
+      self
     end
   end
 end
