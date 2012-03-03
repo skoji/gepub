@@ -69,10 +69,20 @@ module GEPUB
       end
       io.binmode
       @content = io.read
-      @content_callback.each {
-        |p|
-        p.call self
-      }
+      if File.extname(self.href) =~ /.x?html/
+        parsed = Nokogiri::XML::Document.parse(@content)
+        ns_prefix =  parsed.namespaces.invert['http://www.w3.org/1999/xhtml']
+          if ns_prefix.nil?
+            prefix = ''
+          else
+            prefix = "#{ns_prefix}:"
+          end
+          videos = parsed.xpath("//#{prefix}video[starts-with(@src,'http')]")
+          audios = parsed.xpath("//#{prefix}audio[starts-with(@src,'http')]")
+          if videos.size > 0 || audios.size > 0
+            self.add_property('remote-resources')
+          end
+      end
       self
     end
 

@@ -174,23 +174,6 @@ module GEPUB
                                       toc.push(:item => item, :text => text, :id => id)
                                       item
                      })
-      item.push_content_callback {
-        |i|
-        if File.extname(i.href) =~ /.x?html/
-          parsed = Nokogiri::XML::Document.parse(i.content)
-          ns_prefix =  parsed.namespaces.invert['http://www.w3.org/1999/xhtml']
-          if ns_prefix.nil?
-            prefix = ''
-          else
-            prefix = "#{ns_prefix}:"
-          end
-          videos = parsed.xpath("//#{prefix}video[starts-with(@src,'http')]")
-          audios = parsed.xpath("//#{prefix}audio[starts-with(@src,'http')]")
-          if videos.size > 0 || audios.size > 0
-            i.add_property('remote-resources')
-          end
-        end
-      }
       item.add_content io_or_filename unless io_or_filename.nil?
       item
     end
