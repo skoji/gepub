@@ -6,11 +6,18 @@ if RUBY_VERSION < '1.9'
     end
   end
   class String
-    def force_encoding(x)
+    def force_to_bin
       self
     end
   end
+else
+  class String
+    def force_to_bin
+      force_encoding('us-ascii')
+    end
+  end
 end
+
 
 require 'gepub/version'
 require 'gepub/xml_util'
