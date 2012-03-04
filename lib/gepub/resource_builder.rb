@@ -23,6 +23,7 @@ module GEPUB
     def initialize(book, attributes = {},  &block)
       @last_defined_item = nil
       @book = book
+      @dir_prefix = ""
       @file_postprocess = {}
       @file_preprocess = {}
       @files_postprocess = {}
@@ -72,6 +73,15 @@ module GEPUB
 
     def glob(arg)
       files(*Dir.glob(arg))
+    end
+
+    def import(conf, args = {})
+      dir_prefix_org = @dir_prefix
+      @dir_prefix = args[:dir_prefix] || ""
+      Dir.chdir(File.dirname(conf)) {
+        instance_eval(File.new(File.basename(conf)).read)
+      }
+      @dir_prefix = dir_prefix_org
     end
 
     def cover_image(val)
@@ -144,6 +154,7 @@ module GEPUB
         name = val[0]
         io = val[1]
       end
+      name = "#{@dir_prefix}/#{name}" if !@dir_prefix.nil? && @dir_prefix.size > 0
       @book.add_item(name, io)
     end
   end    
