@@ -171,6 +171,18 @@ describe GEPUB::Builder do
       builder.instance_eval{ @book.item_by_href('text/cover.xhtml') }.should_not be_nil
     end
 
+    it 'should add files to book with glob' do
+      workdir = File.join(File.dirname(__FILE__),'fixtures', 'builder')
+      builder = GEPUB::Builder.new {
+        resources(:workdir => workdir)  {
+          glob 'text/*.{txt,xhtml}'
+        }
+      }
+      builder.instance_eval{ @book.item_by_href('text/memo.txt') }.should_not be_nil
+      builder.instance_eval{ @book.item_by_href('text/memo.txt').content.chomp }.should == 'just a plain text.'
+      builder.instance_eval{ @book.item_by_href('text/cover.xhtml') }.should_not be_nil
+    end
+
     it 'should add files to book from IO object' do
       io = File.new(File.join(File.dirname(__FILE__),'fixtures', 'builder', 'text', 'memo.txt'))
       builder = GEPUB::Builder.new {

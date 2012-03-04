@@ -70,6 +70,10 @@ module GEPUB
       }
     end
 
+    def glob(arg)
+      files(*Dir.glob(arg))
+    end
+
     def cover_image(val)
       file(val)
       @last_defined_item.cover_image
