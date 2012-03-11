@@ -57,22 +57,11 @@ module GEPUB
       add_property('nav')
     end
 
-    def add_raw_content(data)
-      @content = data
-    end
-
-    def push_content_callback(&block)
-      @content_callback << block
-    end
-
-    def add_content(io_or_filename)
-      io = io_or_filename
-      if io_or_filename.class == String
-        io = File.new(io_or_filename)
-      end
-      io.binmode
-      @content = io.read
+    def check_content_property
       if File.extname(self.href) =~ /.x?html/
+        @attributes['properties'] = (@attributes['properties'] || []).reject {
+          |x| x == 'svg' || x == 'mathml' || x == 'switch' || x == 'remote-resources'
+        }
         parsed = Nokogiri::XML::Document.parse(@content)
         ns_prefix =  parsed.namespaces.invert['http://www.w3.org/1999/xhtml']
         if ns_prefix.nil?
@@ -95,6 +84,25 @@ module GEPUB
           self.add_property('switch')
         end
       end
+    end
+
+    def add_raw_content(data)
+      @content = data
+      check_content_property
+    end
+
+    def push_content_callback(&block)
+      @content_callback << block
+    end
+
+    def add_content(io_or_filename)
+      io = io_or_filename
+      if io_or_filename.class == String
+        io = File.new(io_or_filename)
+      end
+      io.binmode
+      @content = io.read
+      check_content_property
       self
     end
 
@@ -105,6 +113,9 @@ module GEPUB
       end
       if !attr['properties'].nil?
         attr['properties'] = attr['properties'].join(' ')
+        if attr['properties'].size == 0
+          attr.delete 'properties'
+        end
       end
       builder.item(attr)
     end
