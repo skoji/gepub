@@ -7,19 +7,23 @@ require 'fileutils'
 # = GEPUB 
 # Author:: KOJIMA Satoshi
 # namespace for gepub library.
-# GEPUB::Book for parsing/generating, GEPUB::Builder for generating.
-# GEPUB::Item holds data of resources like xhtml text, css, scripts, images, videos, etc.
+# The core class is GEPUB::Book. It holds metadata and contents of EPUB file. metadata and contents can be accessed
+# through GEPUB::Meta and GEPUB::Item.
+# For generating EPUB file,  use GEPUB::Builder.
+# GEPUB::Item holds information and data  of resources like xhtml text, css, scripts, images, videos, etc.
 # GEPUB::Meta holds metadata(title, creator, publisher, etc.) with its information (alternate script, display sequence, etc.)
 
 module GEPUB
-  # Book is the basic class to hold data in EPUB files.
+  # Book is the class to hold data in EPUB files.
   # 
-  # It can generate and parse EPUB2/EPUB3 files. For generating a new EPUB file,
-  # consider to use GEPUB::Builder. Builder is specialized for generating EPUB, 
-  # very easy to use and can handle almost every metadata of EPUB3.
+  # It can generate and parse EPUB2/EPUB3 files.
+  #
+  # If you want to generate a new EPUB file, consider using GEPUB::Builder instead
+  # of using Book directly.
+  # Builder is a wrapper class of Book specialized for generating EPUB.
   # 
   # Book delegates many methods to objects in other class, so you can't find
-  # them in Book#methods or in ri/rdoc documentation. Their description is below.
+  # them in Book#methods or in ri/rdoc documentation. Their descriptions are below.
   #
   # == \Package Attributes
   # === Book#version (delegated to Package#version)

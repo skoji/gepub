@@ -1,4 +1,10 @@
 module GEPUB
+  #
+  # Builder is a wrapper class of Book. It provides DSL to create new EPUB file.
+  #
+  # = Synopsys
+  #  
+  #
   class Builder
     include BuilderMixin
     class MetaItem
