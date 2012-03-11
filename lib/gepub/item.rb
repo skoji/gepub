@@ -1,4 +1,7 @@
 module GEPUB
+  #
+  # an Object to hold metadata and content of item in manifest.
+  #
   class Item
     attr_accessor :content
     def self.create(parent, attributes = {})
