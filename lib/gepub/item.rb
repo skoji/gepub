@@ -72,16 +72,25 @@ module GEPUB
       if File.extname(self.href) =~ /.x?html/
         parsed = Nokogiri::XML::Document.parse(@content)
         ns_prefix =  parsed.namespaces.invert['http://www.w3.org/1999/xhtml']
-          if ns_prefix.nil?
-            prefix = ''
-          else
-            prefix = "#{ns_prefix}:"
-          end
-          videos = parsed.xpath("//#{prefix}video[starts-with(@src,'http')]")
-          audios = parsed.xpath("//#{prefix}audio[starts-with(@src,'http')]")
-          if videos.size > 0 || audios.size > 0
-            self.add_property('remote-resources')
-          end
+        if ns_prefix.nil?
+          prefix = ''
+        else
+          prefix = "#{ns_prefix}:"
+        end
+        videos = parsed.xpath("//#{prefix}video[starts-with(@src,'http')]")
+        audios = parsed.xpath("//#{prefix}audio[starts-with(@src,'http')]")
+        if videos.size > 0 || audios.size > 0
+          self.add_property('remote-resources')
+        end
+        if parsed.xpath("//p:math", { 'p' => 'http://www.w3.org/1998/Math/MathML' }).size > 0
+          self.add_property('mathml')
+        end
+        if parsed.xpath("//s:svg", { 's' => 'http://www.w3.org/2000/svg' }).size > 0
+          self.add_property('svg')
+        end
+        if parsed.xpath("//epub:switch", { 'epub' => 'http://www.idpf.org/2007/ops' }).size > 0
+          self.add_property('switch')
+        end
       end
       self
     end

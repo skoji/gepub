@@ -437,5 +437,54 @@ describe GEPUB::Builder do
       }
       # this should not raise 'No such file or directory'
     end
+
+    it 'should handle mathml' do
+      builder = GEPUB::Builder.new {
+        unique_identifier 'uid'
+        resources {
+          file 'mathml.xhtml' => StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops"><head></head><body><div><p><math xmlns="http://www.w3.org/1998/Math/MathML"></math></p></div></body></html>')
+        }
+      }
+      builder.instance_eval {
+        @book.item_by_href('mathml.xhtml').properties[0].should == 'mathml'
+      }
+    end
+
+    it 'should handle svg' do
+      builder = GEPUB::Builder.new {
+        unique_identifier 'uid'
+        resources {
+          file 'svg.xhtml' => StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops"><head></head><body><div><p><svg xmlns="http://www.w3.org/2000/svg"></svg></p></div></body></html>')
+        }
+      }
+      builder.instance_eval {
+        @book.item_by_href('svg.xhtml').properties[0].should == 'svg'
+      }
+    end
+
+    it 'should handle epub:switch' do
+      builder = GEPUB::Builder.new {
+        unique_identifier 'uid'
+        resources {
+          file 'switch.xhtml' => StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops"><head></head><body><div><p>
+<epub:switch>
+   <epub:case required-namespace="http://www.xml-cml.org/schema">
+      <cml xmlns="http://www.xml-cml.org/schema">
+         <molecule id="sulfuric-acid">
+            <formula id="f1" concise="H 2 S 1 O 4"/>
+         </molecule>
+      </cml>
+   </epub:case>
+   <epub:default>
+      <p>H<sub>2</sub>SO<sub>4</sub></p>
+   </epub:default>
+</epub:switch></p></div></body></html>')
+        }
+      }
+      builder.instance_eval {
+        @book.item_by_href('switch.xhtml').properties[0].should == 'switch'
+      }
+    end
+
   end
 end
