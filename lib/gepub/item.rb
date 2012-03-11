@@ -2,6 +2,9 @@ module GEPUB
   #
   # an Object to hold metadata and content of item in manifest.
   #
+  # following methods are created dynamically.
+  # #id, #id=, #set_id, #href, #href=, #set_href, #media_type, #media_type=, #set_media_type,
+  # #fallback, #fallback=, #set_fallback, #media_overlay, #media_overlay=, #set_media_overlay
   class Item
     attr_accessor :content
     def self.create(parent, attributes = {})
@@ -9,6 +12,12 @@ module GEPUB
                attributes.reject { |k,v| ['id','href','media-type'].member?(k) })
     end
 
+    #
+    # create Item.
+    # 
+    # if mediatype is not specified, it will be guessed from extension name.
+    # Item can't guess media type for videos and  audios, so you should specify one.
+    # 
     def initialize(itemid, itemhref, itemmediatype = nil, parent = nil, attributes = {})
       if attributes['properties'].class == String
         attributes['properties'] = attributes['properties'].split(' ')
@@ -17,7 +26,6 @@ module GEPUB
       @attributes['media-type'] =  guess_mediatype if media_type.nil?
       @parent = parent
       @parent.register_item(self) unless @parent.nil?
-      @content_callback = []
       self
     end
 
@@ -28,14 +36,16 @@ module GEPUB
       define_method(methodbase) { @attributes[name] }
     }
 
+    # get item's id
     def itemid
       id
     end
 
+    # get mediatype of the item.
     def mediatype
       media_type
     end
-    
+
     def [](x)
       @attributes[x]
     end
@@ -43,21 +53,26 @@ module GEPUB
     def []=(x,y)
       @attributes[x] = y
     end
-    
+
+    # add value to properties attribute.
     def add_property(property)
       (@attributes['properties'] ||=[]) << property
       self
     end
 
+    # set 'cover-image' property to the Item.
+    # On generating EPUB, EPUB2-style cover image meta item will be added.
     def cover_image
       add_property('cover-image')
     end
 
+    # set 'nav' property to the Item.
     def nav
       add_property('nav')
     end
 
-    def check_content_property
+    # guess and set content property from contents.
+    def guess_content_property
       if File.extname(self.href) =~ /.x?html/
         @attributes['properties'] = (@attributes['properties'] || []).reject {
           |x| x == 'svg' || x == 'mathml' || x == 'switch' || x == 'remote-resources'
@@ -86,15 +101,13 @@ module GEPUB
       end
     end
 
+    # add content data to the item.
     def add_raw_content(data)
       @content = data
-      check_content_property
+      guess_content_property
     end
 
-    def push_content_callback(&block)
-      @content_callback << block
-    end
-
+    # add content form io or file to the item
     def add_content(io_or_filename)
       io = io_or_filename
       if io_or_filename.class == String
@@ -102,10 +115,11 @@ module GEPUB
       end
       io.binmode
       @content = io.read
-      check_content_property
+      guess_content_property
       self
     end
 
+    # generate xml to supplied Nokogiri builder.
     def to_xml(builder, opf_version = '3.0')
       attr = @attributes.dup
       if opf_version.to_f < 3.0
