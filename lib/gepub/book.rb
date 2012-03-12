@@ -257,28 +257,27 @@ module GEPUB
 
     # write EPUB to stream specified by the argument.
     def write_to_epub_container(epub)
-      # TODO: sort entries before writing to EPUB container.
       epub.put_next_entry('mimetype', '', '', Zip::ZipEntry::STORED)
       epub << "application/epub+zip"
 
+      entries = {}
       optional_files.each {
         |k, content|
-        epub.put_next_entry(k)
-        epub << content.force_to_bin
+        entries[k] = content
       }
-      
-      epub.put_next_entry('META-INF/container.xml')
-      epub << container_xml.force_to_bin
 
-      epub.put_next_entry(@package.path)
-      epub << opf_xml.force_to_bin
-
+      entries['META-INF/container.xml'] = container_xml
+      entries[@package.path] = opf_xml
       @package.manifest.item_list.each {
         |k, item|
         if item.content != nil
-          epub.put_next_entry(@package.contents_prefix + item.href)
-           epub << item.content.force_to_bin
+          entries[@package.contents_prefix + item.href] = item.content
         end
+      }
+      entries.sort_by { |k,v| k }.each {
+        |k,v|
+        epub.put_next_entry(k)
+        epub << v.force_to_bin
       }
     end
 
