@@ -189,6 +189,12 @@ EOF
     jar = File.join(File.dirname(__FILE__), 'fixtures/epubcheck-3.0b4/epubcheck-3.0b4.jar')
     system 'java', '-jar', jar, epubname
   end
-
+  it 'should generate epub with extra file' do
+    epubname = File.join(File.dirname(__FILE__), 'testepub3.epub')
+    @book.add_optional_file('META-INF/foobar.xml', StringIO.new('<foo></foo>'))
+    @book.generate_epub(epubname)
+    jar = File.join(File.dirname(__FILE__), 'fixtures/epubcheck-3.0b4/epubcheck-3.0b4.jar')
+    system 'java', '-jar', jar, epubname
+  end
 
 end

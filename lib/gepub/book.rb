@@ -161,7 +161,7 @@ module GEPUB
     end
 
     # Add an optional file to the container
-    def set_optional_file(path, io_or_filename)
+    def add_optional_file(path, io_or_filename)
       io = io_or_filename
       if io_or_filename.class == String
         io = File.new(io_or_filename)
@@ -274,6 +274,7 @@ module GEPUB
           entries[@package.contents_prefix + item.href] = item.content
         end
       }
+
       entries.sort_by { |k,v| k }.each {
         |k,v|
         epub.put_next_entry(k)
