@@ -485,6 +485,5 @@ describe GEPUB::Builder do
         @book.item_by_href('switch.xhtml').properties[0].should == 'switch'
       }
     end
-
   end
 end

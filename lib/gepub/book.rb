@@ -137,7 +137,7 @@ module GEPUB
           end
         }
         book = Book.new(package.path)
-        book.instance_eval { @package = package; @stray_files = files }
+        book.instance_eval { @package = package; @optional_files = files }
         book
       }
     end
@@ -154,6 +154,22 @@ module GEPUB
       yield book if block_given?
     end
 
+
+    # Get optional(not required in EPUB specification) files in the container.
+    def optional_files
+      @optional_files || {}
+    end
+
+    # Add an optional file to the container
+    def set_optional_file(path, io_or_filename)
+      io = io_or_filename
+      if io_or_filename.class == String
+        io = File.new(io_or_filename)
+      end
+      io.binmode
+      (@optional_files ||= {})[path] = io.read
+    end
+    
     # add navigation text (which will appear on navigation document or table of contents) to an item.
     # DEPRECATED: please use Item#toc_text or Item#toc_text_with_id, or Builder#heading
 
@@ -240,9 +256,17 @@ module GEPUB
     end
 
     # write EPUB to stream specified by the argument.
-    def write_to_epub_container(epub) 
+    def write_to_epub_container(epub)
+      # TODO: sort entries before writing to EPUB container.
       epub.put_next_entry('mimetype', '', '', Zip::ZipEntry::STORED)
       epub << "application/epub+zip"
+
+      optional_files.each {
+        |k, content|
+        epub.put_next_entry(k)
+        epub << content.force_to_bin
+      }
+      
       epub.put_next_entry('META-INF/container.xml')
       epub << container_xml.force_to_bin
 
