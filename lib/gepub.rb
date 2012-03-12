@@ -18,7 +18,7 @@ else
   end
 end
 
-
+require 'gepub/rubyzip_patch'
 require 'gepub/version'
 require 'gepub/xml_util'
 require 'gepub/meta'
