@@ -260,6 +260,21 @@ module GEPUB
       MetaItem.new(@book.add_contributor(val, nil, role))
     end
 
+    # set optional file.
+    # val should be String or Hash.
+    # if val is String, file is read from the File specified by string and stored in EPUB to the path specified by string.
+    # if val is Hash, file is read from the value and stored in EPUB to the path specified by the key.
+    def optional_file(val)
+      path = val
+      io = val if String === val
+      if Hash === val
+        raise 'argument to optional_file should be length 1' if val.size != 1
+        path = val.first[0]
+        io = val.first[1]
+      end
+      @book.add_optional_file(path, io)
+    end
+    
     def generate_epub(path_to_epub)
       @book.generate_epub(path_to_epub)
     end

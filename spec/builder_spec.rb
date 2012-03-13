@@ -485,5 +485,17 @@ describe GEPUB::Builder do
         @book.item_by_href('switch.xhtml').properties[0].should == 'switch'
       }
     end
+
+    it 'should handle optional file' do
+      builder = GEPUB::Builder.new {
+        optional_file 'META-INF/test.xml' => StringIO.new('<test></test>')
+      }
+      builder.instance_eval {
+        @book.optional_files.size.should == 1
+      }
+      builder.instance_eval {      
+        @book.optional_files['META-INF/test.xml']
+      }.should_not be_nil
+    end
   end
 end
