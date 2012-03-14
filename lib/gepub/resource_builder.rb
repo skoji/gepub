@@ -154,7 +154,7 @@ module GEPUB
         name = val[0]
         io = val[1]
       end
-      name = "#{@dir_prefix}/#{name}" if !@dir_prefix.nil? && @dir_prefix.size > 0
+      name = "#{@dir_prefix}/#{name}" if !@dir_prefix.nil? && @dir_prefix.size > 0 && !name.start_with?('http')
       @book.add_item(name, io)
     end
   end    
