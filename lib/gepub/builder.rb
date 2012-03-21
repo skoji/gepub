@@ -201,7 +201,7 @@ module GEPUB
       when 'short'
         methodname = 'short_title'
       when 'expanded'
-        methodname = 'expandend_title'
+        methodname = 'expanded_title'
       else
         methodname = type
       end
