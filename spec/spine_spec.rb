@@ -36,6 +36,20 @@ describe GEPUB::Spine do
       xml.at_xpath('//xmlns:spine')['toc'].should == 'ncx'
       xml.xpath("//xmlns:itemref[@idref='the_id' and @linear='no']").size.should == 1
     end
+    it 'should generate xml with property' do
+      spine = GEPUB::Spine.new
+      spine.toc = 'ncx'
+      spine.push(GEPUB::Item.new('the_id', 'OEBPS/foo.xhtml')).page_spread_right
+      builder = Nokogiri::XML::Builder.new { |xml|
+        xml.package('xmlns' => "http://www.idpf.org/2007/opf",'version' => "3.0",'unique-identifier' => "pub-id",'xml:lang' => "ja") {
+          spine.to_xml(xml)
+        }
+      }
+      xml = Nokogiri::XML::Document.parse(builder.to_xml)
+      xml.at_xpath('//xmlns:spine')['toc'].should == 'ncx'
+      xml.xpath("//xmlns:itemref[@idref='the_id' and @properties='page-spread-right']").size.should == 1
+    end
+
   end
   
 end

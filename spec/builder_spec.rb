@@ -326,6 +326,24 @@ describe GEPUB::Builder do
       builder.instance_eval{ @book.instance_eval { @toc[1][:text] }}.should == 'memo text'
     end
 
+    it 'should add files and page-spread-property' do
+      workdir = File.join(File.dirname(__FILE__),'fixtures', 'builder')
+      builder = GEPUB::Builder.new {
+        resources(:workdir => workdir)  {
+          ordered {
+            file('text/cover.xhtml')
+            page_spread_left
+            file('text/memo.txt')
+            page_spread_right
+          }
+        }
+      }
+      builder.instance_eval{ @book.item_by_href('text/cover.xhtml') }.should_not be_nil
+      builder.instance_eval{ @book.spine.itemref_list[0].properties[0] }.should == 'page-spread-left'
+      builder.instance_eval{ @book.item_by_href('text/memo.txt') }.should_not be_nil
+      builder.instance_eval{ @book.spine.itemref_list[1].properties[0] }.should == 'page-spread-right'
+    end
+
     it 'should handle fallback chain' do
       workdir = File.join(File.dirname(__FILE__),'fixtures', 'builder')
       builder = GEPUB::Builder.new {

@@ -38,8 +38,26 @@ module GEPUB
         (@attributes['properties'] ||=[]) << property
       end
 
-      def to_xml(builder)
-        builder.itemref(@attributes)
+      def page_spread_right
+        add_property 'page-spread-right'
+      end
+
+      def page_spread_left
+        add_property 'page-spread-left'
+      end
+
+      def to_xml(builder, opf_version)
+        attr = @attributes.dup
+        if opf_version.to_f < 3.0
+          attr.reject!{ |k,v| k == 'properties' }
+        end
+        if !attr['properties'].nil?
+          attr['properties'] = attr['properties'].join(' ')
+          if attr['properties'].size == 0
+            attr.delete 'properties'
+          end
+        end
+        builder.itemref(attr)
       end
     end    
 
@@ -50,7 +68,7 @@ module GEPUB
           @xml = spine_xml
           @namespaces = @xml.namespaces
           @attributes = attr_to_hash(@xml.attributes)
-          @item_refs = []
+         @item_refs = []
           @xml.xpath("//#{ns_prefix(OPF_NS)}:spine/#{ns_prefix(OPF_NS)}:itemref", @namespaces).map {
             |itemref|
             i = Itemref.create(self, attr_to_hash(itemref.attributes))
@@ -64,6 +82,7 @@ module GEPUB
       @id_pool = id_pool
       @attributes = {}
       @item_refs = []
+      @itemref_by_id = {}
       @opf_version = opf_version
       yield self if block_given?
     end
@@ -79,8 +98,13 @@ module GEPUB
       @item_refs.dup
     end
 
+    def itemref_by_id
+      @itemref_by_id.dup
+    end
+    
     def push(item)
       @item_refs << i = Itemref.new(item.id, self)
+      @itemref_by_id[item.id] = i
       i
     end
 
@@ -92,7 +116,7 @@ module GEPUB
       builder.spine(@attributes) {
         @item_refs.each {
           |ref|
-          ref.to_xml(builder)
+          ref.to_xml(builder, @opf_version)
         }
       }
     end

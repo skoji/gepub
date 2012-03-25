@@ -71,6 +71,18 @@ module GEPUB
       }
     end
 
+    def page_spread_left
+      itemref = @book.spine.itemref_by_id[@last_defined_item.item.id]
+      raise 'page_spread_left should be called inside ordered' if (itemref.nil?)
+      itemref.page_spread_left
+    end
+
+    def page_spread_right
+      itemref = @book.spine.itemref_by_id[@last_defined_item.item.id]
+      raise 'page_spread_right should be called inside ordered' if (itemref.nil?)
+      itemref.page_spread_right
+    end
+
     def glob(arg)
       files(*Dir.glob(arg))
     end
