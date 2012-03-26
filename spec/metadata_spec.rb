@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+p# -*- coding: utf-8 -*-
 require File.dirname(__FILE__) + '/spec_helper.rb'
 require 'rubygems'
 require 'nokogiri'
@@ -25,6 +26,11 @@ describe GEPUB::Metadata do
       @metadata.title.to_s.should == 'TheTitle'
     end
     
+    it 'should parse main title with not first display-seq' do
+      metadata = GEPUB::Package.parse_opf(File.open(File.dirname(__FILE__) + '/fixtures/testdata/test2.opf'), '/package.opf').instance_eval{ @metadata }
+      metadata.title.to_s.should == 'TheTitle'
+    end
+
     it 'should parse title-type' do
       @metadata.title_list[0].refiner_list('title-type').size.should == 1
       @metadata.title_list[0].refiner_list('title-type')[0].content.should == 'main'

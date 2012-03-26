@@ -69,7 +69,7 @@ module GEPUB
     end
 
     def main_title # should make it obsolete? 
-      @content_nodes['title'][0].content
+      title.to_s
     end
 
     def oldstyle_meta
@@ -94,7 +94,6 @@ module GEPUB
         end
       }
 
-      #TODO: should override for 'title'. // for 'main title' not always comes first.
       define_method(node) {
         get_first_node(node)
       }
@@ -116,6 +115,16 @@ module GEPUB
       }
     }
 
+    def title
+      if !@content_nodes['title'].nil?
+        @content_nodes['title'].each do
+          |titlenode|
+          return titlenode if titlenode.title_type.to_s == TITLE_TYPE::MAIN
+        end
+      end
+      get_first_node('title')
+    end
+    
     def get_first_node(node)
       if !@content_nodes[node].nil? && @content_nodes[node].size > 0
         @content_nodes[node][0]
