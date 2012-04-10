@@ -178,10 +178,7 @@ module GEPUB
       @toc.push({ :item => item, :text => text, :id => id})      
     end
 
-    # add an item(i.e. html, images, audios, etc)  to Book.
-    # the added item will be referenced by the first argument in the EPUB container.
-    def add_item(href, io_or_filename = nil, id = nil, attributes = {})
-      item = @package.add_item(href,nil,id,attributes)
+    def set_sigleton_methods_to_item(item)
       toc = @toc
       metaclass = (class << item;self;end)
       metaclass.send(:define_method, :toc_text,
@@ -194,24 +191,38 @@ module GEPUB
                                       toc.push(:item => item, :text => text, :id => id)
                                       item
                      })
+      bindings = @package.bindings
+      metaclass.send(:define_method, :is_handler_of,
+                     Proc.new { |media_type|
+                       bindings.add(item.id, media_type)
+                       item
+                     })
+                               
+    end
+    
+    # add an item(i.e. html, images, audios, etc)  to Book.
+    # the added item will be referenced by the first argument in the EPUB container.
+    def add_item(href, io_or_filename = nil, id = nil, attributes = {})
+      item = @package.add_item(href,nil,id,attributes)
+      set_sigleton_methods_to_item(item)
       item.add_content io_or_filename unless io_or_filename.nil?
       item
     end
 
     # same as add_item, but the item will be added to spine of the EPUB.
-
     def add_ordered_item(href, io_or_filename = nil, id = nil, attributes = {})
       item = @package.add_ordered_item(href,io_or_filename,id,attributes)
-      toc = @toc
-      (class << item;self;end).send(:define_method, :toc_text,
-                                    Proc.new { |text|
-                                      toc.push(:item => item, :text => text, :id => nil)
-                                      item
-                                    })
+      set_sigleton_methods_to_item(item)
       yield item if block_given?
       item
     end
-    
+
+
+    # get handler item which defined in bindings for media type, 
+    def get_handler_of(media_type)
+      items[@package.bindings.handler_by_media_type[media_type]]
+    end
+
     def method_missing(name,*args)
       @package.send(name, *args)
     end

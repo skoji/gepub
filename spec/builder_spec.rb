@@ -287,6 +287,18 @@ describe GEPUB::Builder do
       builder.instance_eval{ @book.item_by_href('text/cover.xhtml') }.should_not be_nil        
       builder.instance_eval{ @book.item_by_href('text/cover.xhtml').media_type }.should == 'application/xhtml+xml'
     end
+
+    it 'should specify bindings handler' do
+      builder = GEPUB::Builder.new {
+        resources {
+          file 'scripts/handler.xhtml' => nil
+          handles 'application/x-some-foregin-type'
+        }
+      }
+      builder.instance_eval{
+        @book.get_handler_of('application/x-some-foregin-type').id ==  @book.item_by_href('scripts/handler.xhtml').id
+      }
+    end
     
     it 'should add files to book in spine' do
       workdir = File.join(File.dirname(__FILE__),'fixtures', 'builder')

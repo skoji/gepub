@@ -5,7 +5,7 @@ module GEPUB
   # Holds data in opf file.
   class Package
     include XMLUtil
-    attr_accessor :path, :metadata, :manifest, :spine, :epub_backward_compat, :contents_prefix
+    attr_accessor :path, :metadata, :manifest, :spine, :bindings, :epub_backward_compat, :contents_prefix
 
     class IDPool
       def initialize
@@ -62,6 +62,7 @@ module GEPUB
           @metadata = Metadata.parse(@xml.at_xpath("//#{ns_prefix(OPF_NS)}:metadata"), @attributes['version'], @id_pool)
           @manifest = Manifest.parse(@xml.at_xpath("//#{ns_prefix(OPF_NS)}:manifest"), @attributes['version'], @id_pool)
           @spine = Spine.parse(@xml.at_xpath("//#{ns_prefix(OPF_NS)}:spine"), @attributes['version'], @id_pool)
+          @bindings = Bindings.parse(@xml.at_xpath("//#{ns_prefix(OPF_NS)}:bindings"))
         }
       }
     end
@@ -82,6 +83,7 @@ module GEPUB
       @metadata = Metadata.new(version)
       @manifest = Manifest.new(version)
       @spine = Spine.new(version)
+      @bindings = Bindings.new
       @epub_backward_compat = true
       yield self if block_given?
     end
@@ -234,6 +236,7 @@ module GEPUB
           @metadata.to_xml(xml)
           @manifest.to_xml(xml)
           @spine.to_xml(xml)
+          @bindings.to_xml(xml)
         }
       }
       builder.to_xml(:encoding => 'utf-8')

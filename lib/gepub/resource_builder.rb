@@ -152,7 +152,11 @@ module GEPUB
         item2
       }
     end
-    
+
+    def handles(media_type)
+      @last_defined_item.is_handler_of(media_type)
+    end
+
     private
 
     def create_one_file(val)

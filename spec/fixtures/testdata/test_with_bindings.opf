@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="pub-id" xml:lang="ja">
+<metadata xmlns:dc="http://purl.org/dc/elements/1.1/" >
+<dc:identifier id="pub-id">urn:uuid:1234567890</dc:identifier>
+<meta refines="#pub-id" property="identifier-type" scheme="xsd:string">uuid</meta>
+<dc:identifier id="pub-id2">http://example.jp/epub/test/url</dc:identifier>
+<meta refines="#pub-id2" property="identifier-type" scheme="xsd:string">uri</meta>
+
+<dc:title id="series">Series Title</dc:title>
+<meta refines="#series" property="title-type">collection</meta>
+<meta refines="#series" property="display-seq">2</meta>
+<dc:title id="title">TheTitle</dc:title>
+<meta refines="#title" property="title-type">main</meta>
+<meta refines="#title" property="display-seq">1</meta>
+
+<dc:language id="pub-lang">ja</dc:language>
+
+<dc:creator id="author1">最初の著者</dc:creator>
+<meta refines="#author1" property="role" scheme="marc:relators">aut</meta>
+<meta refines="#author1" property="display-seq">1</meta>
+<meta refines="#author1" property="file-as">さいしょのちょしゃ</meta>
+<dc:creator id="author3">三人目</dc:creator>
+<meta refines="#author3" property="role" scheme="marc:relators">prg</meta>
+<meta refines="#author3" property="display-seq">3</meta>
+<meta refines="#author3" property="file-as">さんにんめ</meta>
+<dc:creator id="author2">ふたりめ</dc:creator>
+<meta refines="#author2" property="role" scheme="marc:relators">aut</meta>
+<meta refines="#author2" property="display-seq">2</meta>
+<meta refines="#author2" property="file-as">ふたりめ</meta>
+
+
+<dc:publisher id="publisher">小嶋智</dc:publisher>
+
+<meta property="dcterms:issued" id="issued">2012-02-12T15:00:00Z</meta>
+<meta property="dcterms:modified" id="modified">2012-02-12T19:00:00Z</meta>
+<meta name="cover" content="cover-image" />
+</metadata>
+
+
+<manifest>
+<item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml" />
+<item id="cover" href="cover/cover.xhtml" media-type="application/xhtml+xml" />
+<item id="cover-image" href="img/cover.jpg" properties="cover-image" media-type="image/jpeg" />
+<item id="toc" href="toc.xhtml" media-type="application/xhtml+xml" />
+<item id="nav" href="nav.xhtml" properties="nav" media-type="application/xhtml+xml" />
+<item id="chap1" href="chap1.xhtml" media-type="application/xhtml+xml" />
+<item id="css" href="style/default.css" media-type="text/css" />
+<item id="object" href="img/test.png" media-type="image/png" />
+<item id="object2" href="resource/image.jpg" media-type="image/jpg" />
+<item id="h" href="h_foo.html" media-type="application/xhtml+xml" properties="scripted" />
+<item id="v" href="v_foo.html" media-type="application/xhtml+xml" properties="scripted" />
+</manifest>
+
+<spine toc="ncx" page-progression-direction="ltr">
+<itemref idref="cover" linear="no" />
+<itemref idref="toc" linear="yes" />
+<itemref idref="chap1" linear="yes" />
+<itemref idref="nav" linear="no" />
+</spine>
+
+<bindings>
+  <mediaType handler="h" media-type="application/x-foreign-type" />  
+  <mediaType handler="v" media-type="application/x-other-foreign-type" />  
+</bindings>
+
+</package>
