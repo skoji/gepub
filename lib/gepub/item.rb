@@ -98,6 +98,9 @@ module GEPUB
         if parsed.xpath("//epub:switch", { 'epub' => 'http://www.idpf.org/2007/ops' }).size > 0
           self.add_property('switch')
         end
+        if parsed.xpath("//#{prefix}script").size > 0
+          self.add_property('scripted')
+        end
       end
     end
 
@@ -126,7 +129,7 @@ module GEPUB
         attr.reject!{ |k,v| k == 'properties' }
       end
       if !attr['properties'].nil?
-        attr['properties'] = attr['properties'].join(' ')
+        attr['properties'] = attr['properties'].uniq.join(' ')
         if attr['properties'].size == 0
           attr.delete 'properties'
         end

@@ -516,6 +516,18 @@ describe GEPUB::Builder do
       }
     end
 
+    it 'should handle scripted property' do
+      builder = GEPUB::Builder.new {
+        unique_identifier 'uid'
+        resources {
+          file 'scripted.xhtml' => StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops"><head><script>alert("scripted");</script></head><body><div><p>text comes here</p></div></body></html>')
+        }
+      }
+      builder.instance_eval {
+        @book.item_by_href('scripted.xhtml').properties[0].should == 'scripted'
+      }
+    end
+
     it 'should handle optional file' do
       builder = GEPUB::Builder.new {
         optional_file 'META-INF/test.xml' => StringIO.new('<test></test>')
