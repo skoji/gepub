@@ -1,6 +1,6 @@
 # gepub  [<img src="https://secure.travis-ci.org/skoji/gepub.png" />](http://travis-ci.org/skoji/gepub) 
 
-* http://github.com/skoji/gepub
+* http://skoji.org/category/gepub/
 
 ## DESCRIPTION:
 
