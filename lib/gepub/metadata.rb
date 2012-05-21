@@ -252,12 +252,7 @@ module GEPUB
     end
 
     def parse_opf2_meta
-      if @opf_version.to_f >= 3.0
-        meta_ns = ns_prefix(OPF_NS) + ':'
-      else
-        meta_ns = ''
-      end
-      @xml.xpath("#{meta_ns}meta[not(@refines) and not(@property)]").map {
+      @xml.xpath("#{ns_prefix(OPF_NS)}:meta[not(@refines) and not(@property)]", @namespaces).map {
             |node|
             create_meta(node)
       }
