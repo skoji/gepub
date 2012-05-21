@@ -55,6 +55,16 @@ describe GEPUB::Metadata do
     end
   end
 
+  context 'Should parse OPF2.0' do
+    before do
+      @metadata = GEPUB::Package.parse_opf(File.open(File.dirname(__FILE__) + '/fixtures/testdata/package_2_0.opf'), '/package.opf').instance_eval{ @metadata }
+    end
+    it 'should parse title' do
+      @metadata.main_title.should == 'thetitle'
+      @metadata.title_list.size.should == 1
+     end
+  end
+  
   context 'Generate New OPF' do
     it 'should write and read identifier' do
       metadata = GEPUB::Metadata.new

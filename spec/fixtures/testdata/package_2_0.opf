@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://www.idpf.org/2007/opf" version="2.0" unique-identifier="BookId">
+  <metadata xmlns:opf="http://www.idpf.org/2007/opf" xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <dc:title>thetitle</dc:title>
+    <dc:creator>theauthor</dc:creator>
+    <dc:contributor>contributors contributors!</dc:contributor>
+    <dc:publisher>thepublisher</dc:publisher>
+    <dc:date>2010-05-05</dc:date>
+    <dc:identifier id="BookId">http://example.jp/foobar/</dc:identifier>
+    <dc:language>ja</dc:language>
+  </metadata>
+  <manifest>
+    <item id="c1" href="text/foobar.xhtml" media-type="application/xhtml+xml"/>
+    <item id="c2" href="text/barbar.xhtml" media-type="application/xhtml+xml"/>
+    <item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml"/>
+  </manifest>
+  <spine toc="ncx">
+    <itemref idref="c1"/>
+    <itemref idref="c2"/>
+  </spine>
+</package>

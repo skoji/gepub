@@ -47,7 +47,7 @@ module GEPUB
       @oldstyle_meta = []
       @opf_version = opf_version
       @namespaces = { 'xmlns:dc' =>  DC_NS }
-      @namespaces['xmlns:opf'] = OPF_NS if @opf_version.to_f < 3.0 
+      @namespaces['xmlns:opf'] = OPF_NS if @opf_version.to_f < 3.0
       yield self if block_given?
     end
 
@@ -252,7 +252,12 @@ module GEPUB
     end
 
     def parse_opf2_meta
-      @xml.xpath("#{ns_prefix(OPF_NS)}:meta[not(@refines) and not(@property)]").map {
+      if @opf_version.to_f >= 3.0
+        meta_ns = ns_prefix(OPF_NS) + ':'
+      else
+        meta_ns = ''
+      end
+      @xml.xpath("#{meta_ns}meta[not(@refines) and not(@property)]").map {
             |node|
             create_meta(node)
       }
