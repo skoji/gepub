@@ -8,6 +8,11 @@ module GEPUB
     extend Forwardable
     attr_accessor :path, :metadata, :manifest, :spine, :bindings, :epub_backward_compat, :contents_prefix
     def_delegators :@manifest, :item_by_href
+    def_delegators :@metadata, *Metadata::CONTENT_NODE_LIST.map {
+      |x|
+      ["#{x}", "#{x}_list", "set_#{x}", "#{x}=", "add_#{x}"]
+    }.flatten
+
 
     class IDPool
       def initialize
@@ -154,17 +159,6 @@ module GEPUB
       @manifest.item_list
     end
     
-    def method_missing(name, *args)
-      Metadata::CONTENT_NODE_LIST.each {
-        |x|
-        case name.to_s
-        when x, "#{x}_list", "set_#{x}", "#{x}=", "add_#{x}"
-          return @metadata.send(name, *args)
-        end
-      }
-      super
-    end
-
     def author=(val)
       warn 'author= is deprecated. please use #creator'
       @metadata.creator= val
