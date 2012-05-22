@@ -5,7 +5,9 @@ module GEPUB
   # Holds data in opf file.
   class Package
     include XMLUtil
+    extend Forwardable
     attr_accessor :path, :metadata, :manifest, :spine, :bindings, :epub_backward_compat, :contents_prefix
+    def_delegators :@manifest, :item_by_href
 
     class IDPool
       def initialize
@@ -153,7 +155,6 @@ module GEPUB
     end
     
     def method_missing(name, *args)
-      return @manifest.send(name.to_sym, *args) if [:item_by_href].member? name
       Metadata::CONTENT_NODE_LIST.each {
         |x|
         case name.to_s

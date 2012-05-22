@@ -16,6 +16,7 @@ describe GEPUB::Package do
       opf['unique-identifier'].should == 'pub-id'
       opf['xml:lang'].should == 'ja'
     end
+    
   end
   context 'generate new opf' do
     it 'should generate opf' do
