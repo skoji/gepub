@@ -62,7 +62,13 @@ describe GEPUB::Metadata do
     it 'should parse title' do
       @metadata.main_title.should == 'thetitle'
       @metadata.title_list.size.should == 1
-     end
+    end
+    it 'should parse OPF2.0 meta node' do
+      @metadata.oldstyle_meta.size.should == 1
+      @metadata.oldstyle_meta[0].name == 'meta'
+      @metadata.oldstyle_meta[0]['name'] == 'cover'
+      @metadata.oldstyle_meta[0]['content'] == 'cover-image'
+    end
   end
   
   context 'Generate New OPF' do

@@ -8,8 +8,10 @@
     <dc:date>2010-05-05</dc:date>
     <dc:identifier id="BookId">http://example.jp/foobar/</dc:identifier>
     <dc:language>ja</dc:language>
+    <meta name="cover" content="cover-image" />
   </metadata>
   <manifest>
+    <item id="cover-image" href="img/cover.jpg" properties="cover-image" media-type="image/jpeg" />
     <item id="c1" href="text/foobar.xhtml" media-type="application/xhtml+xml"/>
     <item id="c2" href="text/barbar.xhtml" media-type="application/xhtml+xml"/>
     <item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml"/>
