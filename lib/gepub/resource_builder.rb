@@ -96,6 +96,10 @@ module GEPUB
       @dir_prefix = dir_prefix_org
     end
 
+    def add_resource_dir(name)
+      import "#{name}/resources.conf", :dir_prefix => name
+    end
+    
     def cover_image(val)
       file(val)
       @last_defined_item.cover_image
