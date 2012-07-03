@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'nokogiri'
+require 'forwardable'
 
 module GEPUB
   # Holds data in opf file.
