@@ -17,6 +17,7 @@ else
     end
   end
 end
+require 'forwardable'
 require 'gepub/version'
 require 'gepub/xml_util'
 require 'gepub/meta'
