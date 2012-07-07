@@ -83,6 +83,12 @@ module GEPUB
       itemref.page_spread_right
     end
 
+    def linear val
+      itemref = @book.spine.itemref_by_id[@last_defined_item.item.id]
+      raise 'linear should be called inside ordered' if (itemref.nil?)
+      itemref.linear = val
+    end
+    
     def glob(arg)
       files(*Dir.glob(arg))
     end
