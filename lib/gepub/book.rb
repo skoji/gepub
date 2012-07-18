@@ -78,6 +78,9 @@ module GEPUB
   # returns Meta object contains last modified time.
   # === setting and reading other metadata: publisher, language, coverage, date, description, format, relation, rights, source, subject, type (delegated to Metadata)
   # they all have methods like: publisher(which returns 'main' publisher), add_publisher(content, id) (which add publisher), set_publisher or publisher= (clears and set publisher), and publisher_list(returns publisher Meta object in display-seq order). 
+  # === Book#page_progression_direction= (delegated to Spine#page_progression_direction=)
+  # set page-proression-direction attribute to spine.
+
   class Book
     MIMETYPE='mimetype'
     MIMETYPE_CONTENTS='application/epub+zip'

@@ -260,6 +260,12 @@ module GEPUB
       MetaItem.new(@book.add_contributor(val, nil, role))
     end
 
+    # set page progression direction.
+    def page_progression_direction(val)
+      raise assert unless ['rtl', 'ltr', 'default'].member? val
+      @book.page_progression_direction = val
+    end
+    
     # set optional file.
     # val should be String or Hash.
     # if val is String, file is read from the File specified by string and stored in EPUB to the path specified by string.

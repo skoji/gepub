@@ -13,6 +13,8 @@ module GEPUB
       |x|
       ["#{x}", "#{x}_list", "set_#{x}", "#{x}=", "add_#{x}"]
     }.flatten
+    def_delegators :@spine, :page_progression_direction=
+    def_delegators :@spine, :page_progression_direction
 
 
     class IDPool
