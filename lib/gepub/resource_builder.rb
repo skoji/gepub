@@ -105,6 +105,13 @@ module GEPUB
     def add_resource_dir(name)
       import "#{name}/resources.conf", :dir_prefix => name
     end
+
+    def add_resource_dirs(dirs)
+      dirs.each do
+        |dir|
+        add_resource_dir dir
+      end
+    end
     
     def cover_image(val)
       file(val)
