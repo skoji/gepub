@@ -223,6 +223,10 @@ module GEPUB
       version
     end
 
+    def enable_rendition
+      @prefixes['rendition'] = 'http://www.idpf.org/vocab/rendition/#'
+    end
+    
     def opf_xml
       if version.to_f < 3.0 || @epub_backward_compat
         spine.toc  ||= 'ncx'
@@ -241,6 +245,12 @@ module GEPUB
       end
       builder = Nokogiri::XML::Builder.new {
         |xml|
+        if @prefixes.size == 0
+          @attributes.delete 'prefix'
+        else
+          @attributes['prefix'] = @prefixes.map { |k, v| "#{k}: #{v}" }.join(' ')
+        end
+        
         xml.package(@namespaces.merge(@attributes)) {
           @metadata.to_xml(xml)
           @manifest.to_xml(xml)

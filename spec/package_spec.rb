@@ -65,6 +65,17 @@ describe GEPUB::Package do
       # TODO: should check all elements
     end
 
+    it 'should generate package with prefix attribute' do
+      package = GEPUB::Package.new('OEBPS/package.opf') do
+        |package|
+        package.set_main_id('http://example.jp', 'BookID', 'url')
+        package['xml:lang'] = 'ja'
+        package.enable_rendition
+      end
+      xml = Nokogiri::XML::Document.parse package.opf_xml
+      xml.root['prefix'].should == 'rendition: http://www.idpf.org/vocab/rendition/#'
+    end
+
     it 'should generate opf2.0' do
       opf = GEPUB::Package.new('OEBPS/package.opf', { 'version' => '2.0'}) {
         |opf|
