@@ -15,7 +15,14 @@ describe GEPUB::Package do
       opf['version'].should == '3.0'
       opf['unique-identifier'].should == 'pub-id'
       opf['xml:lang'].should == 'ja'
-      opf['prefix'].should == 'foaf: http://xmlns.com/foaf/spec/  rendition:http://www.idpf.org/vocab/rendition/#'
+      opf['prefix'].should == 'foaf: http://xmlns.com/foaf/spec/                   rendition:  http://www.idpf.org/vocab/rendition/#'
+    end
+    it 'should parse prefix data' do
+      package = GEPUB::Package.parse_opf(File.open(File.dirname(__FILE__) + '/fixtures/testdata/test.opf'), '/package.opf')
+      package.prefixes.size.should == 2
+      package.prefixes['foaf'].should == 'http://xmlns.com/foaf/spec/'
+      package.prefixes['rendition'].should == 'http://www.idpf.org/vocab/rendition/#'
+      
     end
   end
   context 'generate new opf' do

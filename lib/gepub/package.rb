@@ -7,7 +7,7 @@ module GEPUB
   class Package
     include XMLUtil
     extend Forwardable
-    attr_accessor :path, :metadata, :manifest, :spine, :bindings, :epub_backward_compat, :contents_prefix
+    attr_accessor :path, :metadata, :manifest, :spine, :bindings, :epub_backward_compat, :contents_prefix, :prefixes
     def_delegators :@manifest, :item_by_href
     def_delegators :@metadata, *Metadata::CONTENT_NODE_LIST.map {
       |x|
@@ -59,6 +59,15 @@ module GEPUB
         @pool[k] = v
       end
     end
+
+    def parse_prefixes(prefix)
+      return {} if prefix.nil?
+      p prefix
+      m = prefix.scan /([\S]+): +(\S+)[\s]*/
+      p m 
+      h = Hash[*m.flatten]
+      p h 
+    end
     
     # parse OPF data. opf should be io or string object.
     def self.parse_opf(opf, path)
@@ -73,6 +82,7 @@ module GEPUB
           @manifest = Manifest.parse(@xml.at_xpath("//#{ns_prefix(OPF_NS)}:manifest"), @attributes['version'], @id_pool)
           @spine = Spine.parse(@xml.at_xpath("//#{ns_prefix(OPF_NS)}:spine"), @attributes['version'], @id_pool)
           @bindings = Bindings.parse(@xml.at_xpath("//#{ns_prefix(OPF_NS)}:bindings"))
+          @prefixes = parse_prefixes(@attributes['prefix'])
         }
       }
     end
@@ -86,6 +96,7 @@ module GEPUB
       end
       @contents_prefix = File.dirname(@path).sub(/^\.$/,'')
       @contents_prefix = @contents_prefix + '/' if @contents_prefix.size > 0
+      @prefixes = {}
       @namespaces = {'xmlns' => OPF_NS }
       @attributes = attributes
       @attributes['version'] ||= '3.0'
