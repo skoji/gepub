@@ -31,7 +31,7 @@ module GEPUB
           }
           @xml.xpath("#{ns_prefix(OPF_NS)}:meta[not(@refines) and @property]", @namespaces).each {
             |node|
-            @meta[node['property']] = create_meta(node)
+            (@content_nodes['meta'] ||= []) << create_meta(node)
           }
 
           @oldstyle_meta = parse_opf2_meta
@@ -43,7 +43,6 @@ module GEPUB
       @id_pool = id_pool
       @metalist = {}
       @content_nodes = {}
-      @meta = {}
       @oldstyle_meta = []
       @opf_version = opf_version
       @namespaces = { 'xmlns:dc' =>  DC_NS }
