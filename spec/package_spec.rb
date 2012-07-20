@@ -15,8 +15,8 @@ describe GEPUB::Package do
       opf['version'].should == '3.0'
       opf['unique-identifier'].should == 'pub-id'
       opf['xml:lang'].should == 'ja'
+      opf['prefix'].should == 'foaf: http://xmlns.com/foaf/spec/  rendition:http://www.idpf.org/vocab/rendition/#'
     end
-    
   end
   context 'generate new opf' do
     it 'should generate opf' do

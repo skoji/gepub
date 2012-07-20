@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 
-<package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="pub-id" xml:lang="ja">
+<package xmlns="http://www.idpf.org/2007/opf" version="3.0"
+         unique-identifier="pub-id"
+         xml:lang="ja"
+         prefix="foaf: http://xmlns.com/foaf/spec/ 
+rendition:http://www.idpf.org/vocab/rendition/#"
+         >
 <metadata xmlns:dc="http://purl.org/dc/elements/1.1/" >
 <dc:identifier id="pub-id">urn:uuid:1234567890</dc:identifier>
 <meta refines="#pub-id" property="identifier-type" scheme="xsd:string">uuid</meta>
