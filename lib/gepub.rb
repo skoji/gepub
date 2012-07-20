@@ -19,6 +19,7 @@ else
 end
 require 'gepub/version'
 require 'gepub/xml_util'
+require 'gepub/rendition'
 require 'gepub/meta'
 require 'gepub/datemeta'
 require 'gepub/metadata'

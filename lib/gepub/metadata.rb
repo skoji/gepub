@@ -114,6 +114,17 @@ module GEPUB
       }
     }
 
+    def meta_list
+      (@content_nodes['meta'] || []).dup
+    end
+
+    def meta_clear
+      if !@content_nodes['meta'].nil?
+        @content_nodes['meta'].each { |x| unregister_meta(x) };
+        @content_nodes['meta'] = []
+      end
+    end
+
     def title
       if !@content_nodes['title'].nil?
         @content_nodes['title'].each do

@@ -7,7 +7,7 @@ module GEPUB
   class Package
     include XMLUtil
     extend Forwardable
-    attr_accessor :path, :metadata, :manifest, :spine, :bindings, :epub_backward_compat, :contents_prefix, :prefixes
+    attr_accessor :path, :metadata, :manifest, :spine, :bindings, :epub_backward_compat, :contents_prefix, :prefixes, :rendition
     def_delegators :@manifest, :item_by_href
     def_delegators :@metadata, *Metadata::CONTENT_NODE_LIST.map {
       |x|
@@ -62,11 +62,8 @@ module GEPUB
 
     def parse_prefixes(prefix)
       return {} if prefix.nil?
-      p prefix
       m = prefix.scan /([\S]+): +(\S+)[\s]*/
-      p m 
       h = Hash[*m.flatten]
-      p h 
     end
     
     # parse OPF data. opf should be io or string object.
@@ -83,6 +80,7 @@ module GEPUB
           @spine = Spine.parse(@xml.at_xpath("//#{ns_prefix(OPF_NS)}:spine"), @attributes['version'], @id_pool)
           @bindings = Bindings.parse(@xml.at_xpath("//#{ns_prefix(OPF_NS)}:bindings"))
           @prefixes = parse_prefixes(@attributes['prefix'])
+          @rendition.read_from_metadata(@metadata)
         }
       }
     end
@@ -105,6 +103,7 @@ module GEPUB
       @manifest = Manifest.new(version)
       @spine = Spine.new(version)
       @bindings = Bindings.new
+      @rendition = Rendition.new
       @epub_backward_compat = true
       yield self if block_given?
     end

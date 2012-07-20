@@ -39,6 +39,10 @@
 
 <meta property="dcterms:issued" id="issued">2012-02-12T15:00:00Z</meta>
 <meta property="dcterms:modified" id="modified">2012-02-12T19:00:00Z</meta>
+
+<meta property="rendition:layout">pre-paginated</meta>
+<meta property="rendition:spread">both</meta> 
+
 <meta name="cover" content="cover-image" />
 </metadata>
 

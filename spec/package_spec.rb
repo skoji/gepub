@@ -8,6 +8,7 @@ describe GEPUB::Package do
     opf = GEPUB::Package.new('/package.opf')
     opf.ns_prefix(GEPUB::XMLUtil::OPF_NS).should == 'xmlns'
   end
+
   context 'parse existing opf' do
     it 'should be initialized with opf' do
       opf = GEPUB::Package.parse_opf(File.open(File.dirname(__FILE__) + '/fixtures/testdata/test.opf'), '/package.opf')
@@ -24,6 +25,14 @@ describe GEPUB::Package do
       package.prefixes['rendition'].should == 'http://www.idpf.org/vocab/rendition/#'
       
     end
+    it 'should parse rendition metadata' do
+      package = GEPUB::Package.parse_opf(File.open(File.dirname(__FILE__) + '/fixtures/testdata/test.opf'), '/package.opf')
+      package.rendition.layout.should == 'pre-paginated'
+      package.rendition.orientation.should == 'auto'
+      package.rendition.spread.should == 'both'
+      
+    end
+
   end
   context 'generate new opf' do
     it 'should generate opf' do
