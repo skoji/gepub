@@ -80,7 +80,7 @@ module GEPUB
           @spine = Spine.parse(@xml.at_xpath("//#{ns_prefix(OPF_NS)}:spine"), @attributes['version'], @id_pool)
           @bindings = Bindings.parse(@xml.at_xpath("//#{ns_prefix(OPF_NS)}:bindings"))
           @prefixes = parse_prefixes(@attributes['prefix'])
-          @rendition.read_from_metadata(@metadata)
+          @rendition.read_from_metalist(@metadata.meta_list)
         }
       }
     end

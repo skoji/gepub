@@ -15,8 +15,8 @@ module GEPUB
       @spread = NilContent
     end
 
-    def read_from_metadata(metadata)
-      metadata.meta_list.each {
+    def read_from_metalist(metalist)
+      metalist.each {
         |metanode|
         case metanode['property']
         when 'rendition:layout'
@@ -41,5 +41,8 @@ module GEPUB
       @spread.content || @default_spread
     end
     
+    def value_map
+      { 'layout' => layout, 'orientation' => orientation, 'spread' => spread }
+    end
   end
 end
