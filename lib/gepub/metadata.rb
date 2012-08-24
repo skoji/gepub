@@ -265,14 +265,28 @@ module GEPUB
       @layout.content || @default_layout
     end
 
+    def rendition_layout=(val)
+      @layout = Meta.new('meta', val, self, { 'property' => 'rendition:layout' })
+      (@content_nodes['meta'] ||= []) << @layout
+    end
+
     def rendition_orientation
       @orientation.content || @default_orientation
+    end
+
+    def rendition_orientation=(val)
+      @orientation = Meta.new('meta', val, self, { 'property' => 'rendition:orientation' })
+      (@content_nodes['meta'] ||= []) << @orientation
     end
 
     def rendition_spread
       @spread.content || @default_spread
     end
-    
+
+    def rendition_spread=(val)
+      @spread = Meta.new('meta', val, self, { 'property' => 'rendition:spread' })
+      (@content_nodes['meta'] ||= []) << @spread
+    end
     
     private
     def parse_node(ns, node)
