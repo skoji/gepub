@@ -6,17 +6,18 @@ module GEPUB
       end
     end
     
-    def initialize(default = {})
-      @default_layout = default['layout'] || 'reflowable'
-      @default_orientation = default['orientation'] || 'auto'
-      @default_spread = default['spread'] || 'auto'
+    def initialize()
+      @default_layout = 'reflowable'
+      @default_orientation = 'auto'
+      @default_spread = 'auto'
       @layout = NilContent
       @orientation = NilContent
       @spread = NilContent
     end
 
-    def read_from_metalist(metalist)
-      metalist.each {
+    def set_metadata(metadata)
+      @metadata = metadata
+      @metadata.meta_list.each {
         |metanode|
         case metanode['property']
         when 'rendition:layout'

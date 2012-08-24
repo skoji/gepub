@@ -7,12 +7,19 @@ module GEPUB
   class Package
     include XMLUtil
     extend Forwardable
-    attr_accessor :path, :metadata, :manifest, :spine, :bindings, :epub_backward_compat, :contents_prefix, :prefixes, :rendition
+    attr_accessor :path, :metadata, :manifest, :spine, :bindings, :epub_backward_compat, :contents_prefix, :prefixes 
     def_delegators :@manifest, :item_by_href
     def_delegators :@metadata, *Metadata::CONTENT_NODE_LIST.map {
       |x|
       ["#{x}", "#{x}_list", "set_#{x}", "#{x}=", "add_#{x}"]
     }.flatten
+    def_delegators :@metadata, :rendition_layout
+    def_delegators :@metadata, :rendition_layout=
+    def_delegators :@metadata, :rendition_orientation
+    def_delegators :@metadata, :rendition_orientation=
+    def_delegators :@metadata, :rendition_spread
+    def_delegators :@metadata, :rendition_spread=
+
     def_delegators :@spine, :page_progression_direction=
     def_delegators :@spine, :page_progression_direction
 
@@ -80,7 +87,6 @@ module GEPUB
           @spine = Spine.parse(@xml.at_xpath("//#{ns_prefix(OPF_NS)}:spine"), @attributes['version'], @id_pool)
           @bindings = Bindings.parse(@xml.at_xpath("//#{ns_prefix(OPF_NS)}:bindings"))
           @prefixes = parse_prefixes(@attributes['prefix'])
-          @rendition.read_from_metalist(@metadata.meta_list)
         }
       }
     end
@@ -103,7 +109,6 @@ module GEPUB
       @manifest = Manifest.new(version)
       @spine = Spine.new(version)
       @bindings = Bindings.new
-      @rendition = Rendition.new
       @epub_backward_compat = true
       yield self if block_given?
     end
@@ -224,6 +229,10 @@ module GEPUB
 
     def enable_rendition
       @prefixes['rendition'] = 'http://www.idpf.org/vocab/rendition/#'
+    end
+
+    def rendition_enabled?
+      @prefixes['rendition'] == 'http://www.idpf.org/vocab/rendition/#'      
     end
     
     def opf_xml

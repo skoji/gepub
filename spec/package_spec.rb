@@ -25,11 +25,12 @@ describe GEPUB::Package do
       package.prefixes['rendition'].should == 'http://www.idpf.org/vocab/rendition/#'
       
     end
+
     it 'should parse rendition metadata' do
       package = GEPUB::Package.parse_opf(File.open(File.dirname(__FILE__) + '/fixtures/testdata/test.opf'), '/package.opf')
-      package.rendition.layout.should == 'pre-paginated'
-      package.rendition.orientation.should == 'auto'
-      package.rendition.spread.should == 'both'
+      package.rendition_layout.should == 'pre-paginated'
+      package.rendition_orientation.should == 'auto'
+      package.rendition_spread.should == 'both'
       
     end
 
@@ -85,6 +86,17 @@ describe GEPUB::Package do
       xml.root['prefix'].should == 'rendition: http://www.idpf.org/vocab/rendition/#'
     end
 
+    it 'should generate package with rendition attributes' do
+      package = GEPUB::Package.new('OEBPS/package.opf') do
+        |package|
+        package.rendition_layout = 'pre-paginated'
+        package.rendition_orientation = 'portlait'
+        package.rendition_spread = 'landscape'
+      end
+      xml = Nokogiri::XML::Document.parse package.opf_xml
+      xml.root.xpath.you_should_write_test_here
+    end
+
     it 'should generate opf2.0' do
       opf = GEPUB::Package.new('OEBPS/package.opf', { 'version' => '2.0'}) {
         |opf|
@@ -121,6 +133,5 @@ describe GEPUB::Package do
       xml.root['version'].should == '2.0'
       xml.root['lang'].should == 'ja'
     end
-
   end
 end

@@ -12,6 +12,11 @@ module GEPUB
   end
   # Holds data in /package/metadata 
   class Metadata
+    class NilContent
+      def self.content
+        nil
+      end
+    end
     include XMLUtil
     attr_accessor :opf_version
     # parse metadata element. metadata_xml should be Nokogiri::XML::Node object.
@@ -35,6 +40,18 @@ module GEPUB
           }
 
           @oldstyle_meta = parse_opf2_meta
+
+          meta_list.each {
+            |metanode|
+            case metanode['property']
+            when 'rendition:layout'
+              @layout = metanode
+            when 'rendition:orientation'          
+              @orientation = metanode
+            when 'rendition:spread'
+              @spread = metanode
+            end
+          }
         }
       }
     end
@@ -47,6 +64,12 @@ module GEPUB
       @opf_version = opf_version
       @namespaces = { 'xmlns:dc' =>  DC_NS }
       @namespaces['xmlns:opf'] = OPF_NS if @opf_version.to_f < 3.0
+      @default_layout = 'reflowable'
+      @default_orientation = 'auto'
+      @spread = 'auto'
+      @layout = NilContent
+      @orientation = NilContent
+      @spread = NilContent
       yield self if block_given?
     end
 
@@ -237,6 +260,19 @@ module GEPUB
         @id_pool[meta['id']] = nil
       end
     end
+
+    def rendition_layout
+      @layout.content || @default_layout
+    end
+
+    def rendition_orientation
+      @orientation.content || @default_orientation
+    end
+
+    def rendition_spread
+      @spread.content || @default_spread
+    end
+    
     
     private
     def parse_node(ns, node)
