@@ -46,6 +46,22 @@ module GEPUB
         add_property 'page-spread-left'
       end
 
+      def set_rendition_param(name, val)
+        add_property "rendition:#{name}-#{val}"
+      end
+
+      def rendition_layout=(val)
+        set_rendition_param('layout', val)
+      end
+
+      def rendition_orientation=(val)
+        set_rendition_param('orientation', val)
+      end
+
+      def rendition_spread=(val)
+        set_rendition_param('spread', val)
+      end
+
       def to_xml(builder, opf_version)
         attr = @attributes.dup
         if opf_version.to_f < 3.0
@@ -68,7 +84,7 @@ module GEPUB
           @xml = spine_xml
           @namespaces = @xml.namespaces
           @attributes = attr_to_hash(@xml.attributes)
-         @item_refs = []
+          @item_refs = []
           @xml.xpath("//#{ns_prefix(OPF_NS)}:spine/#{ns_prefix(OPF_NS)}:itemref", @namespaces).map {
             |itemref|
             i = Itemref.create(self, attr_to_hash(itemref.attributes))

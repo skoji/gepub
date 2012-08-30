@@ -356,6 +356,25 @@ describe GEPUB::Builder do
       builder.instance_eval{ @book.spine.itemref_list[1].properties[0] }.should == 'page-spread-right'
     end
 
+    it 'should add files and rendition property' do
+      workdir = File.join(File.dirname(__FILE__),'fixtures', 'builder')
+      builder = GEPUB::Builder.new {
+        resources(:workdir => workdir)  {
+          ordered {
+            file('text/cover.xhtml')
+            file('text/memo.txt')
+            rendition_layout 'pre-paginated'
+            rendition_orientation 'landscape'
+            rendition_spread 'both'
+          }
+        }
+      }
+      builder.instance_eval{ @book.item_by_href('text/memo.txt') }.should_not be_nil
+      builder.instance_eval{ @book.spine.itemref_list[1].properties[0] }.should == 'rendition:layout-pre-paginated'
+      builder.instance_eval{ @book.spine.itemref_list[1].properties[1] }.should == 'rendition:orientation-landscape'
+      builder.instance_eval{ @book.spine.itemref_list[1].properties[2] }.should == 'rendition:spread-both'
+    end
+
     it 'should handle fallback chain' do
       workdir = File.join(File.dirname(__FILE__),'fixtures', 'builder')
       builder = GEPUB::Builder.new {

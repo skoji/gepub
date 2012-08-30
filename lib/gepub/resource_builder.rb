@@ -83,6 +83,22 @@ module GEPUB
       itemref.page_spread_right
     end
 
+    def rendition_layout val
+      itemref = @book.spine.itemref_by_id[@last_defined_item.item.id]
+      raise 'rendition should be called inside ordered' if (itemref.nil?)
+      itemref.rendition_layout = val
+    end
+    def rendition_orientation val
+      itemref = @book.spine.itemref_by_id[@last_defined_item.item.id]
+      raise 'rendition should be called inside ordered' if (itemref.nil?)
+      itemref.rendition_orientation = val
+    end
+    def rendition_spread val
+      itemref = @book.spine.itemref_by_id[@last_defined_item.item.id]
+      raise 'rendition should be called inside ordered' if (itemref.nil?)
+      itemref.rendition_spread = val
+    end
+
     def linear val
       itemref = @book.spine.itemref_by_id[@last_defined_item.item.id]
       raise 'linear should be called inside ordered' if (itemref.nil?)
