@@ -7,9 +7,21 @@ describe GEPUB::Book do
             context 'with no parameter' do
                 it 'returns empty book' do
                     book = GEPUB::Book.new();
-                    book.instance_eval {
-                        expect(@package.path).to eq('OEBPS/package.opf');
-                    }
+                    expect(book.path) .to eq('OEBPS/package.opf');
+                    expect(book.version).to eq('3.0');
+                end
+            end
+            context 'with path' do
+                it 'returns empty book with path' do
+                    book = GEPUB::Book.new('mypath/foo.opf');
+                    expect(book.path) .to eq('mypath/foo.opf');
+                end
+            end
+            context 'with path and attributes' do
+                it 'returns empty book with path and attributes' do
+                    book = GEPUB::Book.new('mypath/book.opf', {'version' => '2.1'});
+                    expect(book.path) .to eq('mypath/book.opf');
+                    expect(book.version).to eq('2.1');
                 end
             end
         end 
