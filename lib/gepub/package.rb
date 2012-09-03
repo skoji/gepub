@@ -69,8 +69,8 @@ module GEPUB
 
     def parse_prefixes(prefix)
       return {} if prefix.nil?
-      m = prefix.scan /([\S]+): +(\S+)[\s]*/
-      h = Hash[*m.flatten]
+      m = prefix.scan(/([\S]+): +(\S+)[\s]*/)
+      Hash[*m.flatten]
     end
     
     # parse OPF data. opf should be io or string object.
@@ -135,10 +135,15 @@ module GEPUB
     end
     
     def identifier=(identifier)
-      set_main_id(identifier, nil, 'URL')
+      set_primary_identifier(identifier, nil, nil)
     end
     
     def set_main_id(identifier, id = nil, type = nil)
+      warn 'set_main_id is deprecated. use set_primary_identifier instead.'
+      set_primary_identifier(identifier, id, type)
+    end
+
+    def set_primary_identifier(identifier, id = nil, type = nil)
       set_unique_identifier(id || @id_pool.generate_key(:prefix => 'BookId', :without_count => true))
       @metadata.add_identifier identifier, unique_identifier, type
     end
@@ -202,6 +207,7 @@ module GEPUB
       @metadata.language
     end
 
+    #TODO maybe it should be 'epub_version'
     def version
       @attributes['version']
     end
