@@ -28,11 +28,7 @@ module GEPUB
           @namespaces = @xml.namespaces
           CONTENT_NODE_LIST.each {
             |node|
-            i = 0
-            @content_nodes[node] = parse_node(DC_NS, node).sort_by {
-              |v|
-              [v.refiner('display-seq').to_s.to_i || 2 ** (0.size * 8 - 2) - 1, i += 1]
-            }              
+            @content_nodes[node] = parse_node(DC_NS, node).sort_as_meta
           }
           @xml.xpath("#{ns_prefix(OPF_NS)}:meta[not(@refines) and @property]", @namespaces).each {
             |node|
@@ -138,7 +134,7 @@ module GEPUB
     }
 
     def meta_list
-      (@content_nodes['meta'] || []).dup
+      (@content_nodes['meta'] || []).sort_as_meta.dup
     end
 
     def meta_clear
@@ -160,7 +156,7 @@ module GEPUB
     
     def get_first_node(node)
       if !@content_nodes[node].nil? && @content_nodes[node].size > 0
-        @content_nodes[node][0]
+        @content_nodes[node].sort_as_meta[0]
       end
     end
 
@@ -187,7 +183,7 @@ module GEPUB
     def add_metadata(name, content, id = nil, itemclass = Meta)
       meta = itemclass.new(name, content, self, { 'id' => id })
       (@content_nodes[name] ||= []) << meta
-      yield self if block_given?
+      yield meta if block_given?
       meta
     end
 
@@ -293,11 +289,11 @@ module GEPUB
     private
     def parse_node(ns, node)
       @xml.xpath("#{ns_prefix(ns)}:#{node}", @namespaces).map {
-        |node|
-        create_meta(node)
+        |n|
+        create_meta(n)
       }
     end
-
+    
     def create_meta(node)
       Meta.new(node.name, node.content, self, attr_to_hash(node.attributes), collect_refiners(node['id']))
     end
