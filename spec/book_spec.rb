@@ -109,62 +109,87 @@ describe GEPUB::Book do
             end 
         end
         describe 'title' do
-            context 'main title is specified' 
-            it 'returns main title' do
-                book = GEPUB::Book.new()
-                book.add_title 'sub title' 
-                book.add_title('the main title', nil, GEPUB::TITLE_TYPE::MAIN) 
-                expect(book.title.to_s).to eq('the main title')
+            context 'main title is specified' do
+                it 'returns main title' do
+                    book = GEPUB::Book.new()
+                    book.add_title 'sub title' 
+                    book.add_title('the main title', nil, GEPUB::TITLE_TYPE::MAIN) 
+                    expect(book.title.to_s).to eq('the main title')
+                end
             end
-        end
-        context 'display_seq is specified' do
-            it 'returns first title' do
-                book = GEPUB::Book.new()
-                book.add_title 'second title' 
-                book.add_title('first title') do
-                    |title|
-                    title.display_seq = 1
-                end 
-                expect(book.title.to_s).to eq('first title')
+            context 'display_seq is specified' do
+                it 'returns first title' do
+                    book = GEPUB::Book.new()
+                    book.add_title 'second title' 
+                    book.add_title('first title') do
+                        |title|
+                        title.display_seq = 1
+                    end 
+                    expect(book.title.to_s).to eq('first title')
+                end
             end
         end
         describe 'title_list' do 
             context 'main title is specified' do
-            end
-            context 'display seq is specified' do
-            end
-        end
-        describe 'add_creator' do 
-        end
-        describe 'creator' do
-        end
-        describe 'creator_list' do
-        end
-        describe 'add_contributor' do
-        end
-        describe 'contributor' do
-        end
-        describe 'contributor_list' do
-        end
-        describe 'set_lastmodified' do
-        end
-        describe 'lastmodified' do
-        end
-        describe 'set_othermetadata' do
-        end
-        describe 'page_progression_direction=' do
-        end
-        describe 'add_optional_file' do
-        end
-        describe 'add_item' do
-        end
-        describe 'add_ordered_item' do
-        end
-        describe 'ordered' do
-        end
-        describe 'write_to_epub_container' do
-        end
-    end
-    context 'on parsing existing book' do
-    end
+                it 'returns titles in defined order' do
+                 book = GEPUB::Book.new()
+                 book.add_title 'sub title' 
+                 book.add_title('the main title', nil, GEPUB::TITLE_TYPE::MAIN) 
+                 expect(book.title_list[0].to_s).to eq('sub title')
+                 expect(book.title_list[1].to_s).to eq('the main title')
+             end
+             context 'display seq is specified' do
+                it 'returns titles in display-seq order' do
+                    book = GEPUB::Book.new()
+                    book.add_title 'third title' 
+                    book.add_title 'fourth title' 
+                    book.add_title 'second title' do
+                        |title|
+                        title.display_seq = 2
+                    end 
+                    book.add_title('first title') do
+                        |title|
+                        title.display_seq = 1
+                    end 
+                    expect(book.title_list[0].to_s).to eq('first title')
+                    expect(book.title_list[1].to_s).to eq('second title')
+                    expect(book.title_list[2].to_s).to eq('third title')
+                    expect(book.title_list[3].to_s).to eq('fourth title')
+                end
+             end
+         end
+     end
+     describe 'add_creator' do 
+     end
+     describe 'creator' do
+     end
+     describe 'creator_list' do
+     end
+     describe 'add_contributor' do
+     end
+     describe 'contributor' do
+     end
+     describe 'contributor_list' do
+     end
+     describe 'set_lastmodified' do
+     end
+     describe 'lastmodified' do
+     end
+     describe 'set_othermetadata' do
+     end
+     describe 'page_progression_direction=' do
+     end
+     describe 'add_optional_file' do
+     end
+     describe 'add_item' do
+     end
+     describe 'add_ordered_item' do
+     end
+     describe 'ordered' do
+     end
+     describe 'write_to_epub_container' do
+     end
+ end
+ context 'on parsing existing book' do
+ end
 end

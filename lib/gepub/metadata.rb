@@ -104,7 +104,7 @@ module GEPUB
     
     CONTENT_NODE_LIST = ['identifier','title', 'language', 'contributor', 'creator', 'coverage', 'date','description','format','publisher','relation','rights','source','subject','type'].each {
       |node|
-      define_method(node + '_list') { @content_nodes[node].dup }
+      define_method(node + '_list') { @content_nodes[node].dup.sort_as_meta }
       define_method(node + '_clear') {
         if !@content_nodes[node].nil?
           @content_nodes[node].each { |x| unregister_meta(x) };
