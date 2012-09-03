@@ -15,8 +15,8 @@ module GEPUB
         @item.set_media_type(val)
       end
       
-      def method_missing(name, *args)
-        @item.send(name.to_sym, *args)
+      def method_missing(name, *args, &block)
+        @item.send(name.to_sym, *args, &block)
       end
     end
     

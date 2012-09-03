@@ -226,8 +226,8 @@ module GEPUB
       items[@package.bindings.handler_by_media_type[media_type]]
     end
 
-    def method_missing(name,*args)
-      @package.send(name, *args)
+    def method_missing(name,*args, &block)
+      @package.send(name, *args, &block)
     end
 
     # should call ordered() with block.

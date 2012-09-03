@@ -1,6 +1,6 @@
 module GEPUB
   module BuilderMixin
-    def method_missing(name, *args)
+    def method_missing(name, *args, &block)
       if Array === @last_defined_item &&
           @last_defined_item.size > 0 &&
           @last_defined_item[0].respond_to?(name.to_sym)
@@ -20,7 +20,7 @@ module GEPUB
           end
         }
       elsif @last_defined_item.respond_to?(name.to_sym)
-        @last_defined_item.send(name, *args)
+        @last_defined_item.send(name, *args, &block)
       else
         super
       end
