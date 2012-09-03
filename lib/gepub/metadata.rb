@@ -73,7 +73,7 @@ module GEPUB
       yield self if block_given?
     end
 
-    def to_xml(builder)
+    def to_xml(builder) 
       builder.metadata(@namespaces) {
         @content_nodes.each {
           |name, list|
@@ -164,8 +164,9 @@ module GEPUB
       end
     end
 
-    def add_identifier(string, id, type=nil)
-      raise 'id #{id} is already in use' if @id_pool[id]
+    def add_identifier(string, id=nil, type=nil)
+      id = @id_pool.generate_key(:prefix => 'BookId') if id.nil?
+      raise "id #{id} is already in use" if @id_pool[id]
       identifier = add_metadata('identifier', string, id)
       identifier.refine('identifier-type', type) unless type.nil?
       identifier
@@ -180,6 +181,7 @@ module GEPUB
         |x|
         return x.content if x['id'] == id
       }
+      return nil
     end
     
     def add_metadata(name, content, id = nil, itemclass = Meta)
