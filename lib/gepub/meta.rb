@@ -48,7 +48,7 @@ module GEPUB
 
     # add a refiner.
     def add_refiner(property, content, attributes = {})
-      (@refiners[property] ||= []) << refiner = Meta.new('meta', content, @parent, { 'property' => property }.merge(attributes)) unless content.nil?
+      (@refiners[property] ||= []) <<  Meta.new('meta', content, @parent, { 'property' => property }.merge(attributes)) unless content.nil?
       self
     end
 
@@ -69,6 +69,14 @@ module GEPUB
       define_method(methodbase) { refiner(name) }
     }
 
+    def lang=(lang)
+      @attributes['xml:lang'] = lang
+    end
+
+    def lang
+      @attributes['xml:lang']
+    end
+    
     # add alternate script refiner.
     def add_alternates(alternates = {})
       alternates.each {
