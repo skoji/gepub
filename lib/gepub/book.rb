@@ -104,41 +104,9 @@ module GEPUB
       package_path = nil
       Zip::ZipInputStream::open_buffer(io) {
         |zis|
-        while entry = zis.get_next_entry
-          if !entry.directory?
-            files[entry.name] = zis.read
-            case entry.name
-            when MIMETYPE then
-              if files[MIMETYPE] != MIMETYPE_CONTENTS
-                warn "#{MIMETYPE} is not valid: should be #{MIMETYPE_CONTENTS} but was #{files[MIMETYPE]}"
-              end
-              files.delete(MIMETYPE)
-            when CONTAINER then
-              package_path = rootfile_from_container(files[CONTAINER])
-              files.delete(CONTAINER)
-            when ROOTFILE_PATTERN then
-              package = Package.parse_opf(files[entry.name], entry.name)
-              files.delete(entry.name)
-            end
-          end
-        end
-
-        if package.nil?
-          raise 'this container do not cotains publication information file'
-        end
-        
-        if package_path != package.path
-          warn 'inconsistend EPUB file: container says opf is #{package_path}, but actually #{package.path}'
-        end
-        
-        files.each {
-          |k, content|
-          item = package.manifest.item_by_href(k.sub(/^#{package.contents_prefix}/,''))
-          if !item.nil?
-            files.delete(k)
-            item.add_raw_content(content)
-          end
-        }
+        package, package_path = parse_container(files)
+        check_consistensy_of_package(package, package_path)
+        parse_files_into_package(files, package)
         book = Book.new(package.path)
         book.instance_eval { @package = package; @optional_files = files }
         book
@@ -239,34 +207,8 @@ module GEPUB
     # clenup and maintain consistency of metadata and items included in the Book
     # object. 
     def cleanup
-      if version.to_f < 3.0 || @package.epub_backward_compat
-        if @package.manifest.item_list.select {
-          |x,item|
-          item.media_type == 'application/x-dtbncx+xml'
-        }.size == 0
-          if (@toc.size == 0)
-            @toc << { :item => @package.manifest.item_list[@package.spine.itemref_list[0].idref] }
-          end
-          add_item('toc.ncx', StringIO.new(ncx_xml), 'ncx')
-        end
-      end
-
-      if version.to_f >=3.0
-        @package.metadata.set_lastmodified
-        
-        if @package.manifest.item_list.select {
-          |href, item|
-          (item.properties||[]).member? 'nav'
-          }.size == 0
-          generate_nav_doc
-        end
-        
-        @package.spine.remove_with_idlist @package.manifest.item_list.map {
-          |href, item|
-          item.fallback
-        }.reject(&:nil?)
-
-      end
+      cleanup_for_epub2
+      cleanup_for_epub3
     end
 
     # write EPUB to stream specified by the argument.
@@ -387,6 +329,81 @@ EOF
         }
       }
       builder.to_xml(:encoding => 'utf-8')
+    end
+    
+    private
+    def parse_container(files) 
+      package_path = nil
+      package = nil
+      while entry = zis.get_next_entry
+        if !entry.directory?
+          files[entry.name] = zis.read
+          case entry.name
+          when MIMETYPE then
+            if files[MIMETYPE] != MIMETYPE_CONTENTS
+              warn "#{MIMETYPE} is not valid: should be #{MIMETYPE_CONTENTS} but was #{files[MIMETYPE]}"
+            end
+            files.delete(MIMETYPE)
+          when CONTAINER then
+            package_path = rootfile_from_container(files[CONTAINER])
+            files.delete(CONTAINER)
+          when ROOTFILE_PATTERN then
+            package = Package.parse_opf(files[entry.name], entry.name)
+            files.delete(entry.name)
+          end
+        end
+      end
+      return package, package_path
+    end
+
+    def check_consistency_of_package(package, package_path)
+      if package.nil?
+        raise 'this container do not cotains publication information file'
+      end
+
+      if package_path != package.path
+        warn 'inconsistend EPUB file: container says opf is #{package_path}, but actually #{package.path}'
+      end
+    end
+    def parse_files_into_package(files, package)
+      files.each {
+        |k, content|
+        item = package.manifest.item_by_href(k.sub(/^#{package.contents_prefix}/,''))
+        if !item.nil?
+          files.delete(k)
+          item.add_raw_content(content)
+        end
+      }
+    end
+    def  cleanup_for_epub2
+      if version.to_f < 3.0 || @package.epub_backward_compat
+        if @package.manifest.item_list.select {
+          |x,item|
+          item.media_type == 'application/x-dtbncx+xml'
+        }.size == 0
+          if (@toc.size == 0)
+            @toc << { :item => @package.manifest.item_list[@package.spine.itemref_list[0].idref] }
+          end
+          add_item('toc.ncx', StringIO.new(ncx_xml), 'ncx')
+        end
+      end
+    end
+    def cleanup_for_epub3
+      if version.to_f >=3.0
+        @package.metadata.set_lastmodified
+        
+        if @package.manifest.item_list.select {
+          |href, item|
+          (item.properties||[]).member? 'nav'
+          }.size == 0
+          generate_nav_doc
+        end
+        
+        @package.spine.remove_with_idlist @package.manifest.item_list.map {
+          |href, item|
+          item.fallback
+        }.reject(&:nil?)
+      end
     end
   end
 end
