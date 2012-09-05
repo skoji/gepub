@@ -182,6 +182,23 @@ describe GEPUB::Book do
      describe 'page_progression_direction=' do
      end
      describe 'add_optional_file' do
+        context 'add apple specific option file' do
+            it 'is added to book' do
+                content = <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<display_options>
+<platform name="*">
+<option name="fixed-layout">true</option>
+</platform>
+</display_options>
+EOF
+                book = GEPUB::Book.new
+                book.add_optional_file('META-INF/com.apple.ibooks.display-options.xm', StringIO.new(content))
+
+                expect(book.optional_files.size).to eq(1)
+                expect(book.optional_files['META-INF/com.apple.ibooks.display-options.xm']).to eq(content)
+            end
+        end
      end
      describe 'add_item' do
      end
