@@ -4,7 +4,7 @@ require 'nokogiri'
 describe GEPUB::Book do 
     context 'on creating new book' do
         describe 'initialize' do
-            context 'with no parameter' do
+            context 'without parameter' do
                 it 'returns empty book' do
                     book = GEPUB::Book.new()
                     expect(book.path) .to eq('OEBPS/package.opf')
@@ -158,6 +158,8 @@ describe GEPUB::Book do
                 end
              end
          end
+     end
+     describe 'creator=' do 
      end
      describe 'add_creator' do 
      end
