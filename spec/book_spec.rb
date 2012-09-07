@@ -132,13 +132,13 @@ describe GEPUB::Book do
         describe 'title_list' do 
             context 'main title is specified' do
                 it 'returns titles in defined order' do
-                 book = GEPUB::Book.new()
-                 book.add_title 'sub title' 
-                 book.add_title('the main title', nil, GEPUB::TITLE_TYPE::MAIN) 
-                 expect(book.title_list[0].to_s).to eq('sub title')
-                 expect(book.title_list[1].to_s).to eq('the main title')
-             end
-             context 'display seq is specified' do
+                   book = GEPUB::Book.new()
+                   book.add_title 'sub title' 
+                   book.add_title('the main title', nil, GEPUB::TITLE_TYPE::MAIN) 
+                   expect(book.title_list[0].to_s).to eq('sub title')
+                   expect(book.title_list[1].to_s).to eq('the main title')
+               end
+               context 'display seq is specified' do
                 it 'returns titles in display-seq order' do
                     book = GEPUB::Book.new()
                     book.add_title 'third title' 
@@ -156,35 +156,94 @@ describe GEPUB::Book do
                     expect(book.title_list[2].to_s).to eq('third title')
                     expect(book.title_list[3].to_s).to eq('fourth title')
                 end
-             end
-         end
-     end
-     describe 'creator=' do 
-     end
-     describe 'add_creator' do 
-     end
-     describe 'creator' do
-     end
-     describe 'creator_list' do
-     end
-     describe 'add_contributor' do
-     end
-     describe 'contributor' do
-     end
-     describe 'contributor_list' do
-     end
+            end
+        end
+    end
+    describe 'add_creator' do
+        it 'adds new creator' do
+            book = GEPUB::Book.new()
+            book.creator = 'the creator'
+            book.add_creator 'new creator'
+            expect(book.creator.to_s).to eq('the creator')
+            expect(book.creator_list[1].to_s).to eq('new creator')
+        end
+    end 
+    describe 'creator=' do 
+        it 'set first creator' do
+            book = GEPUB::Book.new()
+            book.creator = 'the creator'
+            expect(book.creator.to_s).to eq('the creator')
+        end
+        it 'clear and set creator' do
+            book = GEPUB::Book.new()
+            book.creator = 'the creator'
+            book.creator = 'new creator'
+            expect(book.creator.to_s).to eq('new creator')
+            expect(book.creator_list.size).to eq(1)
+        end
+    end
+    describe 'creator' do
+        context 'display seq is specified' do
+            it 'shows creator with smallest display-seq' do
+                book = GEPUB::Book.new()
+                book.add_creator 'a creator'
+                book.add_creator('second creator') do 
+                    |creator|
+                    creator.display_seq = 2
+                end
+                expect(book.creator.to_s).to eq('second creator')
+            end
+        end
+    end
+
+    describe 'creator_list' do
+        context 'display seq is specified' do
+            it 'returns creators in display-seq order' do
+                book = GEPUB::Book.new()
+                book.add_creator 'a creator'
+                book.add_creator('second creator') do 
+                    |creator|
+                    creator.display_seq = 2
+                end
+                book.add_creator 'another creator'
+                book.add_creator('first creator') do 
+                    |creator|
+                    creator.display_seq = 1
+                end
+                book.add_creator('third creator') do 
+                    |creator|
+                    creator.display_seq = 3
+                end
+                expect(book.creator_list[0].to_s).to eq('first creator')
+                expect(book.creator_list[1].to_s).to eq('second creator')
+                expect(book.creator_list[2].to_s).to eq('third creator')
+                expect(book.creator_list[3].to_s).to eq('a creator')
+                expect(book.creator_list[4].to_s).to eq('another creator')
+            end
+        end
+    end
+
+     # omit tests for setter/getter for contributor, publisher, date etc; these methods use same implementation as creator. 
+
      describe 'set_lastmodified' do
-     end
-     describe 'lastmodified' do
-     end
-     describe 'set_othermetadata' do
+        it 'set current time' do
+            book = GEPUB::Book.new
+            now = Time.now
+            book.set_lastmodified
+            expect((book.lastmodified.content - now).abs).to be < 2
+        end
+        it 'set time in string' do
+            book = GEPUB::Book.new
+            book.set_lastmodified(Time.parse('2012-9-12 00:00:00Z'))
+            expect(book.lastmodified.content).to eq(Time.parse('2012-9-12 00:00:00 UTC'))
+        end
      end
      describe 'page_progression_direction=' do
      end
      describe 'add_optional_file' do
         context 'add apple specific option file' do
             it 'is added to book' do
-                content = <<EOF
+                content = <<-EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <display_options>
 <platform name="*">
@@ -199,16 +258,20 @@ EOF
                 expect(book.optional_files['META-INF/com.apple.ibooks.display-options.xm']).to eq(content)
             end
         end
-     end
-     describe 'add_item' do
-     end
-     describe 'add_ordered_item' do
-     end
-     describe 'ordered' do
-     end
-     describe 'write_to_epub_container' do
-     end
- end
- context 'on parsing existing book' do
- end
+    end
+    describe 'add_item' do
+    end
+    describe 'add_ordered_item' do
+    end
+    describe 'ordered' do
+    end
+    describe 'write_to_epub_container' do
+        context 'create typical book' do
+        end
+        context 'create very complex book' do
+        end
+    end
+end
+context 'on parsing existing book' do
+end
 end
