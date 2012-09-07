@@ -239,6 +239,11 @@ describe GEPUB::Book do
         end
      end
      describe 'page_progression_direction=' do
+        it 'set page_progression_direction' do 
+            book = GEPUB::Book.new
+            book.page_progression_direction= 'rtl'
+            expect(book.page_progression_direction).to eq('rtl')
+        end
      end
      describe 'add_optional_file' do
         context 'add apple specific option file' do
