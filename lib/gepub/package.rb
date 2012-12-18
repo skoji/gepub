@@ -13,6 +13,8 @@ module GEPUB
       |x|
       ["#{x}", "#{x}_list", "set_#{x}", "#{x}=", "add_#{x}"]
     }.flatten
+    def_delegators :@metadata, :set_lastmodified
+    def_delegators :@metadata, :lastmodified
     def_delegators :@metadata, :rendition_layout
     def_delegators :@metadata, :rendition_layout=
     def_delegators :@metadata, :rendition_orientation
