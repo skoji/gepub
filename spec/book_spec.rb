@@ -279,5 +279,14 @@ describe GEPUB::Book do
     end
   end
   context 'on parsing existing book' do
+    describe '.parse' do
+     context 'IO Object' do
+      it 'loads book and returns GEPUB::Book object' do
+       filehandle = File.new(File.dirname(__FILE__) + '/fixtures/testdata/wasteland-20120118.epub')
+       book = GEPUB::Book.parse(filehandle)
+       expect(book).to be_instance_of GEPUB::Book
+      end
+     end
+    end
   end
 end

@@ -104,8 +104,8 @@ module GEPUB
       package_path = nil
       Zip::ZipInputStream::open_buffer(io) {
         |zis|
-        package, package_path = parse_container(files)
-        check_consistensy_of_package(package, package_path)
+        package, package_path = parse_container(zis, files)
+        check_consistency_of_package(package, package_path)
         parse_files_into_package(files, package)
         book = Book.new(package.path)
         book.instance_eval { @package = package; @optional_files = files }
@@ -332,7 +332,7 @@ EOF
     end
     
     private
-    def parse_container(files) 
+    def self.parse_container(zis, files) 
       package_path = nil
       package = nil
       while entry = zis.get_next_entry
@@ -356,7 +356,7 @@ EOF
       return package, package_path
     end
 
-    def check_consistency_of_package(package, package_path)
+    def self.check_consistency_of_package(package, package_path)
       if package.nil?
         raise 'this container do not cotains publication information file'
       end
@@ -365,7 +365,7 @@ EOF
         warn 'inconsistend EPUB file: container says opf is #{package_path}, but actually #{package.path}'
       end
     end
-    def parse_files_into_package(files, package)
+    def self.parse_files_into_package(files, package)
       files.each {
         |k, content|
         item = package.manifest.item_by_href(k.sub(/^#{package.contents_prefix}/,''))
