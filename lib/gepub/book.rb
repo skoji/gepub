@@ -91,7 +91,7 @@ module GEPUB
     def self.rootfile_from_container(rootfile)
       doc = Nokogiri::XML::Document.parse(rootfile)
       ns = doc.root.namespaces
-      defaultns = ns.select{ |name, value| value == CONTAINER_NS }.keys[0]
+      defaultns = ns.select{ |name, value| value == CONTAINER_NS }.to_a[0][0]
       doc.css("#{defaultns}|rootfiles > #{defaultns}|rootfile")[0]['full-path']
     end
 
