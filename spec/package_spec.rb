@@ -71,14 +71,14 @@ describe GEPUB::Package do
       xml.root.namespaces.size.should == 1
       xml.root.namespaces['xmlns'].should == GEPUB::XMLUtil::OPF_NS
       xml.root['version'].should == '3.0'
-      xml.root['lang'].should == 'ja'
+      xml.root['xml:lang'].should == 'ja'
       # TODO: should check all elements
     end
 
     it 'should generate package with prefix attribute' do
       package = GEPUB::Package.new('OEBPS/package.opf') do
         |package|
-        package.set_main_id('http://example.jp', 'BookID', 'url')
+        package.set_primary_identifier('http://example.jp', 'BookID', 'url')
         package['xml:lang'] = 'ja'
         package.enable_rendition
       end
@@ -102,7 +102,7 @@ describe GEPUB::Package do
     it 'should generate opf2.0' do
       opf = GEPUB::Package.new('OEBPS/package.opf', { 'version' => '2.0'}) {
         |opf|
-        opf.set_main_id('http://example.jp', 'BookID', 'url')
+        opf.set_primary_identifier('http://example.jp', 'BookID', 'url')
         opf['xml:lang'] = 'ja'
 
         # metadata add: style 1
@@ -133,7 +133,7 @@ describe GEPUB::Package do
       xml.root.namespaces.size.should == 1
       xml.root.namespaces['xmlns'].should == GEPUB::XMLUtil::OPF_NS
       xml.root['version'].should == '2.0'
-      xml.root['lang'].should == 'ja'
+      xml.root['xml:lang'].should == 'ja'
     end
   end
 end

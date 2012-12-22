@@ -19,6 +19,6 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
 
   s.add_development_dependency "rspec", "~> 2.11"
-  s.add_runtime_dependency "nokogiri", "~> 1.5.0"
+  s.add_runtime_dependency "nokogiri", "~> 1.5.6"
   s.add_runtime_dependency "rubyzip", "~> 0.9.7"
 end
