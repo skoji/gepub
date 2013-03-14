@@ -74,8 +74,8 @@ module GEPUB
     end
 
     def unregister_item(item)
-      @items[item.id] = nil
-      @items_by_href[item.href] = nil
+      @items.delete(item.id)
+      @items_by_href.delete(item.href)
       @id_pool[item.id] = nil
     end
     
