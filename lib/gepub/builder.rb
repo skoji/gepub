@@ -245,7 +245,7 @@ module GEPUB
     end
 
     def unique_identifier(val, id = 'BookID', scheme = 'nil')
-      @last_defined_item = MetaItem.new(@book.set_main_id(val, id, scheme))
+      @last_defined_item = MetaItem.new(@book.set_primary_identifier(val, id, scheme))
     end
     
     def alts(alt_vals = {})
