@@ -106,7 +106,7 @@ module GEPUB
     end
     
     def glob(arg)
-      files(*Dir.glob(arg))
+      files(*Dir.glob(arg).select{|x| !File.directory?(x)} )
     end
 
     def import(conf, args = {})
