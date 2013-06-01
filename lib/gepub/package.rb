@@ -41,10 +41,10 @@ module GEPUB
       end
       
       def generate_key(param = {})
+        prefix = param[:prefix] || ''
+        suffix = param[:suffix] || ''
+        count = [ param[:start] || 1, counter(prefix,suffix) || 1].max
         while (true)
-          prefix = param[:prefix] || ''
-          suffix = param[:suffix] || ''
-          count = [ param[:start] || 1, counter(prefix,suffix) || 1].max
           if param[:without_count]
             k = prefix + suffix
             count -= 1
