@@ -46,8 +46,13 @@ module GEPUB
         add_property 'page-spread-left'
       end
 
+      def rendition_specified?
+        @rendition_specified
+      end
+
       def set_rendition_param(name, val)
         add_property "rendition:#{name}-#{val}"
+        @rendition_specified = true
       end
 
       def rendition_layout=(val)
@@ -126,6 +131,10 @@ module GEPUB
 
     def <<(item)
       push item
+    end
+
+    def rendition_specified?
+      @item_refs.collect { |itemref| itemref.rendition_specified? }.size > 0
     end
     
     def to_xml(builder)

@@ -373,6 +373,10 @@ describe GEPUB::Builder do
       builder.instance_eval{ @book.spine.itemref_list[1].properties[0] }.should == 'rendition:layout-pre-paginated'
       builder.instance_eval{ @book.spine.itemref_list[1].properties[1] }.should == 'rendition:orientation-landscape'
       builder.instance_eval{ @book.spine.itemref_list[1].properties[2] }.should == 'rendition:spread-both'
+      builder.instance_eval{
+        xml = Nokogiri::XML::Document.parse @book.opf_xml
+        xml.root['prefix'].should == 'rendition: http://www.idpf.org/vocab/rendition/#'
+      }
     end
 
     it 'should handle fallback chain' do

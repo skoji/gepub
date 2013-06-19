@@ -259,9 +259,10 @@ module GEPUB
           }
         end
       end
-      if @metadata.rendition_specified?
+      if @metadata.rendition_specified? || @spine.rendition_specified? 
         enable_rendition
       end
+
       builder = Nokogiri::XML::Builder.new {
         |xml|
         if @prefixes.size == 0
