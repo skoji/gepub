@@ -62,7 +62,7 @@ module GEPUB
       @namespaces['xmlns:opf'] = OPF_NS if @opf_version.to_f < 3.0
       @default_layout = 'reflowable'
       @default_orientation = 'auto'
-      @spread = 'auto'
+      @default_spread = 'auto'
       @layout = NilContent
       @orientation = NilContent
       @spread = NilContent
@@ -286,6 +286,10 @@ module GEPUB
       (@content_nodes['meta'] ||= []) << @spread
     end
     
+    def rendition_specified?
+      @layout.content || @orientation.content || @spread.content
+    end
+
     private
     def parse_node(ns, node)
       @xml.xpath("#{ns_prefix(ns)}:#{node}", @namespaces).map {

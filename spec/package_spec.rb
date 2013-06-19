@@ -94,6 +94,7 @@ describe GEPUB::Package do
         package.rendition_spread = 'landscape'
       end
       xml = Nokogiri::XML::Document.parse package.opf_xml
+      xml.root['prefix'].should == 'rendition: http://www.idpf.org/vocab/rendition/#'
       xml.at_xpath("//xmlns:meta[@property='rendition:layout']").content.should == 'pre-paginated'
       xml.at_xpath("//xmlns:meta[@property='rendition:orientation']").content.should == 'portlait'
       xml.at_xpath("//xmlns:meta[@property='rendition:spread']").content.should == 'landscape'
