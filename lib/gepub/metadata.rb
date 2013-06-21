@@ -46,7 +46,10 @@ module GEPUB
               @orientation = metanode
             when 'rendition:spread'
               @spread = metanode
+            when 'ibooks:version'
+              @ibooks_version = metanode
             end
+
           }
         }
       }
@@ -66,6 +69,7 @@ module GEPUB
       @layout = NilContent
       @orientation = NilContent
       @spread = NilContent
+      @ibooks_version = NilContent
       yield self if block_given?
     end
 
@@ -285,11 +289,24 @@ module GEPUB
       @spread = Meta.new('meta', val, self, { 'property' => 'rendition:spread' })
       (@content_nodes['meta'] ||= []) << @spread
     end
+
+    def ibooks_version
+      @ibooks_version.content || ''
+    end
+
+    def ibooks_version=(val)
+      @ibooks_version = Meta.new('meta', val, self, { 'property' => 'ibooks:version' })
+      (@content_nodes['meta'] ||= []) << @ibooks_version
+    end
     
     def rendition_specified?
       @layout.content || @orientation.content || @spread.content
     end
 
+    def ibooks_vocaburaly_specified?
+      @ibooks_version.content
+    end
+    
     private
     def parse_node(ns, node)
       @xml.xpath("#{ns_prefix(ns)}:#{node}", @namespaces).map {

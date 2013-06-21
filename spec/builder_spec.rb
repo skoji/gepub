@@ -379,6 +379,23 @@ describe GEPUB::Builder do
       }
     end
 
+    it 'whould handle ibooks version' do
+      workdir = File.join(File.dirname(__FILE__),'fixtures', 'builder')
+      builder = GEPUB::Builder.new {
+        ibooks_version '1.1.1'
+        resources(:workdir => workdir)  {
+          ordered {
+            file('text/cover.xhtml')
+            file('text/memo.txt')
+          }
+        }
+      }
+      builder.instance_eval{
+        xml = Nokogiri::XML::Document.parse @book.opf_xml
+        xml.root['prefix'].should == 'ibooks: http://vocabulary.itunes.apple.com/rdf/ibooks/vocabulary-extensions-1.0/'
+        xml.at_xpath("//xmlns:meta[@property='ibooks:version']").content.should == '1.1.1'
+      }
+    end
     it 'should handle fallback chain' do
       workdir = File.join(File.dirname(__FILE__),'fixtures', 'builder')
       builder = GEPUB::Builder.new {

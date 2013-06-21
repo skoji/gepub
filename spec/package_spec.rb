@@ -100,6 +100,16 @@ describe GEPUB::Package do
       xml.at_xpath("//xmlns:meta[@property='rendition:spread']").content.should == 'landscape'
     end
 
+    it 'should handle ibooks version' do
+      package = GEPUB::Package.new('OEBPS/package.opf') do
+        |package|
+        package.ibooks_version = '1.1.1'
+      end
+      xml = Nokogiri::XML::Document.parse package.opf_xml
+      xml.root['prefix'].should == 'ibooks: http://vocabulary.itunes.apple.com/rdf/ibooks/vocabulary-extensions-1.0/'
+      xml.at_xpath("//xmlns:meta[@property='ibooks:version']").content.should == '1.1.1'
+    end
+    
     it 'should generate opf2.0' do
       opf = GEPUB::Package.new('OEBPS/package.opf', { 'version' => '2.0'}) {
         |opf|

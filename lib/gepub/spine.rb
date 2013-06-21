@@ -134,7 +134,7 @@ module GEPUB
     end
 
     def rendition_specified?
-      @item_refs.collect { |itemref| itemref.rendition_specified? }.size > 0
+      @item_refs.select { |itemref| itemref.rendition_specified? }.size > 0
     end
     
     def to_xml(builder)

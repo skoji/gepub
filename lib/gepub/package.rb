@@ -21,6 +21,8 @@ module GEPUB
     def_delegators :@metadata, :rendition_orientation=
     def_delegators :@metadata, :rendition_spread
     def_delegators :@metadata, :rendition_spread=
+    def_delegators :@metadata, :ibooks_version
+    def_delegators :@metadata, :ibooks_version=
 
     def_delegators :@spine, :page_progression_direction=
     def_delegators :@spine, :page_progression_direction
@@ -242,6 +244,14 @@ module GEPUB
     def rendition_enabled?
       @prefixes['rendition'] == 'http://www.idpf.org/vocab/rendition/#'      
     end
+
+    def enable_ibooks_vocabulary
+      @prefixes['ibooks'] = 'http://vocabulary.itunes.apple.com/rdf/ibooks/vocabulary-extensions-1.0/'
+    end
+
+    def ibooks_vocabulary_enabled?
+      @prefixes['ibooks'] == 'http://vocabulary.itunes.apple.com/rdf/ibooks/vocabulary-extensions-1.0/'
+    end
     
     def opf_xml
       if version.to_f < 3.0 || @epub_backward_compat
@@ -261,6 +271,9 @@ module GEPUB
       end
       if @metadata.rendition_specified? || @spine.rendition_specified? 
         enable_rendition
+      end
+      if @metadata.ibooks_vocaburaly_specified?
+        enable_ibooks_vocabulary
       end
 
       builder = Nokogiri::XML::Builder.new {
