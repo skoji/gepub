@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-require 'rubygem'
+require 'rubygems'
 require 'gepub'
 
 book = GEPUB::Book.new
