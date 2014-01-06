@@ -207,6 +207,18 @@ describe GEPUB::Builder do
       builder.instance_eval{ @book.item_by_href('text/cover.xhtml') }.should_not be_nil
     end
 
+    it 'should add a file with id' do
+      workdir = File.join(File.dirname(__FILE__),'fixtures', 'builder')
+      builder = GEPUB::Builder.new {
+        resources(:workdir => workdir)  {
+          file('text/memo.txt')
+          id 'the_id_of_memo.txt'
+        }
+      }
+      builder.instance_eval{ @book.item_by_href('text/memo.txt') }.should_not be_nil
+      builder.instance_eval{ @book.item_by_href('text/memo.txt').id }.should == 'the_id_of_memo.txt'
+    end
+
     it 'should add files to book from IO object' do
       io = File.new(File.join(File.dirname(__FILE__),'fixtures', 'builder', 'text', 'memo.txt'))
       builder = GEPUB::Builder.new {

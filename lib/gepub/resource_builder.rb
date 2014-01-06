@@ -143,6 +143,10 @@ module GEPUB
       @last_defined_item.toc_text_with_id(text, id)
     end
 
+    def id(the_id)
+      @last_defined_item.id = the_id
+    end
+
     def with_media_type(*type)
       raise 'with_media_type needs block.' unless block_given?
       @file_postprocess['with_media_type'] = Proc.new { media_type(*type) }
