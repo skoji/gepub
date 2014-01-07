@@ -10,14 +10,14 @@ describe GEPUB::Manifest do
     end
 
     it 'should be parsed' do
-      @manifest.item_list.size.should == 9
-      @manifest.item_list['ncx'].href.should == 'toc.ncx'
-      @manifest.item_list['ncx'].media_type.should == 'application/x-dtbncx+xml'
-      @manifest.item_list['cover'].href.should == 'cover/cover.xhtml'
-      @manifest.item_list['cover'].media_type.should == 'application/xhtml+xml'
-      @manifest.item_list['cover-image'].href.should == 'img/cover.jpg'
-      @manifest.item_list['cover-image'].media_type.should == 'image/jpeg'
-      @manifest.item_list['cover-image'].properties[0].should == 'cover-image'
+      expect(@manifest.item_list.size).to eq(9)
+      expect(@manifest.item_list['ncx'].href).to eq('toc.ncx')
+      expect(@manifest.item_list['ncx'].media_type).to eq('application/x-dtbncx+xml')
+      expect(@manifest.item_list['cover'].href).to eq('cover/cover.xhtml')
+      expect(@manifest.item_list['cover'].media_type).to eq('application/xhtml+xml')
+      expect(@manifest.item_list['cover-image'].href).to eq('img/cover.jpg')
+      expect(@manifest.item_list['cover-image'].media_type).to eq('image/jpeg')
+      expect(@manifest.item_list['cover-image'].properties[0]).to eq('cover-image')
     end
   end
   context 'generate new opf' do
@@ -30,7 +30,7 @@ describe GEPUB::Manifest do
         }
       }
       xml = Nokogiri::XML::Document.parse(builder.to_xml)
-      xml.xpath("//xmlns:item[@id='ncx' and @href='toc.ncx' and @media-type='application/x-dtbncx+xml']").size.should == 1
+      expect(xml.xpath("//xmlns:item[@id='ncx' and @href='toc.ncx' and @media-type='application/x-dtbncx+xml']").size).to eq(1)
     end
   end
 end

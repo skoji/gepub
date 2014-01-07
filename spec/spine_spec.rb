@@ -9,17 +9,17 @@ describe GEPUB::Spine do
       @spine = GEPUB::Package.parse_opf(File.open(File.dirname(__FILE__) + '/fixtures/testdata/test.opf'), '/package.opf').instance_eval{ @spine }
     end
     it 'should be parsed' do
-      @spine.toc.should == 'ncx'
+      expect(@spine.toc).to eq('ncx')
       @spine.page_progression_direction == 'ltr'
-      @spine.itemref_list.size.should == 4
-      @spine.itemref_list[0].idref.should == 'cover'
-      @spine.itemref_list[0].linear.should == 'no'
-      @spine.itemref_list[1].idref.should == 'toc'
-      @spine.itemref_list[1].linear.should == 'yes'
-      @spine.itemref_list[2].idref.should == 'chap1'
-      @spine.itemref_list[2].linear.should == 'yes'
-      @spine.itemref_list[3].idref.should == 'nav'
-      @spine.itemref_list[3].linear.should == 'no'
+      expect(@spine.itemref_list.size).to eq(4)
+      expect(@spine.itemref_list[0].idref).to eq('cover')
+      expect(@spine.itemref_list[0].linear).to eq('no')
+      expect(@spine.itemref_list[1].idref).to eq('toc')
+      expect(@spine.itemref_list[1].linear).to eq('yes')
+      expect(@spine.itemref_list[2].idref).to eq('chap1')
+      expect(@spine.itemref_list[2].linear).to eq('yes')
+      expect(@spine.itemref_list[3].idref).to eq('nav')
+      expect(@spine.itemref_list[3].linear).to eq('no')
     end
   end
   context 'generate new opf' do
@@ -33,8 +33,8 @@ describe GEPUB::Spine do
         }
       }
       xml = Nokogiri::XML::Document.parse(builder.to_xml)
-      xml.at_xpath('//xmlns:spine')['toc'].should == 'ncx'
-      xml.xpath("//xmlns:itemref[@idref='the_id' and @linear='no']").size.should == 1
+      expect(xml.at_xpath('//xmlns:spine')['toc']).to eq('ncx')
+      expect(xml.xpath("//xmlns:itemref[@idref='the_id' and @linear='no']").size).to eq(1)
     end
     it 'should generate xml with property' do
       spine = GEPUB::Spine.new
@@ -46,8 +46,8 @@ describe GEPUB::Spine do
         }
       }
       xml = Nokogiri::XML::Document.parse(builder.to_xml)
-      xml.at_xpath('//xmlns:spine')['toc'].should == 'ncx'
-      xml.xpath("//xmlns:itemref[@idref='the_id' and @properties='page-spread-right']").size.should == 1
+      expect(xml.at_xpath('//xmlns:spine')['toc']).to eq('ncx')
+      expect(xml.xpath("//xmlns:itemref[@idref='the_id' and @properties='page-spread-right']").size).to eq(1)
     end
 
   end

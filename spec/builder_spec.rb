@@ -7,41 +7,41 @@ describe GEPUB::Builder do
       builder = GEPUB::Builder.new {
         language 'ja'
       }
-      builder.instance_eval { @book.language }.to_s.should == 'ja'
+      expect(builder.instance_eval { @book.language }.to_s).to eq('ja')
     end
 
     it 'should generate uid' do
       builder = GEPUB::Builder.new {
         unique_identifier 'http://example.jp/as_url', 'BookID', 'url'
       }
-      builder.instance_eval { @book.identifier }.to_s.should == 'http://example.jp/as_url'
-      builder.instance_eval { @book.identifier_list[0]['id']}.should == 'BookID'
-      builder.instance_eval { @book.identifier_list[0].identifier_type}.to_s.should == 'url'
+      expect(builder.instance_eval { @book.identifier }.to_s).to eq('http://example.jp/as_url')
+      expect(builder.instance_eval { @book.identifier_list[0]['id']}).to eq('BookID')
+      expect(builder.instance_eval { @book.identifier_list[0].identifier_type}.to_s).to eq('url')
     end
     
     it 'should generate title' do
       builder = GEPUB::Builder.new {
         title 'The Book Title'
       }
-      builder.instance_eval { @book.title }.to_s.should == 'The Book Title'
-      builder.instance_eval { @book.title.title_type }.to_s.should == 'main'
+      expect(builder.instance_eval { @book.title }.to_s).to eq('The Book Title')
+      expect(builder.instance_eval { @book.title.title_type }.to_s).to eq('main')
     end
 
     it 'should generate title with type ' do
       builder = GEPUB::Builder.new {
         subtitle 'the sub-title'
       }
-      builder.instance_eval { @book.title }.to_s.should == 'the sub-title'
-      builder.instance_eval { @book.title.title_type }.to_s.should == 'subtitle'
+      expect(builder.instance_eval { @book.title }.to_s).to eq('the sub-title')
+      expect(builder.instance_eval { @book.title.title_type }.to_s).to eq('subtitle')
     end
 
     it 'should generate collection title ' do
       builder = GEPUB::Builder.new {
         collection 'the collection', 3
       }
-      builder.instance_eval { @book.title }.to_s.should == 'the collection'
-      builder.instance_eval { @book.title.title_type }.to_s.should == 'collection'
-      builder.instance_eval { @book.title.group_position }.to_s.should == '3'
+      expect(builder.instance_eval { @book.title }.to_s).to eq('the collection')
+      expect(builder.instance_eval { @book.title.title_type }.to_s).to eq('collection')
+      expect(builder.instance_eval { @book.title.group_position }.to_s).to eq('3')
     end
 
     it 'should refine title: alternates ' do
@@ -49,9 +49,9 @@ describe GEPUB::Builder do
         collection 'the collection', 3
         alt 'ja' => 'シリーズ'
       }
-      builder.instance_eval { @book.title }.to_s.should == 'the collection'
-      builder.instance_eval { @book.title.title_type }.to_s.should == 'collection'
-      builder.instance_eval { @book.title.list_alternates['ja'] }.to_s.should == 'シリーズ'
+      expect(builder.instance_eval { @book.title }.to_s).to eq('the collection')
+      expect(builder.instance_eval { @book.title.title_type }.to_s).to eq('collection')
+      expect(builder.instance_eval { @book.title.list_alternates['ja'] }.to_s).to eq('シリーズ')
     end
 
     it 'should refine title: file_as ' do
@@ -59,9 +59,9 @@ describe GEPUB::Builder do
         title 'メインタイトル'
         file_as 'main title'
       }
-      builder.instance_eval { @book.title }.to_s.should == 'メインタイトル'
-      builder.instance_eval { @book.title.title_type }.to_s.should == 'main'
-      builder.instance_eval { @book.title.file_as }.to_s.should == 'main title'
+      expect(builder.instance_eval { @book.title }.to_s).to eq('メインタイトル')
+      expect(builder.instance_eval { @book.title.title_type }.to_s).to eq('main')
+      expect(builder.instance_eval { @book.title.file_as }.to_s).to eq('main title')
     end
 
     it 'should refine title: alt and file_as ' do
@@ -70,44 +70,44 @@ describe GEPUB::Builder do
         file_as 'main title'
         alt 'en' => 'The Main Title'
       }
-      builder.instance_eval { @book.title }.to_s.should == 'メインタイトル'
-      builder.instance_eval { @book.title.title_type }.to_s.should == 'main'
-      builder.instance_eval { @book.title.file_as }.to_s.should == 'main title'
-      builder.instance_eval { @book.title.list_alternates['en'] }.to_s.should == 'The Main Title'
+      expect(builder.instance_eval { @book.title }.to_s).to eq('メインタイトル')
+      expect(builder.instance_eval { @book.title.title_type }.to_s).to eq('main')
+      expect(builder.instance_eval { @book.title.file_as }.to_s).to eq('main title')
+      expect(builder.instance_eval { @book.title.list_alternates['en'] }.to_s).to eq('The Main Title')
     end
 
     it 'should generate creator ' do
       builder = GEPUB::Builder.new {
         creator 'The Main Author'
       }
-      builder.instance_eval { @book.creator }.to_s.should == 'The Main Author'
+      expect(builder.instance_eval { @book.creator }.to_s).to eq('The Main Author')
     end
 
     it 'should generate creator with role' do
       builder = GEPUB::Builder.new {
         creator 'The Illustrator', 'ill'
       }
-      builder.instance_eval { @book.creator }.to_s.should == 'The Illustrator'
-      builder.instance_eval { @book.creator.role}.to_s.should == 'ill'
+      expect(builder.instance_eval { @book.creator }.to_s).to eq('The Illustrator')
+      expect(builder.instance_eval { @book.creator.role}.to_s).to eq('ill')
     end
 
     it 'should generate contributor ' do
       builder = GEPUB::Builder.new {
         contributor 'contributor', 'edt'
       }
-      builder.instance_eval { @book.contributor }.to_s.should == 'contributor'
-      builder.instance_eval { @book.contributor.role}.to_s.should == 'edt'
+      expect(builder.instance_eval { @book.contributor }.to_s).to eq('contributor')
+      expect(builder.instance_eval { @book.contributor.role}.to_s).to eq('edt')
     end
 
     it 'should generate multiple creators ' do
       builder = GEPUB::Builder.new {
         creators 'First Author', 'Second Author', ['Third Person', 'edt']
       }
-      builder.instance_eval { @book.creator_list }.size.should == 3
-      builder.instance_eval { @book.creator_list[0] }.to_s.should == 'First Author'
-      builder.instance_eval { @book.creator_list[1] }.to_s.should == 'Second Author'
-      builder.instance_eval { @book.creator_list[2] }.to_s.should == 'Third Person'
-      builder.instance_eval { @book.creator_list[2].role }.to_s.should == 'edt'
+      expect(builder.instance_eval { @book.creator_list }.size).to eq(3)
+      expect(builder.instance_eval { @book.creator_list[0] }.to_s).to eq('First Author')
+      expect(builder.instance_eval { @book.creator_list[1] }.to_s).to eq('Second Author')
+      expect(builder.instance_eval { @book.creator_list[2] }.to_s).to eq('Third Person')
+      expect(builder.instance_eval { @book.creator_list[2].role }.to_s).to eq('edt')
     end
 
     it 'should generate multiple creators, and then add file_as at once ' do
@@ -115,14 +115,14 @@ describe GEPUB::Builder do
         creators 'First Author', 'Second Author', ['Third Person', 'edt']
         file_as '1st', '2nd', '3rd'
       }
-      builder.instance_eval { @book.creator_list }.size.should == 3
-      builder.instance_eval { @book.creator_list[0] }.to_s.should == 'First Author'
-      builder.instance_eval { @book.creator_list[0].file_as }.to_s.should == '1st'
-      builder.instance_eval { @book.creator_list[1] }.to_s.should == 'Second Author'
-      builder.instance_eval { @book.creator_list[1].file_as }.to_s.should == '2nd'
-      builder.instance_eval { @book.creator_list[2] }.to_s.should == 'Third Person'
-      builder.instance_eval { @book.creator_list[2].file_as }.to_s.should == '3rd'
-      builder.instance_eval { @book.creator_list[2].role }.to_s.should == 'edt'
+      expect(builder.instance_eval { @book.creator_list }.size).to eq(3)
+      expect(builder.instance_eval { @book.creator_list[0] }.to_s).to eq('First Author')
+      expect(builder.instance_eval { @book.creator_list[0].file_as }.to_s).to eq('1st')
+      expect(builder.instance_eval { @book.creator_list[1] }.to_s).to eq('Second Author')
+      expect(builder.instance_eval { @book.creator_list[1].file_as }.to_s).to eq('2nd')
+      expect(builder.instance_eval { @book.creator_list[2] }.to_s).to eq('Third Person')
+      expect(builder.instance_eval { @book.creator_list[2].file_as }.to_s).to eq('3rd')
+      expect(builder.instance_eval { @book.creator_list[2].role }.to_s).to eq('edt')
     end
 
 
@@ -134,17 +134,17 @@ describe GEPUB::Builder do
              'en' => ['first','second','third']
              )
       }
-      builder.instance_eval { @book.creator_list }.size.should == 3
-      builder.instance_eval { @book.creator_list[0] }.to_s.should == 'First Author'
-      builder.instance_eval { @book.creator_list[0].list_alternates['ja'] }.to_s.should == '最初'
-      builder.instance_eval { @book.creator_list[0].list_alternates['en'] }.to_s.should == 'first'
-      builder.instance_eval { @book.creator_list[1] }.to_s.should == 'Second Author'
-      builder.instance_eval { @book.creator_list[1].list_alternates['ja'] }.to_s.should == '二番目'
-      builder.instance_eval { @book.creator_list[1].list_alternates['en'] }.to_s.should == 'second'
-      builder.instance_eval { @book.creator_list[2] }.to_s.should == 'Third Person'
-      builder.instance_eval { @book.creator_list[2].list_alternates['ja'] }.to_s.should == '三番目'
-      builder.instance_eval { @book.creator_list[2].list_alternates['en'] }.to_s.should == 'third'
-      builder.instance_eval { @book.creator_list[2].role }.to_s.should == 'edt'
+      expect(builder.instance_eval { @book.creator_list }.size).to eq(3)
+      expect(builder.instance_eval { @book.creator_list[0] }.to_s).to eq('First Author')
+      expect(builder.instance_eval { @book.creator_list[0].list_alternates['ja'] }.to_s).to eq('最初')
+      expect(builder.instance_eval { @book.creator_list[0].list_alternates['en'] }.to_s).to eq('first')
+      expect(builder.instance_eval { @book.creator_list[1] }.to_s).to eq('Second Author')
+      expect(builder.instance_eval { @book.creator_list[1].list_alternates['ja'] }.to_s).to eq('二番目')
+      expect(builder.instance_eval { @book.creator_list[1].list_alternates['en'] }.to_s).to eq('second')
+      expect(builder.instance_eval { @book.creator_list[2] }.to_s).to eq('Third Person')
+      expect(builder.instance_eval { @book.creator_list[2].list_alternates['ja'] }.to_s).to eq('三番目')
+      expect(builder.instance_eval { @book.creator_list[2].list_alternates['en'] }.to_s).to eq('third')
+      expect(builder.instance_eval { @book.creator_list[2].role }.to_s).to eq('edt')
     end
   end
   context 'resources' do
@@ -155,8 +155,8 @@ describe GEPUB::Builder do
           file('text/memo.txt')
         }
       }
-      builder.instance_eval{ @book.item_by_href('text/memo.txt') }.should_not be_nil
-      builder.instance_eval{ @book.item_by_href('text/memo.txt').content.chomp }.should == 'just a plain text.'
+      expect(builder.instance_eval{ @book.item_by_href('text/memo.txt') }).not_to be_nil
+      expect(builder.instance_eval{ @book.item_by_href('text/memo.txt').content.chomp }).to eq('just a plain text.')
     end
 
     it 'should add files to book' do
@@ -166,9 +166,9 @@ describe GEPUB::Builder do
           files('text/memo.txt','text/cover.xhtml')
         }
       }
-      builder.instance_eval{ @book.item_by_href('text/memo.txt') }.should_not be_nil
-      builder.instance_eval{ @book.item_by_href('text/memo.txt').content.chomp }.should == 'just a plain text.'
-      builder.instance_eval{ @book.item_by_href('text/cover.xhtml') }.should_not be_nil
+      expect(builder.instance_eval{ @book.item_by_href('text/memo.txt') }).not_to be_nil
+      expect(builder.instance_eval{ @book.item_by_href('text/memo.txt').content.chomp }).to eq('just a plain text.')
+      expect(builder.instance_eval{ @book.item_by_href('text/cover.xhtml') }).not_to be_nil
     end
 
     it 'should add files to book with glob' do
@@ -178,9 +178,9 @@ describe GEPUB::Builder do
           glob 'text/*.{txt,xhtml}'
         }
       }
-      builder.instance_eval{ @book.item_by_href('text/memo.txt') }.should_not be_nil
-      builder.instance_eval{ @book.item_by_href('text/memo.txt').content.chomp }.should == 'just a plain text.'
-      builder.instance_eval{ @book.item_by_href('text/cover.xhtml') }.should_not be_nil
+      expect(builder.instance_eval{ @book.item_by_href('text/memo.txt') }).not_to be_nil
+      expect(builder.instance_eval{ @book.item_by_href('text/memo.txt').content.chomp }).to eq('just a plain text.')
+      expect(builder.instance_eval{ @book.item_by_href('text/cover.xhtml') }).not_to be_nil
     end
 
     it 'should add files to book with import with prefix' do
@@ -190,9 +190,9 @@ describe GEPUB::Builder do
           import 'text/localresource.conf'
         }
       }
-      builder.instance_eval{ @book.item_by_href('memo.txt') }.should_not be_nil
-      builder.instance_eval{ @book.item_by_href('memo.txt').content.chomp }.should == 'just a plain text.'
-      builder.instance_eval{ @book.item_by_href('cover.xhtml') }.should_not be_nil
+      expect(builder.instance_eval{ @book.item_by_href('memo.txt') }).not_to be_nil
+      expect(builder.instance_eval{ @book.item_by_href('memo.txt').content.chomp }).to eq('just a plain text.')
+      expect(builder.instance_eval{ @book.item_by_href('cover.xhtml') }).not_to be_nil
     end
 
     it 'should add files to book with import with prefix' do
@@ -202,9 +202,9 @@ describe GEPUB::Builder do
           import 'text/localresource.conf', :dir_prefix => 'text'
         }
       }
-      builder.instance_eval{ @book.item_by_href('text/memo.txt') }.should_not be_nil
-      builder.instance_eval{ @book.item_by_href('text/memo.txt').content.chomp }.should == 'just a plain text.'
-      builder.instance_eval{ @book.item_by_href('text/cover.xhtml') }.should_not be_nil
+      expect(builder.instance_eval{ @book.item_by_href('text/memo.txt') }).not_to be_nil
+      expect(builder.instance_eval{ @book.item_by_href('text/memo.txt').content.chomp }).to eq('just a plain text.')
+      expect(builder.instance_eval{ @book.item_by_href('text/cover.xhtml') }).not_to be_nil
     end
 
     it 'should add a file with id' do
@@ -215,8 +215,8 @@ describe GEPUB::Builder do
           id 'the_id_of_memo.txt'
         }
       }
-      builder.instance_eval{ @book.item_by_href('text/memo.txt') }.should_not be_nil
-      builder.instance_eval{ @book.item_by_href('text/memo.txt').id }.should == 'the_id_of_memo.txt'
+      expect(builder.instance_eval{ @book.item_by_href('text/memo.txt') }).not_to be_nil
+      expect(builder.instance_eval{ @book.item_by_href('text/memo.txt').id }).to eq('the_id_of_memo.txt')
     end
 
     it 'should add files to book from IO object' do
@@ -226,8 +226,8 @@ describe GEPUB::Builder do
           file('text/memo.txt' => io)
         }
       }
-      builder.instance_eval{ @book.item_by_href('text/memo.txt') }.should_not be_nil
-      builder.instance_eval{ @book.item_by_href('text/memo.txt').content.chomp }.should == 'just a plain text.'
+      expect(builder.instance_eval{ @book.item_by_href('text/memo.txt') }).not_to be_nil
+      expect(builder.instance_eval{ @book.item_by_href('text/memo.txt').content.chomp }).to eq('just a plain text.')
     end
 
     it 'should add image file as cover' do
@@ -237,8 +237,8 @@ describe GEPUB::Builder do
           cover_image 'img/cover.jpg'
         }
       }
-      builder.instance_eval{ @book.item_by_href('img/cover.jpg') }.should_not be_nil
-      builder.instance_eval{ @book.item_by_href('img/cover.jpg').properties.member? 'cover-image' }.should ==  true
+      expect(builder.instance_eval{ @book.item_by_href('img/cover.jpg') }).not_to be_nil
+      expect(builder.instance_eval{ @book.item_by_href('img/cover.jpg').properties.member? 'cover-image' }).to eq(true)
     end
 
     it 'should add file as nav' do
@@ -248,8 +248,8 @@ describe GEPUB::Builder do
           nav 'text/nav.xhtml'
         }
       }
-      builder.instance_eval{ @book.item_by_href('text/nav.xhtml') }.should_not be_nil
-      builder.instance_eval{ @book.item_by_href('text/nav.xhtml').properties.member? 'nav' }.should ==  true
+      expect(builder.instance_eval{ @book.item_by_href('text/nav.xhtml') }).not_to be_nil
+      expect(builder.instance_eval{ @book.item_by_href('text/nav.xhtml').properties.member? 'nav' }).to eq(true)
     end
 
     it 'should specify mediatype' do
@@ -260,8 +260,8 @@ describe GEPUB::Builder do
           media_type('audio/mp4')
         }
       }
-      builder.instance_eval{ @book.item_by_href('resources/noise.m4') }.should_not be_nil        
-      builder.instance_eval{ @book.item_by_href('resources/noise.m4').media_type }.should == 'audio/mp4'
+      expect(builder.instance_eval{ @book.item_by_href('resources/noise.m4') }).not_to be_nil        
+      expect(builder.instance_eval{ @book.item_by_href('resources/noise.m4').media_type }).to eq('audio/mp4')
     end
 
     it 'should specify mediatype to files' do
@@ -272,11 +272,11 @@ describe GEPUB::Builder do
           media_type('audio/mp4')
         }
       }
-      builder.instance_eval{ @book.item_by_href('resources/noise.m4') }.should_not be_nil        
-      builder.instance_eval{ @book.item_by_href('resources/noise.m4').media_type }.should == 'audio/mp4'
+      expect(builder.instance_eval{ @book.item_by_href('resources/noise.m4') }).not_to be_nil        
+      expect(builder.instance_eval{ @book.item_by_href('resources/noise.m4').media_type }).to eq('audio/mp4')
 
-      builder.instance_eval{ @book.item_by_href('resources/noise_2.m4a') }.should_not be_nil        
-      builder.instance_eval{ @book.item_by_href('resources/noise_2.m4a').media_type }.should == 'audio/mp4'
+      expect(builder.instance_eval{ @book.item_by_href('resources/noise_2.m4a') }).not_to be_nil        
+      expect(builder.instance_eval{ @book.item_by_href('resources/noise_2.m4a').media_type }).to eq('audio/mp4')
     end
 
     it 'should specify mediatype to files using with_media_type' do
@@ -290,14 +290,14 @@ describe GEPUB::Builder do
           file('text/cover.xhtml')
         }
       }
-      builder.instance_eval{ @book.item_by_href('resources/noise.m4') }.should_not be_nil        
-      builder.instance_eval{ @book.item_by_href('resources/noise.m4').media_type }.should == 'audio/mp4'
+      expect(builder.instance_eval{ @book.item_by_href('resources/noise.m4') }).not_to be_nil        
+      expect(builder.instance_eval{ @book.item_by_href('resources/noise.m4').media_type }).to eq('audio/mp4')
 
-      builder.instance_eval{ @book.item_by_href('resources/noise_2.m4a') }.should_not be_nil        
-      builder.instance_eval{ @book.item_by_href('resources/noise_2.m4a').media_type }.should == 'audio/mp4'
+      expect(builder.instance_eval{ @book.item_by_href('resources/noise_2.m4a') }).not_to be_nil        
+      expect(builder.instance_eval{ @book.item_by_href('resources/noise_2.m4a').media_type }).to eq('audio/mp4')
 
-      builder.instance_eval{ @book.item_by_href('text/cover.xhtml') }.should_not be_nil        
-      builder.instance_eval{ @book.item_by_href('text/cover.xhtml').media_type }.should == 'application/xhtml+xml'
+      expect(builder.instance_eval{ @book.item_by_href('text/cover.xhtml') }).not_to be_nil        
+      expect(builder.instance_eval{ @book.item_by_href('text/cover.xhtml').media_type }).to eq('application/xhtml+xml')
     end
 
     it 'should specify bindings handler' do
@@ -322,10 +322,10 @@ describe GEPUB::Builder do
           }
         }
       }
-      builder.instance_eval{ @book.item_by_href('text/cover.xhtml') }.should_not be_nil
-      builder.instance_eval{ @book.spine_items[0].href }.should ==  'text/cover.xhtml'
-      builder.instance_eval{ @book.item_by_href('text/memo.txt') }.should_not be_nil
-      builder.instance_eval{ @book.spine_items[1].href }.should ==  'text/memo.txt'
+      expect(builder.instance_eval{ @book.item_by_href('text/cover.xhtml') }).not_to be_nil
+      expect(builder.instance_eval{ @book.spine_items[0].href }).to eq('text/cover.xhtml')
+      expect(builder.instance_eval{ @book.item_by_href('text/memo.txt') }).not_to be_nil
+      expect(builder.instance_eval{ @book.spine_items[1].href }).to eq('text/memo.txt')
     end
 
     it 'should add files and heading' do
@@ -340,14 +340,14 @@ describe GEPUB::Builder do
           }
         }
       }
-      builder.instance_eval{ @book.item_by_href('text/cover.xhtml') }.should_not be_nil
-      builder.instance_eval{ @book.spine_items[0].href }.should ==  'text/cover.xhtml'
-      builder.instance_eval{ @book.item_by_href('text/memo.txt') }.should_not be_nil
-      builder.instance_eval{ @book.spine_items[1].href }.should ==  'text/memo.txt'
-      builder.instance_eval{ @book.instance_eval { @toc[0][:item].href }}.should == 'text/cover.xhtml'
-      builder.instance_eval{ @book.instance_eval { @toc[0][:text] }}.should == 'cover page'
-      builder.instance_eval{ @book.instance_eval { @toc[1][:item].href }}.should == 'text/memo.txt'
-      builder.instance_eval{ @book.instance_eval { @toc[1][:text] }}.should == 'memo text'
+      expect(builder.instance_eval{ @book.item_by_href('text/cover.xhtml') }).not_to be_nil
+      expect(builder.instance_eval{ @book.spine_items[0].href }).to eq('text/cover.xhtml')
+      expect(builder.instance_eval{ @book.item_by_href('text/memo.txt') }).not_to be_nil
+      expect(builder.instance_eval{ @book.spine_items[1].href }).to eq('text/memo.txt')
+      expect(builder.instance_eval{ @book.instance_eval { @toc[0][:item].href }}).to eq('text/cover.xhtml')
+      expect(builder.instance_eval{ @book.instance_eval { @toc[0][:text] }}).to eq('cover page')
+      expect(builder.instance_eval{ @book.instance_eval { @toc[1][:item].href }}).to eq('text/memo.txt')
+      expect(builder.instance_eval{ @book.instance_eval { @toc[1][:text] }}).to eq('memo text')
     end
 
     it 'should add files and page-spread-property' do
@@ -362,10 +362,10 @@ describe GEPUB::Builder do
           }
         }
       }
-      builder.instance_eval{ @book.item_by_href('text/cover.xhtml') }.should_not be_nil
-      builder.instance_eval{ @book.spine.itemref_list[0].properties[0] }.should == 'page-spread-left'
-      builder.instance_eval{ @book.item_by_href('text/memo.txt') }.should_not be_nil
-      builder.instance_eval{ @book.spine.itemref_list[1].properties[0] }.should == 'page-spread-right'
+      expect(builder.instance_eval{ @book.item_by_href('text/cover.xhtml') }).not_to be_nil
+      expect(builder.instance_eval{ @book.spine.itemref_list[0].properties[0] }).to eq('page-spread-left')
+      expect(builder.instance_eval{ @book.item_by_href('text/memo.txt') }).not_to be_nil
+      expect(builder.instance_eval{ @book.spine.itemref_list[1].properties[0] }).to eq('page-spread-right')
     end
 
     it 'should add files and rendition property' do
@@ -381,10 +381,10 @@ describe GEPUB::Builder do
           }
         }
       }
-      builder.instance_eval{ @book.item_by_href('text/memo.txt') }.should_not be_nil
-      builder.instance_eval{ @book.spine.itemref_list[1].properties[0] }.should == 'rendition:layout-pre-paginated'
-      builder.instance_eval{ @book.spine.itemref_list[1].properties[1] }.should == 'rendition:orientation-landscape'
-      builder.instance_eval{ @book.spine.itemref_list[1].properties[2] }.should == 'rendition:spread-both'
+      expect(builder.instance_eval{ @book.item_by_href('text/memo.txt') }).not_to be_nil
+      expect(builder.instance_eval{ @book.spine.itemref_list[1].properties[0] }).to eq('rendition:layout-pre-paginated')
+      expect(builder.instance_eval{ @book.spine.itemref_list[1].properties[1] }).to eq('rendition:orientation-landscape')
+      expect(builder.instance_eval{ @book.spine.itemref_list[1].properties[2] }).to eq('rendition:spread-both')
       builder.instance_eval{
         xml = Nokogiri::XML::Document.parse @book.opf_xml
         xml.root['prefix'].should == 'rendition: http://www.idpf.org/vocab/rendition/#'
@@ -587,9 +587,9 @@ describe GEPUB::Builder do
       builder.instance_eval {
         @book.optional_files.size.should == 1
       }
-      builder.instance_eval {      
+      expect(builder.instance_eval {      
         @book.optional_files['META-INF/test.xml']
-      }.should_not be_nil
+      }).not_to be_nil
     end
   end
 end

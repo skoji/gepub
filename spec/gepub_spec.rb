@@ -6,34 +6,34 @@ require 'nokogiri'
 describe GEPUB::Item do
   it "should return atttributes" do
     item = GEPUB::Item.new('theid', 'foo/bar.bar', 'application/xhtml+xml')
-    item.itemid.should == 'theid'
-    item.href.should == 'foo/bar.bar'
-    item.mediatype.should == 'application/xhtml+xml'
+    expect(item.itemid).to eq('theid')
+    expect(item.href).to eq('foo/bar.bar')
+    expect(item.mediatype).to eq('application/xhtml+xml')
   end
 
   it "should handle html" do
     item = GEPUB::Item.new('id', 'text/foo.html')
-    item.mediatype.should == 'application/xhtml+xml'
+    expect(item.mediatype).to eq('application/xhtml+xml')
   end
 
   it "should handle xhtml" do
     item = GEPUB::Item.new('id', 'text/foo.xhtml')
-    item.mediatype.should == 'application/xhtml+xml'
+    expect(item.mediatype).to eq('application/xhtml+xml')
   end
 
   it "should handle JPG" do
     item = GEPUB::Item.new('id', 'img/foo.JPG')
-    item.mediatype.should == 'image/jpeg'
+    expect(item.mediatype).to eq('image/jpeg')
   end
 
   it "should handle css" do
     item = GEPUB::Item.new('id', 'img/foo.css')
-    item.mediatype.should == 'text/css'
+    expect(item.mediatype).to eq('text/css')
   end
 
   it "should handle javascript" do
     item = GEPUB::Item.new('id', 'js/jQuery.js')
-    item.mediatype.should == 'text/javascript'
+    expect(item.mediatype).to eq('text/javascript')
   end
 
 end
@@ -82,57 +82,57 @@ EOF
   end
 
   it "should have titile"  do
-    @book.title.to_s.should == 'thetitle' 
+    expect(@book.title.to_s).to eq('thetitle') 
   end
 
   it "should generate correct ncx"  do
     ncx = Nokogiri::XML.parse(@book.ncx_xml).root
-    ncx.name.should == 'ncx'
-    ncx.attributes['version'].value.should == '2005-1'
+    expect(ncx.name).to eq('ncx')
+    expect(ncx.attributes['version'].value).to eq('2005-1')
     ncx.namespaces['xmlns'] == 'http://www.daisy.org/z3986/2005/ncx/'
   end
 
   it "should have correct head in ncx" do
     head = Nokogiri::XML.parse(@book.ncx_xml).at_xpath('/xmlns:ncx/xmlns:head')
-    head.should_not be_nil
-    head.at_xpath("xmlns:meta[@name='dtb:uid']")['content'].should == "http://example.jp/foobar/"
-    head.xpath("xmlns:meta[@name='dtb:depth']").size.should > 0
-    head.xpath("xmlns:meta[@name='dtb:totalPageCount']").size.should > 0
-    head.xpath("xmlns:meta[@name='dtb:maxPageNumber']").size.should > 0
+    expect(head).not_to be_nil
+    expect(head.at_xpath("xmlns:meta[@name='dtb:uid']")['content']).to eq("http://example.jp/foobar/")
+    expect(head.xpath("xmlns:meta[@name='dtb:depth']").size).to be > 0
+    expect(head.xpath("xmlns:meta[@name='dtb:totalPageCount']").size).to be > 0
+    expect(head.xpath("xmlns:meta[@name='dtb:maxPageNumber']").size).to be > 0
   end
 
   it "should have correct ncx doctitle" do
     doctitle = Nokogiri::XML.parse(@book.ncx_xml).root
 
-    doctitle.xpath('xmlns:docTitle').size.should > 0 
-    doctitle.at_xpath('xmlns:docTitle/xmlns:text').text.should == 'thetitle'
+    expect(doctitle.xpath('xmlns:docTitle').size).to be > 0 
+    expect(doctitle.at_xpath('xmlns:docTitle/xmlns:text').text).to eq('thetitle')
   end
 
   it "should correct ncx navmap" do
     ncx = Nokogiri::XML::parse(@book.ncx_xml).root
 
-    ncx.xpath('xmlns:navMap').size.should > 0
+    expect(ncx.xpath('xmlns:navMap').size).to be > 0
     nav_point = ncx.at_xpath('xmlns:navMap/xmlns:navPoint')
-    nav_point['id'].should == 'c2'
-    nav_point['playOrder'].should == '1'
+    expect(nav_point['id']).to eq('c2')
+    expect(nav_point['playOrder']).to eq('1')
     
-    nav_point.at_xpath('xmlns:navLabel/xmlns:text').content.should == 'test chapter'
+    expect(nav_point.at_xpath('xmlns:navLabel/xmlns:text').content).to eq('test chapter')
     nav_point.at_xpath('xmlns:content')['src'] == 'foobar2.html'
 
   end
 
   it "should create correct opf" do
     opf = Nokogiri::XML.parse(@book.opf_xml).root
-    opf.name.should == 'package'
-    opf.namespaces['xmlns'].should == 'http://www.idpf.org/2007/opf'
-    opf['version'].should == '3.0'
-    opf['unique-identifier'].should == 'BookId'
+    expect(opf.name).to eq('package')
+    expect(opf.namespaces['xmlns']).to eq('http://www.idpf.org/2007/opf')
+    expect(opf['version']).to eq('3.0')
+    expect(opf['unique-identifier']).to eq('BookId')
   end
 
   it "should have correct metadata in opf" do
     opf = Nokogiri::XML.parse(@book.opf_xml).root
     metadata = opf.xpath('xmlns:metadata').first
-    metadata.at_xpath('dc:language', metadata.namespaces).content.should == 'ja'
+    expect(metadata.at_xpath('dc:language', metadata.namespaces).content).to eq('ja')
     #TODO: check metadata
   end
 
@@ -140,19 +140,19 @@ EOF
     opf = Nokogiri::XML.parse(@book.opf_xml).root
 
     manifest = opf.at_xpath('xmlns:manifest')
-    manifest.at_xpath('xmlns:item[@id="c1"]')['href'].should == 'text/foobar.xhtml'    
-    manifest.at_xpath('xmlns:item[@id="c1"]')['media-type'].should == 'application/xhtml+xml'
+    expect(manifest.at_xpath('xmlns:item[@id="c1"]')['href']).to eq('text/foobar.xhtml')    
+    expect(manifest.at_xpath('xmlns:item[@id="c1"]')['media-type']).to eq('application/xhtml+xml')
 
     spine = opf.at_xpath('xmlns:spine')
-    spine['toc'].should == 'ncx'
-    spine.at_xpath('xmlns:itemref')['idref'].should == 'c1'
+    expect(spine['toc']).to eq('ncx')
+    expect(spine.at_xpath('xmlns:itemref')['idref']).to eq('c1')
   end
 
   it "should have correct bindings in opf" do
     opf = Nokogiri::XML.parse(@book.opf_xml).root
     bindings = opf.at_xpath('xmlns:bindings')
-    bindings.at_xpath('xmlns:mediaType')['handler'].should == @item3_id
-    bindings.at_xpath('xmlns:mediaType')['media-type'].should == 'application/x-some-media-type'
+    expect(bindings.at_xpath('xmlns:mediaType')['handler']).to eq(@item3_id)
+    expect(bindings.at_xpath('xmlns:mediaType')['media-type']).to eq('application/x-some-media-type')
   end
   
   it "should have correct cover image id" do
@@ -162,7 +162,7 @@ EOF
 
     metadata = opf.at_xpath('xmlns:metadata')
     meta = metadata.at_xpath("xmlns:meta[@name='cover']")
-    meta['content'].should == item.itemid        
+    expect(meta['content']).to eq(item.itemid)        
   end
 
   it "should generate correct epub" do

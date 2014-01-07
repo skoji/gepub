@@ -9,11 +9,11 @@ describe GEPUB::Bindings do
       @bindings = GEPUB::Package.parse_opf(File.open(File.dirname(__FILE__) + '/fixtures/testdata/test_with_bindings.opf'), '/package.opf').instance_eval{ @bindings }
     end
     it 'should be parsed' do
-      @bindings.media_types.size.should == 2
-      @bindings.media_types[0].handler.should == 'h'
-      @bindings.media_types[0].media_type.should == 'application/x-foreign-type'
-      @bindings.media_types[1].handler.should == 'v'
-      @bindings.media_types[1].media_type.should == 'application/x-other-foreign-type'
+      expect(@bindings.media_types.size).to eq(2)
+      expect(@bindings.media_types[0].handler).to eq('h')
+      expect(@bindings.media_types[0].media_type).to eq('application/x-foreign-type')
+      expect(@bindings.media_types[1].handler).to eq('v')
+      expect(@bindings.media_types[1].media_type).to eq('application/x-other-foreign-type')
     end
   end
   
@@ -27,7 +27,7 @@ describe GEPUB::Bindings do
         }
       }
       xml = Nokogiri::XML::Document.parse(builder.to_xml)
-      xml.xpath("//xmlns:mediaType[@handler='id1' and @media-type='application/x-some-type']").size.should == 1
+      expect(xml.xpath("//xmlns:mediaType[@handler='id1' and @media-type='application/x-some-type']").size).to eq(1)
     end
   end
   

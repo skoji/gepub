@@ -6,31 +6,31 @@ require 'nokogiri'
 describe GEPUB::Package do
   it 'should be initialized' do
     opf = GEPUB::Package.new('/package.opf')
-    opf.ns_prefix(GEPUB::XMLUtil::OPF_NS).should == 'xmlns'
+    expect(opf.ns_prefix(GEPUB::XMLUtil::OPF_NS)).to eq('xmlns')
   end
 
   context 'parse existing opf' do
     it 'should be initialized with opf' do
       opf = GEPUB::Package.parse_opf(File.open(File.dirname(__FILE__) + '/fixtures/testdata/test.opf'), '/package.opf')
-      opf.ns_prefix(GEPUB::XMLUtil::OPF_NS).should == 'xmlns'
-      opf['version'].should == '3.0'
-      opf['unique-identifier'].should == 'pub-id'
-      opf['xml:lang'].should == 'ja'
-      opf['prefix'].should == 'foaf: http://xmlns.com/foaf/spec/                   rendition:  http://www.idpf.org/vocab/rendition/#'
+      expect(opf.ns_prefix(GEPUB::XMLUtil::OPF_NS)).to eq('xmlns')
+      expect(opf['version']).to eq('3.0')
+      expect(opf['unique-identifier']).to eq('pub-id')
+      expect(opf['xml:lang']).to eq('ja')
+      expect(opf['prefix']).to eq('foaf: http://xmlns.com/foaf/spec/                   rendition:  http://www.idpf.org/vocab/rendition/#')
     end
     it 'should parse prefix data' do
       package = GEPUB::Package.parse_opf(File.open(File.dirname(__FILE__) + '/fixtures/testdata/test.opf'), '/package.opf')
-      package.prefixes.size.should == 2
-      package.prefixes['foaf'].should == 'http://xmlns.com/foaf/spec/'
-      package.prefixes['rendition'].should == 'http://www.idpf.org/vocab/rendition/#'
+      expect(package.prefixes.size).to eq(2)
+      expect(package.prefixes['foaf']).to eq('http://xmlns.com/foaf/spec/')
+      expect(package.prefixes['rendition']).to eq('http://www.idpf.org/vocab/rendition/#')
       
     end
 
     it 'should parse rendition metadata' do
       package = GEPUB::Package.parse_opf(File.open(File.dirname(__FILE__) + '/fixtures/testdata/test.opf'), '/package.opf')
-      package.rendition_layout.should == 'pre-paginated'
-      package.rendition_orientation.should == 'auto'
-      package.rendition_spread.should == 'both'
+      expect(package.rendition_layout).to eq('pre-paginated')
+      expect(package.rendition_orientation).to eq('auto')
+      expect(package.rendition_spread).to eq('both')
       
     end
 
@@ -67,11 +67,11 @@ describe GEPUB::Package do
         }
       }
       xml = Nokogiri::XML::Document.parse opf.opf_xml
-      xml.root.name.should == 'package'
-      xml.root.namespaces.size.should == 1
-      xml.root.namespaces['xmlns'].should == GEPUB::XMLUtil::OPF_NS
-      xml.root['version'].should == '3.0'
-      xml.root['xml:lang'].should == 'ja'
+      expect(xml.root.name).to eq('package')
+      expect(xml.root.namespaces.size).to eq(1)
+      expect(xml.root.namespaces['xmlns']).to eq(GEPUB::XMLUtil::OPF_NS)
+      expect(xml.root['version']).to eq('3.0')
+      expect(xml.root['xml:lang']).to eq('ja')
       # TODO: should check all elements
     end
 
@@ -83,7 +83,7 @@ describe GEPUB::Package do
         package.enable_rendition
       end
       xml = Nokogiri::XML::Document.parse package.opf_xml
-      xml.root['prefix'].should == 'rendition: http://www.idpf.org/vocab/rendition/#'
+      expect(xml.root['prefix']).to eq('rendition: http://www.idpf.org/vocab/rendition/#')
     end
 
     it 'should generate package with rendition attributes' do
@@ -94,10 +94,10 @@ describe GEPUB::Package do
         package.rendition_spread = 'landscape'
       end
       xml = Nokogiri::XML::Document.parse package.opf_xml
-      xml.root['prefix'].should == 'rendition: http://www.idpf.org/vocab/rendition/#'
-      xml.at_xpath("//xmlns:meta[@property='rendition:layout']").content.should == 'pre-paginated'
-      xml.at_xpath("//xmlns:meta[@property='rendition:orientation']").content.should == 'portlait'
-      xml.at_xpath("//xmlns:meta[@property='rendition:spread']").content.should == 'landscape'
+      expect(xml.root['prefix']).to eq('rendition: http://www.idpf.org/vocab/rendition/#')
+      expect(xml.at_xpath("//xmlns:meta[@property='rendition:layout']").content).to eq('pre-paginated')
+      expect(xml.at_xpath("//xmlns:meta[@property='rendition:orientation']").content).to eq('portlait')
+      expect(xml.at_xpath("//xmlns:meta[@property='rendition:spread']").content).to eq('landscape')
     end
 
     it 'should handle ibooks version' do
@@ -106,8 +106,8 @@ describe GEPUB::Package do
         package.ibooks_version = '1.1.1'
       end
       xml = Nokogiri::XML::Document.parse package.opf_xml
-      xml.root['prefix'].should == 'ibooks: http://vocabulary.itunes.apple.com/rdf/ibooks/vocabulary-extensions-1.0/'
-      xml.at_xpath("//xmlns:meta[@property='ibooks:version']").content.should == '1.1.1'
+      expect(xml.root['prefix']).to eq('ibooks: http://vocabulary.itunes.apple.com/rdf/ibooks/vocabulary-extensions-1.0/')
+      expect(xml.at_xpath("//xmlns:meta[@property='ibooks:version']").content).to eq('1.1.1')
     end
     
     it 'should generate opf2.0' do
@@ -140,11 +140,11 @@ describe GEPUB::Package do
         }
       }
       xml = Nokogiri::XML::Document.parse opf.opf_xml
-      xml.root.name.should == 'package'
-      xml.root.namespaces.size.should == 1
-      xml.root.namespaces['xmlns'].should == GEPUB::XMLUtil::OPF_NS
-      xml.root['version'].should == '2.0'
-      xml.root['xml:lang'].should == 'ja'
+      expect(xml.root.name).to eq('package')
+      expect(xml.root.namespaces.size).to eq(1)
+      expect(xml.root.namespaces['xmlns']).to eq(GEPUB::XMLUtil::OPF_NS)
+      expect(xml.root['version']).to eq('2.0')
+      expect(xml.root['xml:lang']).to eq('ja')
     end
   end
 end
