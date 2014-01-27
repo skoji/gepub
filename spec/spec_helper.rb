@@ -1,3 +1,5 @@
+require "stringio"
+
 begin
   require 'rspec'
 rescue LoadError
@@ -13,6 +15,20 @@ RSpec.configure do |config|
   config.tty = true
   # Use the specified formatter
   config.formatter = :documentation # :progress, :html, :textmate
+
+  def capture(stream)
+    begin
+      stream = stream.to_s
+      eval "$#{stream} = StringIO.new"
+      yield
+      result = eval("$#{stream}").string
+    ensure
+      eval "$#{stream} = #{stream.upcase}"
+    end
+    result
+  end
+
+
 end
 
 require 'rspec/core/formatters/base_text_formatter'

@@ -53,7 +53,7 @@ describe GEPUB::Book do
     @book.spine.push(item1)
 
     item2 = @book.add_ordered_item('text/barbar.xhtml',
-                                        StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title></head><body><p>second page, whith is test chapter.</p></body></html>'),
+                                   StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title></head><body><p>second page, whith is test chapter.</p></body></html>'),
                                    'c2')
     item2.toc_text 'test chapter'
 
@@ -169,9 +169,12 @@ EOF
     epubname = File.join(File.dirname(__FILE__), 'testepub.epub')
     @book.generate_epub(epubname)
     jar = File.join(File.dirname(__FILE__), 'fixtures/epubcheck-3.0b4/epubcheck-3.0b4.jar')
-    system 'java', '-jar', jar, epubname
-  end
+    @stdout = capture(:stdout) do 
+      puts %x(java -jar #{jar} #{epubname})
+    end
+    expect(@stdout.include? "No errors or warnings detected.")
 
+  end
   it "should generate correct epub with buffer" do
     epubname = File.join(File.dirname(__FILE__), 'testepub_buf.epub')
     File.open(epubname, 'wb') {
@@ -179,7 +182,11 @@ EOF
       io.write @book.generate_epub_stream.string
     }
     jar = File.join(File.dirname(__FILE__), 'fixtures/epubcheck-3.0b4/epubcheck-3.0b4.jar')
-    system 'java', '-jar', jar, epubname
+    @stdout = capture(:stdout) do 
+      puts %x(java -jar #{jar} #{epubname})
+    end
+    expect(@stdout.include? "No errors or warnings detected.")
+
   end
 
   it "should generate correct epub2.0" do
@@ -196,19 +203,26 @@ EOF
     item1.add_content(StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c1</title></head><body><p>the first page</p></body></html>'))
     @book.spine.push(item1)
     item2 = @book.add_ordered_item('text/barbar.xhtml',
-                                        StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title></head><body><p>second page, whith is test chapter.</p></body></html>'),
-                                        'c2')
+                                   StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title></head><body><p>second page, whith is test chapter.</p></body></html>'),
+                                   'c2')
     item2.toc_text 'test chapter'
     @book.generate_epub(epubname)
     jar = File.join(File.dirname(__FILE__), 'fixtures/epubcheck-3.0b4/epubcheck-3.0b4.jar')
-    system 'java', '-jar', jar, epubname
+    @stdout = capture(:stdout) do 
+      puts %x(java -jar #{jar} #{epubname})
+    end
+    expect(@stdout.include? "No errors or warnings detected.")
+
+
   end
   it 'should generate epub with extra file' do
     epubname = File.join(File.dirname(__FILE__), 'testepub3.epub')
     @book.add_optional_file('META-INF/foobar.xml', StringIO.new('<foo></foo>'))
     @book.generate_epub(epubname)
     jar = File.join(File.dirname(__FILE__), 'fixtures/epubcheck-3.0b4/epubcheck-3.0b4.jar')
-    system 'java', '-jar', jar, epubname
+    @stdout = capture(:stdout) do 
+      puts %x(java -jar #{jar} #{epubname})
+    end
+    expect(@stdout.include? "No errors or warnings detected.")
   end
-
 end
