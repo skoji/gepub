@@ -36,7 +36,11 @@ describe 'GEPUB usage' do
       epubname = File.join(File.dirname(__FILE__), 'example_test_with_builder_buffer.epub')
       File.open(epubname, 'wb') { |io| io.write builder.generate_epub_stream.string }
       jar = File.join(File.dirname(__FILE__), 'fixtures/epubcheck-3.0b4/epubcheck-3.0b4.jar')    
-      system 'java' '-jar', jar, epubname
+      @stdout = capture(:stdout) do 
+        puts %x(java -jar #{jar} #{epubname})
+      end
+      expect(@stdout.include? "No errors or warnings detected.")
+
     end
 
     it 'should generate simple EPUB3 with Builder' do
@@ -68,7 +72,12 @@ describe 'GEPUB usage' do
       epubname = File.join(File.dirname(__FILE__), 'example_test_with_builder.epub')
       builder.generate_epub(epubname)
       jar = File.join(File.dirname(__FILE__), 'fixtures/epubcheck-3.0b4/epubcheck-3.0b4.jar')    
-      system 'java' '-jar', jar, epubname
+
+      @stdout = capture(:stdout) do 
+        puts %x(java -jar #{jar} #{epubname})
+      end
+      expect(@stdout.include? "No errors or warnings detected.")
+
     end
 
     it 'should generate simple EPUB3 with rather complicated matadata' do
@@ -111,7 +120,11 @@ describe 'GEPUB usage' do
       epubname = File.join(File.dirname(__FILE__), 'example_test.epub')
       book.generate_epub(epubname)
       jar = File.join(File.dirname(__FILE__), 'fixtures/epubcheck-3.0b4/epubcheck-3.0b4.jar')    
-      system 'java' '-jar', jar, epubname
+      @stdout = capture(:stdout) do 
+        puts %x(java -jar #{jar} #{epubname})
+      end
+      expect(@stdout.include? "No errors or warnings detected.")
+
     end
   end
 end
