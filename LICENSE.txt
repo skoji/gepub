@@ -2,7 +2,7 @@
 
 (The New BSD License)
 
-Copyright (c) 2010-2012, KOJIMA Satoshi
+Copyright (c) 2010-2014, KOJIMA Satoshi
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
