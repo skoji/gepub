@@ -102,7 +102,7 @@ module GEPUB
       files = {}
       package = nil
       package_path = nil
-      Zip::ZipInputStream::open_buffer(io) {
+      Zip::InputStream::open_buffer(io) {
         |zis|
         package, package_path = parse_container(zis, files)
         check_consistency_of_package(package, package_path)
@@ -213,7 +213,7 @@ module GEPUB
 
     # write EPUB to stream specified by the argument.
     def write_to_epub_container(epub)
-      epub.put_next_entry('mimetype', '', '', Zip::ZipEntry::STORED)
+      epub.put_next_entry('mimetype', '', '', Zip::Entry::STORED)
       epub << "application/epub+zip"
 
       entries = {}
@@ -241,7 +241,7 @@ module GEPUB
     # generates and returns StringIO contains EPUB.
     def generate_epub_stream
       cleanup
-      Zip::ZipOutputStream::write_buffer {
+      Zip::OutputStream::write_buffer {
         |epub|
         write_to_epub_container(epub)
       }
@@ -251,7 +251,7 @@ module GEPUB
     def generate_epub(path_to_epub)
       cleanup
       File.delete(path_to_epub) if File.exist?(path_to_epub)
-      Zip::ZipOutputStream::open(path_to_epub) {
+      Zip::OutputStream::open(path_to_epub) {
         |epub|
         write_to_epub_container(epub)
       }
