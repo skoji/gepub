@@ -213,7 +213,6 @@ EOF
     end
     expect(@stdout).to include("No errors or warnings detected.")
 
-
   end
   it 'should generate epub with extra file' do
     epubname = File.join(File.dirname(__FILE__), 'testepub3.epub')

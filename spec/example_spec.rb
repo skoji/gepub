@@ -40,7 +40,6 @@ describe 'GEPUB usage' do
         puts %x(java -jar #{jar} #{epubname})
       end
       expect(@stdout).to include("No errors or warnings detected.")
-
     end
 
     it 'should generate simple EPUB3 with Builder' do
@@ -72,17 +71,15 @@ describe 'GEPUB usage' do
       epubname = File.join(File.dirname(__FILE__), 'example_test_with_builder.epub')
       builder.generate_epub(epubname)
       jar = File.join(File.dirname(__FILE__), 'fixtures/epubcheck-3.0.1/epubcheck-3.0.1.jar')    
-
       @stdout = capture(:stdout) do 
         puts %x(java -jar #{jar} #{epubname})
       end
       expect(@stdout).to include("No errors or warnings detected.")
-
     end
 
     it 'should generate simple EPUB3 with rather complicated matadata' do
       book = GEPUB::Book.new
-      book.set_main_id('http:/example.jp/bookid_in_url', 'BookID', 'URL')
+      book.set_primary_identifier('http:/example.jp/bookid_in_url', 'BookID', 'URL')
       book.language = 'ja'
 
       # you can add metadata and its property using block
@@ -124,7 +121,6 @@ describe 'GEPUB usage' do
         puts %x(java -jar #{jar} #{epubname})
       end
       expect(@stdout).to include("No errors or warnings detected.")
-
     end
   end
 end
