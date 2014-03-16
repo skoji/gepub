@@ -1,5 +1,8 @@
 # gepub  
-[<img src="https://secure.travis-ci.org/skoji/gepub.png" />](http://travis-ci.org/skoji/gepub) [![Coverage Status](https://coveralls.io/repos/skoji/gepub/badge.png?branch=master)](https://coveralls.io/r/skoji/gepub?branch=master)
+[<img src="https://secure.travis-ci.org/skoji/gepub.png" />](http://travis-ci.org/skoji/gepub) 
+[![Coverage Status](https://coveralls.io/repos/skoji/gepub/badge.png?branch=master)](https://coveralls.io/r/skoji/gepub?branch=master)
+[![Dependency Status](https://gemnasium.com/skoji/gepub.png)](https://gemnasium.com/skoji/gepub)
+[![Gem Version](https://badge.fury.io/rb/gepub.png)](http://badge.fury.io/rb/gepub)
 
 * http://en.skoji.jp/category/gepub/
 
