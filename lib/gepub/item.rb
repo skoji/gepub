@@ -157,10 +157,14 @@ module GEPUB
         'application/oebps-package+xml'
       when /.ncx/i
         'application/x-dtbncx+xml'
-      when /.(otf|ttf|ttc)/i
+      when /.(otf|ttf|ttc|eot)/i
         'application/vnd.ms-opentype'
       when /.woff/i
         'application/font-woff'
+      when /.mp4/i
+        'video/mp4'
+      when /.mp3/i
+        'audio/mpeg'
       end
     end
   end
