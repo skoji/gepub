@@ -7,6 +7,24 @@ module GEPUB
   # #fallback, #fallback=, #set_fallback, #media_overlay, #media_overlay=, #set_media_overlay
   class Item
     attr_accessor :content
+    
+    # static mediatype regex => mime types list
+    @@mime_types =  { 
+      '(html|xhtml)' => 'application/xhtml+xml',
+      'css' => 'text/css',
+      'js' => 'text/javascript',
+      '(jpg|jpeg)' => 'image/jpeg',
+      'png' => 'image/png',
+      'gif' => 'image/gif',
+      'svg' => 'image/svg+xml',
+      'opf' => 'application/oebps-package+xml',
+      'ncx' => 'application/x-dtbncx+xml',
+      '(otf|ttf|ttc|eot)' => 'application/vnd.ms-opentype',
+      'woff' => 'application/font-woff',
+      'mp4' => 'video/mp4',
+      'mp3' => 'audio/mpeg'
+    }
+    
     def self.create(parent, attributes = {})
       Item.new(attributes['id'], attributes['href'], attributes['media-type'], parent,
                attributes.reject { |k,v| ['id','href','media-type'].member?(k) })
@@ -58,6 +76,16 @@ module GEPUB
     def add_property(property)
       (@attributes['properties'] ||=[]) << property
       self
+    end
+    
+    # get mime_types static list
+    def mime_types
+      @@mime_types
+    end
+
+    # add new mediatype to @@mediatypes
+    def add_mime_type(mediatypes)
+      mediatypes.each { |expr, mime| @@mime_types[expr] = mime if !@@mime_types[expr] }
     end
 
     # set 'cover-image' property to the Item.
@@ -137,31 +165,8 @@ module GEPUB
       builder.item(attr)
     end
 
+    #guess mediatype by mime type mask
     def guess_mediatype
-      case File.extname(href)
-      when /.(html|xhtml)/i
-        'application/xhtml+xml'
-      when /.css/i
-        'text/css'
-      when /.js/i
-        'text/javascript'
-      when /.(jpg|jpeg)/i
-        'image/jpeg'
-      when /.png/i
-        'image/png'
-      when /.gif/i
-        'image/gif'
-      when /.svg/i
-        'image/svg+xml'
-      when /.opf/i
-        'application/oebps-package+xml'
-      when /.ncx/i
-        'application/x-dtbncx+xml'
-      when /.(otf|ttf|ttc)/i
-        'application/vnd.ms-opentype'
-      when /.woff/i
-        'application/font-woff'
-      end
+      @@mime_types.each {|ext, mime| puts mime if File.extname(href) =~ /.#{ext}/i }
     end
-  end
 end  
