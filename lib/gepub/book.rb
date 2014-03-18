@@ -142,14 +142,6 @@ module GEPUB
       (@optional_files ||= {})[path] = io.read
     end
     
-    # add navigation text (which will appear on navigation document or table of contents) to an item.
-    # DEPRECATED: please use Item#toc_text or Item#toc_text_with_id, or Builder#heading
-
-    def add_nav(item, text, id = nil)
-      warn 'add_nav is deprecated: please use Item#toc_text'
-      @toc.push({ :item => item, :text => text, :id => id})      
-    end
-
     def set_sigleton_methods_to_item(item)
       toc = @toc
       metaclass = (class << item;self;end)

@@ -39,7 +39,7 @@ describe GEPUB::Package do
     it 'should generate opf' do
       opf = GEPUB::Package.new('OEBPS/package.opf') {
         |opf|
-        opf.set_main_id('http://example.jp', 'BookID', 'url')
+        opf.set_primary_identifier('http://example.jp', 'BookID', 'url')
         opf['xml:lang'] = 'ja'
 
         # metadata add: style 1

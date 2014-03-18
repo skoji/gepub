@@ -142,11 +142,6 @@ module GEPUB
       set_primary_identifier(identifier, nil, nil)
     end
     
-    def set_main_id(identifier, id = nil, type = nil)
-      warn 'set_main_id is deprecated. use set_primary_identifier instead.'
-      set_primary_identifier(identifier, id, type)
-    end
-
     def set_primary_identifier(identifier, id = nil, type = nil)
       set_unique_identifier(id || @id_pool.generate_key(:prefix => 'BookId', :without_count => true))
       @metadata.add_identifier identifier, unique_identifier, type
@@ -186,32 +181,6 @@ module GEPUB
       @manifest.item_list
     end
     
-    def author=(val)
-      warn 'author= is deprecated. please use #creator'
-      @metadata.creator= val
-    end
-
-    def author
-      warn '#author is deprecated. please use #creator'
-      @metadata.creator
-    end      
-
-    def specify_cover_image(item)
-      warn 'specify_cover_image is deprecated. please use Item#cover_image'
-      item.cover_image
-    end
-
-    def locale=(val)
-      warn 'locale= is deprecated. please use #language='
-      @metadata.language = val
-    end
-
-    def locale 
-      warn '#locale is deprecated. please use #language'
-      @metadata.language
-    end
-
-    #TODO maybe it should be 'epub_version'
     def version
       @attributes['version']
     end
@@ -227,16 +196,6 @@ module GEPUB
       set_version(val)
     end
     
-    def epub_version=(val)
-      warn 'epub_version= is deprecated. please use #version='
-      @attributes['version'] = val
-    end
-
-    def epub_version
-      warn 'epub_version is deprecated. please use #version'
-      version
-    end
-
     def enable_rendition
       @prefixes['rendition'] = 'http://www.idpf.org/vocab/rendition/#'
     end
