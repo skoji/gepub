@@ -35,14 +35,14 @@ module GEPUB
 
     # add new mediatype to @@mediatypes
     def self.add_mimetype(mediatypes)
-      mediatypes.each { |expr, mime| @@mime_types[expr] = mime if !@@mime_types[expr] }
+      mediatypes.each { |expr, mime| @@mime_types[expr] ||= mime }
       compile_mime_types
     end
 
     #guess mediatype by mime type mask
     def self.guess_mediatype(href)
       ext = File.extname(href)
-      @@mime_types_compiled.each { |pattern, mime| return mime if  ext =~ pattern }
+      @@mime_types_compiled.select { |pattern, mime| ext =~ pattern }.values[0]
     end
     
   end
