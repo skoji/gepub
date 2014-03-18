@@ -23,7 +23,7 @@ module GEPUB
         attributes['properties'] = attributes['properties'].split(' ')
       end
       @attributes = {'id' => itemid, 'href' => itemhref, 'media-type' => itemmediatype}.merge(attributes)
-      @attributes['media-type'] =  guess_mediatype if media_type.nil?
+      @attributes['media-type'] = GEPUB::Mime.guess_mediatype(itemhref) if media_type.nil?
       @parent = parent
       @parent.register_item(self) unless @parent.nil?
       self
@@ -136,36 +136,5 @@ module GEPUB
       end
       builder.item(attr)
     end
-
-    def guess_mediatype
-      case File.extname(href)
-      when /.(html|xhtml)/i
-        'application/xhtml+xml'
-      when /.css/i
-        'text/css'
-      when /.js/i
-        'text/javascript'
-      when /.(jpg|jpeg)/i
-        'image/jpeg'
-      when /.png/i
-        'image/png'
-      when /.gif/i
-        'image/gif'
-      when /.svg/i
-        'image/svg+xml'
-      when /.opf/i
-        'application/oebps-package+xml'
-      when /.ncx/i
-        'application/x-dtbncx+xml'
-      when /.(otf|ttf|ttc|eot)/i
-        'application/vnd.ms-opentype'
-      when /.woff/i
-        'application/font-woff'
-      when /.mp4/i
-        'video/mp4'
-      when /.mp3/i
-        'audio/mpeg'
-      end
-    end
   end
-end  
+end
