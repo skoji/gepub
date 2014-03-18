@@ -4,6 +4,11 @@ module GEPUB
   #
 
   class Mime
+
+    # compile mime_types regexp
+    def self.compile_mime_types
+      @@mime_types_compiled = Hash[@@mime_types.map { |expr, mime| [ /\.#{expr}/i, mime ] }]
+    end
     
     # media types by file extension regexp seeds to mime types
     @@mime_types =  { 
@@ -21,7 +26,8 @@ module GEPUB
       'mp4' => 'video/mp4',
       'mp3' => 'audio/mpeg'
     }
-    
+    compile_mime_types
+
     # return mime media types => mime types hash
     def self.mime_types
        @@mime_types
@@ -30,11 +36,13 @@ module GEPUB
     # add new mediatype to @@mediatypes
     def self.add_mimetype(mediatypes)
       mediatypes.each { |expr, mime| @@mime_types[expr] = mime if !@@mime_types[expr] }
+      compile_mime_types
     end
 
     #guess mediatype by mime type mask
     def self.guess_mediatype(href)
-      @@mime_types.each { |ext, mime| return mime if File.extname(href) =~ /.#{ext}/i }
+      ext = File.extname(href)
+      @@mime_types_compiled.each { |pattern, mime| return mime if  ext =~ pattern }
     end
     
   end
