@@ -7,7 +7,7 @@ module GEPUB
 
     # compile mime_types regexp
     def self.compile_mime_types
-      @@mime_types_compiled = Hash[@@mime_types.map { |expr, mime| [ /\.#{expr}/i, mime ] }]
+      @@mime_types_compiled = Hash[@@mime_types.map { |expr, mime| [ /\A\.#{expr}\Z/i, mime ] }]
     end
     
     # media types by file extension regexp seeds to mime types
@@ -39,7 +39,7 @@ module GEPUB
       compile_mime_types
     end
 
-    #guess mediatype by mime type mask
+     #guess mediatype by mime type mask
     def self.guess_mediatype(href)
       ext = File.extname(href)
       @@mime_types_compiled.select { |pattern, mime| ext =~ pattern }.values[0]
