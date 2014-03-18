@@ -23,7 +23,7 @@ module GEPUB
         attributes['properties'] = attributes['properties'].split(' ')
       end
       @attributes = {'id' => itemid, 'href' => itemhref, 'media-type' => itemmediatype}.merge(attributes)
-      @attributes['media-type'] = GEPUB::Mime.guess_mediatype(href) if media_type.nil?
+      @attributes['media-type'] = GEPUB::Mime.guess_mediatype(itemhref) if media_type.nil?
       @parent = parent
       @parent.register_item(self) unless @parent.nil?
       self
