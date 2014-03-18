@@ -7,24 +7,6 @@ module GEPUB
   # #fallback, #fallback=, #set_fallback, #media_overlay, #media_overlay=, #set_media_overlay
   class Item
     attr_accessor :content
-    
-    # static mediatype regex => mime types list
-    @@mime_types =  { 
-      '(html|xhtml)' => 'application/xhtml+xml',
-      'css' => 'text/css',
-      'js' => 'text/javascript',
-      '(jpg|jpeg)' => 'image/jpeg',
-      'png' => 'image/png',
-      'gif' => 'image/gif',
-      'svg' => 'image/svg+xml',
-      'opf' => 'application/oebps-package+xml',
-      'ncx' => 'application/x-dtbncx+xml',
-      '(otf|ttf|ttc|eot)' => 'application/vnd.ms-opentype',
-      'woff' => 'application/font-woff',
-      'mp4' => 'video/mp4',
-      'mp3' => 'audio/mpeg'
-    }
-    
     def self.create(parent, attributes = {})
       Item.new(attributes['id'], attributes['href'], attributes['media-type'], parent,
                attributes.reject { |k,v| ['id','href','media-type'].member?(k) })
@@ -41,7 +23,7 @@ module GEPUB
         attributes['properties'] = attributes['properties'].split(' ')
       end
       @attributes = {'id' => itemid, 'href' => itemhref, 'media-type' => itemmediatype}.merge(attributes)
-      @attributes['media-type'] =  guess_mediatype if media_type.nil?
+      @attributes['media-type'] = GEPUB::Mime.guess_mediatype(href) if media_type.nil?
       @parent = parent
       @parent.register_item(self) unless @parent.nil?
       self
@@ -76,16 +58,6 @@ module GEPUB
     def add_property(property)
       (@attributes['properties'] ||=[]) << property
       self
-    end
-    
-    # get mime_types static list
-    def mime_types
-      @@mime_types
-    end
-
-    # add new mediatype to @@mediatypes
-    def add_mime_type(mediatypes)
-      mediatypes.each { |expr, mime| @@mime_types[expr] = mime if !@@mime_types[expr] }
     end
 
     # set 'cover-image' property to the Item.
@@ -165,8 +137,5 @@ module GEPUB
       builder.item(attr)
     end
 
-    #guess mediatype by mime type mask
-    def guess_mediatype
-      @@mime_types.each {|ext, mime| puts mime if File.extname(href) =~ /.#{ext}/i }
-    end
-end  
+  end
+end
