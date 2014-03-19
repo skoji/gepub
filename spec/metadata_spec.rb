@@ -154,6 +154,14 @@ describe GEPUB::Metadata do
       expect(metadata.date.to_s).to eq('2012-02-27T20:00:00Z')
     end
 
+    it 'should handle date with Time object by content = ' do
+      metadata = GEPUB::Metadata.new
+      a = Time.parse '2012-02-27 20:00:00 UTC'
+      metadata.add_date('2011-01-01', 'date')
+      metadata.date.content = a
+      expect(metadata.date.to_s).to eq('2012-02-27T20:00:00Z')
+    end
+
     it 'should handle date with a not W3C-DTF string' do
       metadata = GEPUB::Metadata.new
       metadata.add_date('2012-02-28 05:00:00 +0900', 'date')

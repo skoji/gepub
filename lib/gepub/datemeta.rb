@@ -11,10 +11,10 @@ module GEPUB
     end
 
     def content=(date)
-      if content.is_a? String
-        content = Time.parse(content)
+      if date.is_a? String
+        date = Time.parse(date)
       end
-      @content = content
+      @content = date
     end
 
     def to_s(locale = nil)
