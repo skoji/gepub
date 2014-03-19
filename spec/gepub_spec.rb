@@ -168,12 +168,7 @@ EOF
   it "should generate correct epub" do
     epubname = File.join(File.dirname(__FILE__), 'testepub.epub')
     @book.generate_epub(epubname)
-    jar = File.join(File.dirname(__FILE__), 'fixtures/epubcheck-3.0.1/epubcheck-3.0.1.jar')
-    @stdout = capture(:stdout) do 
-      puts %x(java -jar #{jar} #{epubname})
-    end
-    expect(@stdout).to include("No errors or warnings detected.")
-
+    epubcheck(epubname)
   end
   it "should generate correct epub with buffer" do
     epubname = File.join(File.dirname(__FILE__), 'testepub_buf.epub')
@@ -181,12 +176,7 @@ EOF
       |io|
       io.write @book.generate_epub_stream.string
     }
-    jar = File.join(File.dirname(__FILE__), 'fixtures/epubcheck-3.0.1/epubcheck-3.0.1.jar')
-    @stdout = capture(:stdout) do 
-      puts %x(java -jar #{jar} #{epubname})
-    end
-    expect(@stdout).to include("No errors or warnings detected.")
-
+    epubcheck(epubname)
   end
 
   it "should generate correct epub2.0" do
@@ -207,21 +197,12 @@ EOF
                                    'c2')
     item2.toc_text 'test chapter'
     @book.generate_epub(epubname)
-    jar = File.join(File.dirname(__FILE__), 'fixtures/epubcheck-3.0.1/epubcheck-3.0.1.jar')
-    @stdout = capture(:stdout) do 
-      puts %x(java -jar #{jar} #{epubname})
-    end
-    expect(@stdout).to include("No errors or warnings detected.")
-
+    epubcheck(epubname)
   end
   it 'should generate epub with extra file' do
     epubname = File.join(File.dirname(__FILE__), 'testepub3.epub')
     @book.add_optional_file('META-INF/foobar.xml', StringIO.new('<foo></foo>'))
     @book.generate_epub(epubname)
-    jar = File.join(File.dirname(__FILE__), 'fixtures/epubcheck-3.0.1/epubcheck-3.0.1.jar')
-    @stdout = capture(:stdout) do 
-      puts %x(java -jar #{jar} #{epubname})
-    end
-    expect(@stdout).to include("No errors or warnings detected.")
+    epubcheck(epubname)
   end
 end

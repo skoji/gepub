@@ -31,7 +31,14 @@ RSpec.configure do |config|
     result
   end
 
-
+  def epubcheck(epubname)
+    jar = File.join(File.dirname(__FILE__), 'fixtures/epubcheck-3.0.1/epubcheck-3.0.1.jar')    
+    stdout = capture(:stdout) do 
+      puts %x(java -jar #{jar} #{epubname})
+    end
+    expect(stdout).to include("No errors or warnings detected.")
+  end
+  
 end
 
 require 'rspec/core/formatters/base_text_formatter'
