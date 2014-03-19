@@ -142,7 +142,7 @@ module GEPUB
       (@optional_files ||= {})[path] = io.read
     end
     
-    def set_sigleton_methods_to_item(item)
+    def set_singleton_methods_to_item(item)
       toc = @toc
       metaclass = (class << item;self;end)
       metaclass.send(:define_method, :toc_text,
@@ -168,7 +168,7 @@ module GEPUB
     # the added item will be referenced by the first argument in the EPUB container.
     def add_item(href, io_or_filename = nil, id = nil, attributes = {})
       item = @package.add_item(href,nil,id,attributes)
-      set_sigleton_methods_to_item(item)
+      set_singleton_methods_to_item(item)
       item.add_content io_or_filename unless io_or_filename.nil?
       item
     end
@@ -176,7 +176,7 @@ module GEPUB
     # same as add_item, but the item will be added to spine of the EPUB.
     def add_ordered_item(href, io_or_filename = nil, id = nil, attributes = {})
       item = @package.add_ordered_item(href,io_or_filename,id,attributes)
-      set_sigleton_methods_to_item(item)
+      set_singleton_methods_to_item(item)
       yield item if block_given?
       item
     end
