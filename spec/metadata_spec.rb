@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-p# -*- coding: utf-8 -*-
 require File.dirname(__FILE__) + '/spec_helper.rb'
 require 'rubygems'
 require 'nokogiri'
