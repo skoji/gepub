@@ -10,7 +10,7 @@ describe GEPUB::Spine do
     end
     it 'should be parsed' do
       expect(@spine.toc).to eq('ncx')
-      @spine.page_progression_direction == 'ltr'
+      expect(@spine.page_progression_direction).to eq('ltr')
       expect(@spine.itemref_list.size).to eq(4)
       expect(@spine.itemref_list[0].idref).to eq('cover')
       expect(@spine.itemref_list[0].linear).to eq('no')

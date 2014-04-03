@@ -402,11 +402,12 @@ describe GEPUB::Builder do
           }
         }
       }
-      builder.instance_eval{
-        xml = Nokogiri::XML::Document.parse @book.opf_xml
-        xml.root['prefix'].should == 'ibooks: http://vocabulary.itunes.apple.com/rdf/ibooks/vocabulary-extensions-1.0/'
-        xml.at_xpath("//xmlns:meta[@property='ibooks:version']").content.should == '1.1.1'
+      xml =  builder.instance_eval{
+        Nokogiri::XML::Document.parse @book.opf_xml
       }
+      expect(xml.root['prefix']).to eq 'ibooks: http://vocabulary.itunes.apple.com/rdf/ibooks/vocabulary-extensions-1.0/'
+      expect(xml.at_xpath("//xmlns:meta[@property='ibooks:version']").content).to eq '1.1.1'
+
     end
     it 'should handle fallback chain' do
       workdir = File.join(File.dirname(__FILE__),'fixtures', 'builder')
@@ -421,13 +422,13 @@ describe GEPUB::Builder do
           }
         }
       }
-      builder.instance_eval {
-        fallbackid = @book.item_by_href('chap3_docbook.xml').fallback
-        @book.items[fallbackid].href.should == 'chap3.xml'
-
-        fallbackid = @book.items[fallbackid].fallback
-        @book.items[fallbackid].href.should == 'chap3.xhtml'        
+      book = builder.instance_eval {
+        @book
       }
+      fallbackid = book.item_by_href('chap3_docbook.xml').fallback
+      expect(book.items[fallbackid].href).to eq 'chap3.xml'
+      fallbackid = book.items[fallbackid].fallback
+      expect(book.items[fallbackid].href).to eq 'chap3.xhtml'        
     end
 
     it 'should handle fallback chain with fallback_chain_files' do
@@ -438,13 +439,11 @@ describe GEPUB::Builder do
           fallback_chain_files({'chap3_docbook.xml' => nil}, {'chap3.xml' => nil}, {'chap3.xhtml' => nil})
         }
       }
-      builder.instance_eval {
-        fallbackid = @book.item_by_href('chap3_docbook.xml').fallback
-        @book.items[fallbackid].href.should == 'chap3.xml'
-
-        fallbackid = @book.items[fallbackid].fallback
-        @book.items[fallbackid].href.should == 'chap3.xhtml'        
-      }
+      book = builder.instance_eval { @book }
+      fallbackid = book.item_by_href('chap3_docbook.xml').fallback
+      expect(book.items[fallbackid].href).to eq 'chap3.xml'
+      fallbackid = book.items[fallbackid].fallback
+      expect(book.items[fallbackid].href).to eq 'chap3.xhtml'
     end
 
     it 'should handle fallback chain with fallback_chain_files in with_media_type' do
@@ -456,16 +455,15 @@ describe GEPUB::Builder do
           }
         }
       }
-      builder.instance_eval {
-        @book.item_by_href('chap3_docbook.xml').media_type.should == 'application/docbook+xml'
-        fallbackid = @book.item_by_href('chap3_docbook.xml').fallback
-        @book.items[fallbackid].href.should == 'chap3.xml'
-        @book.items[fallbackid].media_type.should == 'application/z3986-auth+xml'
+      book =  builder.instance_eval { @book }
+      expect(book.item_by_href('chap3_docbook.xml').media_type).to eq 'application/docbook+xml'
+      fallbackid = book.item_by_href('chap3_docbook.xml').fallback
+      expect(book.items[fallbackid].href).to eq 'chap3.xml'
+      expect(book.items[fallbackid].media_type).to eq 'application/z3986-auth+xml'
 
-        fallbackid = @book.items[fallbackid].fallback
-        @book.items[fallbackid].href.should == 'chap3.xhtml'        
-        @book.items[fallbackid].media_type.should == 'application/xhtml+xml'
-      }
+      fallbackid = book.items[fallbackid].fallback
+      expect(book.items[fallbackid].href).to eq 'chap3.xhtml'        
+      expect(book.items[fallbackid].media_type).to eq 'application/xhtml+xml'
     end
 
     it 'should handle fallback chain in spine' do
@@ -485,17 +483,15 @@ describe GEPUB::Builder do
           }
         }
       }
-      builder.instance_eval {
-        @book.cleanup
-        fallbackid = @book.item_by_href('chap3_docbook.xml').fallback
-        @book.items[fallbackid].href.should == 'chap3.xml'
-        fallbackid = @book.items[fallbackid].fallback
-        @book.items[fallbackid].href.should == 'chap3.xhtml'
+      book = builder.instance_eval { @book }
+      book.cleanup
+      fallbackid = book.item_by_href('chap3_docbook.xml').fallback
+      expect(book.items[fallbackid].href).to eq 'chap3.xml'
+      fallbackid = book.items[fallbackid].fallback
+      expect(book.items[fallbackid].href).to eq 'chap3.xhtml'
 
-        @book.spine_items.size.should == 1
-        @book.spine_items[0].href == 'chap3_docbook.xhtml'
-
-      }
+      expect(book.spine_items.size).to eq 1
+      book.spine_items[0].href == 'chap3_docbook.xhtml'
     end
 
     it 'should create remote-resources' do
@@ -511,7 +507,7 @@ describe GEPUB::Builder do
     end
 
     it 'should handle remote resource URL' do
-      builder = GEPUB::Builder.new {
+      GEPUB::Builder.new {
         unique_identifier 'uid'
         resources {
           file 'http://foo.bar'

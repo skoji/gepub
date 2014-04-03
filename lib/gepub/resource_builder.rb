@@ -30,14 +30,14 @@ module GEPUB
       @files_preprocess = {}
       current_wd = Dir.getwd
       Dir.chdir(attributes[:workdir]) unless attributes[:workdir].nil?
-      instance_eval &block
+      instance_eval(&block)
       Dir.chdir current_wd
       true
     end
 
     def ordered(&block)
       @book.ordered {
-        instance_eval &block
+        instance_eval(&block)
       }
     end
 

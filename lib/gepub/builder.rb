@@ -182,7 +182,7 @@ module GEPUB
     def initialize(attributes = {},  &block)
       @last_defined_item = nil
       @book = Book.new
-      instance_eval &block
+      instance_eval(&block)
       # TODO check @book's consistency
       true
     end

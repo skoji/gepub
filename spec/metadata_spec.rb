@@ -49,9 +49,9 @@ describe GEPUB::Metadata do
 
     it 'should parse OPF2.0 meta node' do
       expect(@metadata.oldstyle_meta.size).to eq(1)
-      @metadata.oldstyle_meta[0].name == 'meta'
-      @metadata.oldstyle_meta[0]['name'] == 'cover'
-      @metadata.oldstyle_meta[0]['content'] == 'cover-image'
+      expect(@metadata.oldstyle_meta[0].name).to eq 'meta'
+      expect(@metadata.oldstyle_meta[0]['name']).to eq 'cover'
+      expect(@metadata.oldstyle_meta[0]['content']).to eq 'cover-image'
     end
   end
 
@@ -65,9 +65,9 @@ describe GEPUB::Metadata do
     end
     it 'should parse OPF2.0 meta node' do
       expect(@metadata.oldstyle_meta.size).to eq(1)
-      @metadata.oldstyle_meta[0].name == 'meta'
-      @metadata.oldstyle_meta[0]['name'] == 'cover'
-      @metadata.oldstyle_meta[0]['content'] == 'cover-image'
+      expect(@metadata.oldstyle_meta[0].name).to eq 'meta'
+      expect(@metadata.oldstyle_meta[0]['name']).to eq 'cover'
+      expect(@metadata.oldstyle_meta[0]['content']).to eq 'cover-image'
     end
   end
   

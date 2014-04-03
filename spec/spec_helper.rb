@@ -46,12 +46,12 @@ module RSpec
   module Core
     module Formatters
       class DocumentationFormatter < BaseTextFormatter
-			  # def green(text); color(text, "\e[42m") end
-			  def red(text); color(text, "\e[41m") end
-			  # def magenta(text); color(text, "\e[45m") end
-			end
-		end
-	end
+        # def green(text); color(text, "\e[42m") end
+        def red(text); color(text, "\e[41m") end
+        # def magenta(text); color(text, "\e[45m") end
+      end
+    end
+  end
 end
 $:.unshift(File.dirname(__FILE__) + '/../lib')
 require 'gepub'
