@@ -4,7 +4,7 @@
 [![Dependency Status](https://gemnasium.com/skoji/gepub.png)](https://gemnasium.com/skoji/gepub)
 [![Gem Version](https://badge.fury.io/rb/gepub.png)](http://badge.fury.io/rb/gepub)
 
-* http://en.skoji.jp/category/gepub/
+* http://rdoc.info/github/skoji/gepub/master/frames
 
 ## DESCRIPTION:
 
