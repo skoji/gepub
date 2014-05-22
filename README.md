@@ -18,6 +18,7 @@ a generic EPUB parser/generator library.
 
 * See [issues](https://github.com/skoji/gepub/issues/) for known problems.
 
+**GEPUB::Builder will be obsolete in gepub 0.7. GEPUB::Book#new will be enhanced instead of Builder DSL. **
 
 ## SYNOPSIS:
 
