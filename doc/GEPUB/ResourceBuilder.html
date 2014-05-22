@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="UTF-8">
+
+<title>class GEPUB::ResourceBuilder - RDoc Documentation</title>
+
+<link href="../fonts.css" rel="stylesheet">
+<link href="../rdoc.css" rel="stylesheet">
+
+<script type="text/javascript">
+  var rdoc_rel_prefix = "../";
+</script>
+
+<script src="../js/jquery.js"></script>
+<script src="../js/navigation.js"></script>
+<script src="../js/search_index.js"></script>
+<script src="../js/search.js"></script>
+<script src="../js/searcher.js"></script>
+<script src="../js/darkfish.js"></script>
+
+
+<body id="top" role="document" class="class">
+<nav role="navigation">
+  <div id="project-navigation">
+    <div id="home-section" role="region" title="Quick navigation" class="nav-section">
+  <h2>
+    <a href="../index.html" rel="home">Home</a>
+  </h2>
+
+  <div id="table-of-contents-navigation">
+    <a href="../table_of_contents.html#pages">Pages</a>
+    <a href="../table_of_contents.html#classes">Classes</a>
+    <a href="../table_of_contents.html#methods">Methods</a>
+  </div>
+</div>
+
+    <div id="search-section" role="search" class="project-section initially-hidden">
+  <form action="#" method="get" accept-charset="utf-8">
+    <div id="search-field-wrapper">
+      <input id="search-field" role="combobox" aria-label="Search"
+             aria-autocomplete="list" aria-controls="search-results"
+             type="text" name="search" placeholder="Search" spellcheck="false"
+             title="Type to search, Up and Down to navigate, Enter to load">
+    </div>
+
+    <ul id="search-results" aria-label="Search Results"
+        aria-busy="false" aria-expanded="false"
+        aria-atomic="false" class="initially-hidden"></ul>
+  </form>
+</div>
+
+  </div>
+
+  
+
+  <div id="class-metadata">
+    
+    <div id="parent-class-section" class="nav-section">
+  <h3>Parent</h3>
+
+  
+  <p class="link">Object
+  
+</div>
+
+    <div id="includes-section" class="nav-section">
+  <h3>Included Modules</h3>
+
+  <ul class="link-list">
+  
+  
+    <li><a class="include" href="BuilderMixin.html">GEPUB::BuilderMixin</a>
+  
+  
+  </ul>
+</div>
+
+    
+    <!-- Method Quickref -->
+<div id="method-list-section" class="nav-section">
+  <h3>Methods</h3>
+
+  <ul class="link-list" role="directory">
+    
+    <li ><a href="#method-c-new">::new</a>
+    
+    <li ><a href="#method-i-add_resource_dir">#add_resource_dir</a>
+    
+    <li ><a href="#method-i-add_resource_dirs">#add_resource_dirs</a>
+    
+    <li ><a href="#method-i-cover_image">#cover_image</a>
+    
+    <li ><a href="#method-i-fallback_chain_files">#fallback_chain_files</a>
+    
+    <li ><a href="#method-i-fallback_group">#fallback_group</a>
+    
+    <li ><a href="#method-i-file">#file</a>
+    
+    <li ><a href="#method-i-files">#files</a>
+    
+    <li ><a href="#method-i-glob">#glob</a>
+    
+    <li ><a href="#method-i-handles">#handles</a>
+    
+    <li ><a href="#method-i-heading">#heading</a>
+    
+    <li ><a href="#method-i-id">#id</a>
+    
+    <li ><a href="#method-i-import">#import</a>
+    
+    <li ><a href="#method-i-linear">#linear</a>
+    
+    <li ><a href="#method-i-nav">#nav</a>
+    
+    <li ><a href="#method-i-ordered">#ordered</a>
+    
+    <li ><a href="#method-i-page_spread_left">#page_spread_left</a>
+    
+    <li ><a href="#method-i-page_spread_right">#page_spread_right</a>
+    
+    <li ><a href="#method-i-rendition_layout">#rendition_layout</a>
+    
+    <li ><a href="#method-i-rendition_orientation">#rendition_orientation</a>
+    
+    <li ><a href="#method-i-rendition_spread">#rendition_spread</a>
+    
+    <li ><a href="#method-i-with_media_type">#with_media_type</a>
+    
+  </ul>
+</div>
+
+  </div>
+</nav>
+
+<main role="main" aria-labelledby="class-GEPUB::ResourceBuilder">
+  <h1 id="class-GEPUB::ResourceBuilder" class="class">
+    class GEPUB::ResourceBuilder
+  </h1>
+
+  <section class="description">
+    
+  </section>
+
+  
+  
+  
+  <section id="5Buntitled-5D" class="documentation-section">
+    
+
+    
+
+    
+
+    
+
+    
+     <section id="public-class-5Buntitled-5D-method-details" class="method-section">
+       <header>
+         <h3>Public Class Methods</h3>
+       </header>
+
+    
+      <div id="method-c-new" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">new</span><span
+            class="method-args">(book, attributes = {}, &block)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+          
+
+          
+          <div class="method-source-code" id="new-source">
+            <pre><span class="ruby-comment"># File lib/gepub/resource_builder.rb, line 23</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">book</span>, <span class="ruby-identifier">attributes</span> = {},  <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+  <span class="ruby-ivar">@last_defined_item</span> = <span class="ruby-keyword">nil</span>
+  <span class="ruby-ivar">@book</span> = <span class="ruby-identifier">book</span>
+  <span class="ruby-ivar">@dir_prefix</span> = <span class="ruby-string">&quot;&quot;</span>
+  <span class="ruby-ivar">@file_postprocess</span> = {}
+  <span class="ruby-ivar">@file_preprocess</span> = {}
+  <span class="ruby-ivar">@files_postprocess</span> = {}
+  <span class="ruby-ivar">@files_preprocess</span> = {}
+  <span class="ruby-identifier">current_wd</span> = <span class="ruby-constant">Dir</span>.<span class="ruby-identifier">getwd</span>
+  <span class="ruby-constant">Dir</span>.<span class="ruby-identifier">chdir</span>(<span class="ruby-identifier">attributes</span>[<span class="ruby-value">:workdir</span>]) <span class="ruby-keyword">unless</span> <span class="ruby-identifier">attributes</span>[<span class="ruby-value">:workdir</span>].<span class="ruby-identifier">nil?</span>
+  <span class="ruby-identifier">instance_eval</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+  <span class="ruby-constant">Dir</span>.<span class="ruby-identifier">chdir</span> <span class="ruby-identifier">current_wd</span>
+  <span class="ruby-keyword">true</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+    </section>
+  
+     <section id="public-instance-5Buntitled-5D-method-details" class="method-section">
+       <header>
+         <h3>Public Instance Methods</h3>
+       </header>
+
+    
+      <div id="method-i-add_resource_dir" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">add_resource_dir</span><span
+            class="method-args">(name)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+          
+
+          
+          <div class="method-source-code" id="add_resource_dir-source">
+            <pre><span class="ruby-comment"># File lib/gepub/resource_builder.rb, line 121</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">add_resource_dir</span>(<span class="ruby-identifier">name</span>)
+  <span class="ruby-identifier">import</span> <span class="ruby-node">&quot;#{name}/resources.conf&quot;</span>, <span class="ruby-value">:dir_prefix</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">name</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-add_resource_dirs" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">add_resource_dirs</span><span
+            class="method-args">(dirs)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+          
+
+          
+          <div class="method-source-code" id="add_resource_dirs-source">
+            <pre><span class="ruby-comment"># File lib/gepub/resource_builder.rb, line 125</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">add_resource_dirs</span>(<span class="ruby-identifier">dirs</span>)
+  <span class="ruby-identifier">dirs</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span>
+    <span class="ruby-operator">|</span><span class="ruby-identifier">dir</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">add_resource_dir</span> <span class="ruby-identifier">dir</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-cover_image" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">cover_image</span><span
+            class="method-args">(val)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+          
+
+          
+          <div class="method-source-code" id="cover_image-source">
+            <pre><span class="ruby-comment"># File lib/gepub/resource_builder.rb, line 132</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">cover_image</span>(<span class="ruby-identifier">val</span>)
+  <span class="ruby-identifier">file</span>(<span class="ruby-identifier">val</span>)
+  <span class="ruby-ivar">@last_defined_item</span>.<span class="ruby-identifier">cover_image</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-fallback_chain_files" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">fallback_chain_files</span><span
+            class="method-args">(*arg)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+          
+
+          
+          <div class="method-source-code" id="fallback_chain_files-source">
+            <pre><span class="ruby-comment"># File lib/gepub/resource_builder.rb, line 182</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">fallback_chain_files</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">arg</span>)
+  <span class="ruby-identifier">files</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">arg</span>)
+  <span class="ruby-ivar">@last_defined_item</span>.<span class="ruby-identifier">inject</span>(<span class="ruby-keyword">nil</span>) {
+    <span class="ruby-operator">|</span><span class="ruby-identifier">item1</span>, <span class="ruby-identifier">item2</span><span class="ruby-operator">|</span>
+    <span class="ruby-keyword">if</span> <span class="ruby-operator">!</span><span class="ruby-identifier">item1</span>.<span class="ruby-identifier">nil?</span>
+      <span class="ruby-identifier">item1</span>.<span class="ruby-identifier">item</span>.<span class="ruby-identifier">set_fallback</span>(<span class="ruby-identifier">item2</span>.<span class="ruby-identifier">item</span>.<span class="ruby-identifier">id</span>)
+    <span class="ruby-keyword">end</span>
+    <span class="ruby-identifier">item2</span>
+  }
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-fallback_group" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">fallback_group</span><span
+            class="method-args">() { || ... }</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+          
+
+          
+          <div class="method-source-code" id="fallback_group-source">
+            <pre><span class="ruby-comment"># File lib/gepub/resource_builder.rb, line 159</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">fallback_group</span>
+  <span class="ruby-identifier">raise</span> <span class="ruby-string">&#39;fallback_group needs block.&#39;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
+  <span class="ruby-identifier">count</span> = <span class="ruby-value">0</span>
+  <span class="ruby-identifier">before</span> = <span class="ruby-keyword">nil</span>
+
+  <span class="ruby-ivar">@files_preprocess</span>[<span class="ruby-string">&#39;fallback_group&#39;</span>] = <span class="ruby-constant">Proc</span>.<span class="ruby-identifier">new</span> { <span class="ruby-identifier">raise</span> <span class="ruby-string">&quot;can&#39;t use files within fallback_group&quot;</span> }
+
+  <span class="ruby-ivar">@file_preprocess</span>[<span class="ruby-string">&#39;fallback_group&#39;</span>] = <span class="ruby-constant">Proc</span>.<span class="ruby-identifier">new</span> {
+    <span class="ruby-identifier">before</span> = <span class="ruby-ivar">@last_defined_item</span>
+  }
+
+  <span class="ruby-ivar">@file_postprocess</span>[<span class="ruby-string">&#39;fallback_group&#39;</span>] = <span class="ruby-constant">Proc</span>.<span class="ruby-identifier">new</span> {
+    <span class="ruby-keyword">if</span> <span class="ruby-identifier">count</span> <span class="ruby-operator">&gt;</span> <span class="ruby-value">0</span>
+      <span class="ruby-identifier">before</span>.<span class="ruby-identifier">item</span>.<span class="ruby-identifier">set_fallback</span>(<span class="ruby-ivar">@last_defined_item</span>.<span class="ruby-identifier">item</span>.<span class="ruby-identifier">id</span>)
+    <span class="ruby-keyword">end</span>
+    <span class="ruby-identifier">count</span> <span class="ruby-operator">+=</span> <span class="ruby-value">1</span>
+  }
+  <span class="ruby-keyword">yield</span>
+  <span class="ruby-ivar">@files_preprocess</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-string">&#39;fallback_group&#39;</span>)
+  <span class="ruby-ivar">@file_postprocess</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-string">&#39;fallback_group&#39;</span>)
+  <span class="ruby-ivar">@file_preprocess</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-string">&#39;fallback_group&#39;</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-file" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">file</span><span
+            class="method-args">(val)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+          
+
+          
+          <div class="method-source-code" id="file-source">
+            <pre><span class="ruby-comment"># File lib/gepub/resource_builder.rb, line 44</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">file</span>(<span class="ruby-identifier">val</span>)
+  <span class="ruby-identifier">raise</span> <span class="ruby-string">&quot;can&#39;t specify multiple files on file keyword&quot;</span> <span class="ruby-keyword">if</span> <span class="ruby-constant">Hash</span> <span class="ruby-operator">===</span> <span class="ruby-identifier">val</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">val</span>.<span class="ruby-identifier">length</span> <span class="ruby-operator">&gt;</span> <span class="ruby-value">1</span>
+
+  <span class="ruby-ivar">@file_preprocess</span>.<span class="ruby-identifier">each</span> {
+    <span class="ruby-operator">|</span><span class="ruby-identifier">k</span>,<span class="ruby-identifier">p</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">p</span>.<span class="ruby-identifier">call</span>
+  }
+  <span class="ruby-ivar">@last_defined_item</span> = <span class="ruby-constant">ResourceItem</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">create_one_file</span>(<span class="ruby-identifier">val</span>))
+  <span class="ruby-ivar">@file_postprocess</span>.<span class="ruby-identifier">each</span> {
+    <span class="ruby-operator">|</span><span class="ruby-identifier">k</span>,<span class="ruby-identifier">p</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">p</span>.<span class="ruby-identifier">call</span>
+  }
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-files" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">files</span><span
+            class="method-args">(*arg)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+          
+
+          
+          <div class="method-source-code" id="files-source">
+            <pre><span class="ruby-comment"># File lib/gepub/resource_builder.rb, line 58</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">files</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">arg</span>)
+  <span class="ruby-identifier">arg</span> = <span class="ruby-identifier">arg</span>[<span class="ruby-value">0</span>] <span class="ruby-keyword">if</span> <span class="ruby-identifier">arg</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">==</span> <span class="ruby-value">1</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-constant">Hash</span> <span class="ruby-operator">===</span> <span class="ruby-identifier">arg</span>[<span class="ruby-value">0</span>]
+  <span class="ruby-ivar">@files_preprocess</span>.<span class="ruby-identifier">each</span> {
+    <span class="ruby-operator">|</span><span class="ruby-identifier">k</span>,<span class="ruby-identifier">p</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">p</span>.<span class="ruby-identifier">call</span>
+  }
+  <span class="ruby-ivar">@last_defined_item</span> = <span class="ruby-identifier">arg</span>.<span class="ruby-identifier">map</span> {
+    <span class="ruby-operator">|</span><span class="ruby-identifier">val</span><span class="ruby-operator">|</span>
+    <span class="ruby-constant">ResourceItem</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">create_one_file</span>(<span class="ruby-identifier">val</span>))
+  }
+  <span class="ruby-ivar">@files_postprocess</span>.<span class="ruby-identifier">each</span> {
+    <span class="ruby-operator">|</span><span class="ruby-identifier">k</span>,<span class="ruby-identifier">p</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">p</span>.<span class="ruby-identifier">call</span>
+  }
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-glob" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">glob</span><span
+            class="method-args">(arg)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+          
+
+          
+          <div class="method-source-code" id="glob-source">
+            <pre><span class="ruby-comment"># File lib/gepub/resource_builder.rb, line 108</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">glob</span>(<span class="ruby-identifier">arg</span>)
+  <span class="ruby-identifier">files</span>(<span class="ruby-operator">*</span><span class="ruby-constant">Dir</span>.<span class="ruby-identifier">glob</span>(<span class="ruby-identifier">arg</span>).<span class="ruby-identifier">select</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">x</span><span class="ruby-operator">|</span> <span class="ruby-operator">!</span><span class="ruby-constant">File</span>.<span class="ruby-identifier">directory?</span>(<span class="ruby-identifier">x</span>)} )
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-handles" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">handles</span><span
+            class="method-args">(media_type)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+          
+
+          
+          <div class="method-source-code" id="handles-source">
+            <pre><span class="ruby-comment"># File lib/gepub/resource_builder.rb, line 193</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">handles</span>(<span class="ruby-identifier">media_type</span>)
+  <span class="ruby-ivar">@last_defined_item</span>.<span class="ruby-identifier">is_handler_of</span>(<span class="ruby-identifier">media_type</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-heading" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">heading</span><span
+            class="method-args">(text, id = nil)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+          
+
+          
+          <div class="method-source-code" id="heading-source">
+            <pre><span class="ruby-comment"># File lib/gepub/resource_builder.rb, line 142</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">heading</span>(<span class="ruby-identifier">text</span>, <span class="ruby-identifier">id</span> = <span class="ruby-keyword">nil</span>)
+  <span class="ruby-ivar">@last_defined_item</span>.<span class="ruby-identifier">toc_text_with_id</span>(<span class="ruby-identifier">text</span>, <span class="ruby-identifier">id</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-id" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">id</span><span
+            class="method-args">(the_id)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+          
+
+          
+          <div class="method-source-code" id="id-source">
+            <pre><span class="ruby-comment"># File lib/gepub/resource_builder.rb, line 146</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">id</span>(<span class="ruby-identifier">the_id</span>)
+  <span class="ruby-ivar">@last_defined_item</span>.<span class="ruby-identifier">id</span> = <span class="ruby-identifier">the_id</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-import" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">import</span><span
+            class="method-args">(conf, args = {})</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+          
+
+          
+          <div class="method-source-code" id="import-source">
+            <pre><span class="ruby-comment"># File lib/gepub/resource_builder.rb, line 112</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">import</span>(<span class="ruby-identifier">conf</span>, <span class="ruby-identifier">args</span> = {})
+  <span class="ruby-identifier">dir_prefix_org</span> = <span class="ruby-ivar">@dir_prefix</span>
+  <span class="ruby-ivar">@dir_prefix</span> = <span class="ruby-identifier">args</span>[<span class="ruby-value">:dir_prefix</span>] <span class="ruby-operator">||</span> <span class="ruby-string">&quot;&quot;</span>
+  <span class="ruby-constant">Dir</span>.<span class="ruby-identifier">chdir</span>(<span class="ruby-constant">File</span>.<span class="ruby-identifier">dirname</span>(<span class="ruby-identifier">conf</span>)) {
+    <span class="ruby-identifier">instance_eval</span>(<span class="ruby-constant">File</span>.<span class="ruby-identifier">new</span>(<span class="ruby-constant">File</span>.<span class="ruby-identifier">basename</span>(<span class="ruby-identifier">conf</span>)).<span class="ruby-identifier">read</span>)
+  }
+  <span class="ruby-ivar">@dir_prefix</span> = <span class="ruby-identifier">dir_prefix_org</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-linear" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">linear</span><span
+            class="method-args">(val)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+          
+
+          
+          <div class="method-source-code" id="linear-source">
+            <pre><span class="ruby-comment"># File lib/gepub/resource_builder.rb, line 102</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">linear</span> <span class="ruby-identifier">val</span>
+  <span class="ruby-identifier">itemref</span> = <span class="ruby-ivar">@book</span>.<span class="ruby-identifier">spine</span>.<span class="ruby-identifier">itemref_by_id</span>[<span class="ruby-ivar">@last_defined_item</span>.<span class="ruby-identifier">item</span>.<span class="ruby-identifier">id</span>]
+  <span class="ruby-identifier">raise</span> <span class="ruby-string">&#39;linear should be called inside ordered&#39;</span> <span class="ruby-keyword">if</span> (<span class="ruby-identifier">itemref</span>.<span class="ruby-identifier">nil?</span>)
+  <span class="ruby-identifier">itemref</span>.<span class="ruby-identifier">linear</span> = <span class="ruby-identifier">val</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-nav" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">nav</span><span
+            class="method-args">(val)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+          
+
+          
+          <div class="method-source-code" id="nav-source">
+            <pre><span class="ruby-comment"># File lib/gepub/resource_builder.rb, line 137</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">nav</span>(<span class="ruby-identifier">val</span>)
+  <span class="ruby-identifier">file</span>(<span class="ruby-identifier">val</span>)
+  <span class="ruby-ivar">@last_defined_item</span>.<span class="ruby-identifier">nav</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-ordered" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">ordered</span><span
+            class="method-args">(&block)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+          
+
+          
+          <div class="method-source-code" id="ordered-source">
+            <pre><span class="ruby-comment"># File lib/gepub/resource_builder.rb, line 38</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">ordered</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+  <span class="ruby-ivar">@book</span>.<span class="ruby-identifier">ordered</span> {
+    <span class="ruby-identifier">instance_eval</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+  }
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-page_spread_left" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">page_spread_left</span><span
+            class="method-args">()</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+          
+
+          
+          <div class="method-source-code" id="page_spread_left-source">
+            <pre><span class="ruby-comment"># File lib/gepub/resource_builder.rb, line 74</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">page_spread_left</span>
+  <span class="ruby-identifier">itemref</span> = <span class="ruby-ivar">@book</span>.<span class="ruby-identifier">spine</span>.<span class="ruby-identifier">itemref_by_id</span>[<span class="ruby-ivar">@last_defined_item</span>.<span class="ruby-identifier">item</span>.<span class="ruby-identifier">id</span>]
+  <span class="ruby-identifier">raise</span> <span class="ruby-string">&#39;page_spread_left should be called inside ordered&#39;</span> <span class="ruby-keyword">if</span> (<span class="ruby-identifier">itemref</span>.<span class="ruby-identifier">nil?</span>)
+  <span class="ruby-identifier">itemref</span>.<span class="ruby-identifier">page_spread_left</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-page_spread_right" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">page_spread_right</span><span
+            class="method-args">()</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+          
+
+          
+          <div class="method-source-code" id="page_spread_right-source">
+            <pre><span class="ruby-comment"># File lib/gepub/resource_builder.rb, line 80</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">page_spread_right</span>
+  <span class="ruby-identifier">itemref</span> = <span class="ruby-ivar">@book</span>.<span class="ruby-identifier">spine</span>.<span class="ruby-identifier">itemref_by_id</span>[<span class="ruby-ivar">@last_defined_item</span>.<span class="ruby-identifier">item</span>.<span class="ruby-identifier">id</span>]
+  <span class="ruby-identifier">raise</span> <span class="ruby-string">&#39;page_spread_right should be called inside ordered&#39;</span> <span class="ruby-keyword">if</span> (<span class="ruby-identifier">itemref</span>.<span class="ruby-identifier">nil?</span>)
+  <span class="ruby-identifier">itemref</span>.<span class="ruby-identifier">page_spread_right</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-rendition_layout" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">rendition_layout</span><span
+            class="method-args">(val)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+          
+
+          
+          <div class="method-source-code" id="rendition_layout-source">
+            <pre><span class="ruby-comment"># File lib/gepub/resource_builder.rb, line 86</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">rendition_layout</span> <span class="ruby-identifier">val</span>
+  <span class="ruby-identifier">itemref</span> = <span class="ruby-ivar">@book</span>.<span class="ruby-identifier">spine</span>.<span class="ruby-identifier">itemref_by_id</span>[<span class="ruby-ivar">@last_defined_item</span>.<span class="ruby-identifier">item</span>.<span class="ruby-identifier">id</span>]
+  <span class="ruby-identifier">raise</span> <span class="ruby-string">&#39;rendition should be called inside ordered&#39;</span> <span class="ruby-keyword">if</span> (<span class="ruby-identifier">itemref</span>.<span class="ruby-identifier">nil?</span>)
+  <span class="ruby-identifier">itemref</span>.<span class="ruby-identifier">rendition_layout</span> = <span class="ruby-identifier">val</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-rendition_orientation" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">rendition_orientation</span><span
+            class="method-args">(val)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+          
+
+          
+          <div class="method-source-code" id="rendition_orientation-source">
+            <pre><span class="ruby-comment"># File lib/gepub/resource_builder.rb, line 91</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">rendition_orientation</span> <span class="ruby-identifier">val</span>
+  <span class="ruby-identifier">itemref</span> = <span class="ruby-ivar">@book</span>.<span class="ruby-identifier">spine</span>.<span class="ruby-identifier">itemref_by_id</span>[<span class="ruby-ivar">@last_defined_item</span>.<span class="ruby-identifier">item</span>.<span class="ruby-identifier">id</span>]
+  <span class="ruby-identifier">raise</span> <span class="ruby-string">&#39;rendition should be called inside ordered&#39;</span> <span class="ruby-keyword">if</span> (<span class="ruby-identifier">itemref</span>.<span class="ruby-identifier">nil?</span>)
+  <span class="ruby-identifier">itemref</span>.<span class="ruby-identifier">rendition_orientation</span> = <span class="ruby-identifier">val</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-rendition_spread" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">rendition_spread</span><span
+            class="method-args">(val)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+          
+
+          
+          <div class="method-source-code" id="rendition_spread-source">
+            <pre><span class="ruby-comment"># File lib/gepub/resource_builder.rb, line 96</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">rendition_spread</span> <span class="ruby-identifier">val</span>
+  <span class="ruby-identifier">itemref</span> = <span class="ruby-ivar">@book</span>.<span class="ruby-identifier">spine</span>.<span class="ruby-identifier">itemref_by_id</span>[<span class="ruby-ivar">@last_defined_item</span>.<span class="ruby-identifier">item</span>.<span class="ruby-identifier">id</span>]
+  <span class="ruby-identifier">raise</span> <span class="ruby-string">&#39;rendition should be called inside ordered&#39;</span> <span class="ruby-keyword">if</span> (<span class="ruby-identifier">itemref</span>.<span class="ruby-identifier">nil?</span>)
+  <span class="ruby-identifier">itemref</span>.<span class="ruby-identifier">rendition_spread</span> = <span class="ruby-identifier">val</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-with_media_type" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">with_media_type</span><span
+            class="method-args">(*type) { || ... }</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+          
+
+          
+          <div class="method-source-code" id="with_media_type-source">
+            <pre><span class="ruby-comment"># File lib/gepub/resource_builder.rb, line 150</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">with_media_type</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">type</span>)
+  <span class="ruby-identifier">raise</span> <span class="ruby-string">&#39;with_media_type needs block.&#39;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">block_given?</span>
+  <span class="ruby-ivar">@file_postprocess</span>[<span class="ruby-string">&#39;with_media_type&#39;</span>] = <span class="ruby-constant">Proc</span>.<span class="ruby-identifier">new</span> { <span class="ruby-identifier">media_type</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">type</span>) }
+  <span class="ruby-ivar">@files_postprocess</span>[<span class="ruby-string">&#39;with_media_type&#39;</span>] = <span class="ruby-constant">Proc</span>.<span class="ruby-identifier">new</span> { <span class="ruby-identifier">media_type</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">type</span>) }
+  <span class="ruby-keyword">yield</span> 
+  <span class="ruby-ivar">@file_postprocess</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-string">&#39;with_media_type&#39;</span>)
+  <span class="ruby-ivar">@files_postprocess</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-string">&#39;with_media_type&#39;</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+    </section>
+  
+  </section>
+</main>
+
+
+<footer id="validator-badges" role="contentinfo">
+  <p><a href="http://validator.w3.org/check/referer">Validate</a>
+  <p>Generated by <a href="http://rdoc.rubyforge.org">RDoc</a> 4.1.0.
+  <p>Based on <a href="http://deveiate.org/projects/Darkfish-Rdoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
+</footer>
+
