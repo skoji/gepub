@@ -26,3 +26,6 @@ example_test*.epub
 Gemfile.lock
 vendor/**
 .bundle/**
+
+# rdoc
+rdoc/**

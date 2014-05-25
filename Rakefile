@@ -8,6 +8,6 @@ task :default => :spec
 
 RDoc::Task.new(:rdoc) do |rdoc|
   rdoc.main = "README.md"
-  rdoc.rdoc_dir = "doc"
+  rdoc.rdoc_dir = "rdoc"
   rdoc.rdoc_files.include("README.md", "lib/**/*.rb")
 end
