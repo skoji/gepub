@@ -29,30 +29,31 @@ describe GEPUB::Book do
     describe 'version=' do
       context 'overwrite version' do
         it 'will hold new version' do
-          book = GEPUB::Book.new()
-          book.version = '2.1'
-          expect(book.version).to eq('2.1')
+          GEPUB::Book.new do |book|
+            book.version = '2.1'
+            expect(book.version).to eq('2.1')
+          end
         end
       end
     end
     describe 'identifer=' do
       context 'set identifier' do
         it 'will set unique-identifier and related attributes' do
-          book = GEPUB::Book.new()
-          book.identifier = 'the-book-identifier'
-
-          expect(book.identifier).to eq('the-book-identifier')
-          expect(book.identifier_list[0]['id']).to eq(book.unique_identifier)
-          expect(book.identifier_list[0].refiner('identifier-type')).to be_nil
+          GEPUB::Book.new do |book|
+            book.identifier = 'the-book-identifier'
+            expect(book.identifier).to eq('the-book-identifier')
+            expect(book.identifier_list[0]['id']).to eq(book.unique_identifier)
+            expect(book.identifier_list[0].refiner('identifier-type')).to be_nil
+          end
         end
       end 
     end
     describe 'set_primary_identifier=' do 
       context 'set identifier with id and type' do
         it 'will set unique-identifier and related attributes' do
-          book = GEPUB::Book.new()
-          book.set_primary_identifier 'http//example.com/the-identifier', 'MyBookID', 'URL'
-
+          book = GEPUB::Book.new do
+            set_primary_identifier 'http//example.com/the-identifier', 'MyBookID', 'URL'
+          end
           expect(book.identifier).to eq('http//example.com/the-identifier')
           expect(book.unique_identifier).to eq('MyBookID')
           expect(book.identifier_list[0]['id']).to eq('MyBookID')

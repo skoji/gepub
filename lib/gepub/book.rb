@@ -116,14 +116,15 @@ module GEPUB
 
     # creates new empty Book object.
     # usually you do not need to specify any arguments.
-
-    def initialize(path='OEBPS/package.opf', attributes = {})
+    def initialize(path='OEBPS/package.opf', attributes = {}, &block)
       if File.extname(path) != '.opf'
         warn 'GEPUB::Book#new interface changed. You must supply path to package.opf as first argument. If you want to set title, please use GEPUB::Book#title='
       end
       @package = Package.new(path, attributes)
       @toc = []
-      yield book if block_given?
+      if block
+        block.arity < 1 ? instance_eval(&block) : block[self]        
+      end
     end
 
 
