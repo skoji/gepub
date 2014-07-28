@@ -163,15 +163,15 @@ module GEPUB
       end
 
       def file_as(name)
-        @item.set_file_as(name)
+        @item.file_as(name)
       end
 
       def seq(num)
-        @item.set_display_seq(num)
+        @item.display_seq(num)
       end
 
       def group_position(num)
-        @item.set_group_position(num)
+        @item.group_position(num)
       end
 
       def id(val)
@@ -210,7 +210,7 @@ module GEPUB
 
     def collection(val, count = 1)
       @last_defined_item =
-        MetaItem.new(@book.add_title(val, nil, GEPUB::TITLE_TYPE::COLLECTION).set_group_position(count.to_s))
+        MetaItem.new(@book.add_title(val, nil, GEPUB::TITLE_TYPE::COLLECTION).group_position(count.to_s))
     end
 
     def creator(val, role = 'aut')
@@ -245,7 +245,7 @@ module GEPUB
     end
 
     def unique_identifier(val, id = 'BookID', scheme = 'nil')
-      @last_defined_item = MetaItem.new(@book.set_primary_identifier(val, id, scheme))
+      @last_defined_item = MetaItem.new(@book.primary_identifier(val, id, scheme))
     end
     
     def alts(alt_vals = {})

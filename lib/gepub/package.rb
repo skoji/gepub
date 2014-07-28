@@ -5,7 +5,7 @@ require 'forwardable'
 module GEPUB
   # Holds data in opf file.
   class Package
-    include XMLUtil
+    include XMLUtil, DSLUtil
     extend Forwardable
     attr_accessor :path, :metadata, :manifest, :spine, :bindings, :epub_backward_compat, :contents_prefix, :prefixes 
     def_delegators :@manifest, :item_by_href
@@ -15,6 +15,7 @@ module GEPUB
     }.flatten
     def_delegators :@metadata, :set_lastmodified
     def_delegators :@metadata, :lastmodified
+    def_delegators :@metadata, :modified_now
     def_delegators :@metadata, :rendition_layout
     def_delegators :@metadata, :rendition_layout=
     def_delegators :@metadata, :rendition_orientation
@@ -121,8 +122,17 @@ module GEPUB
       |name|
       methodbase = name.gsub('-','_').sub('xml:lang', 'lang')
       define_method(methodbase + '=') { |val| @attributes[name] =  val }
-      define_method('set_' + methodbase) { |val| @attributes[name] = val }        
-      define_method(methodbase) { @attributes[name] }
+      define_method('set_' + methodbase) { |val|
+        warn "set_#{methodbase} is obsolete. use #{methodbase} instead."
+        @attributes[name] = val
+      }        
+      define_method(methodbase, ->(val=UNASSIGNED) {
+                      if unassigned?(val)
+                        @attributes[name]
+                      else
+                        send(methodbase + '=', val)
+                      end
+                    })
     }
 
     def [](x)
@@ -134,16 +144,20 @@ module GEPUB
     end
 
 
-    def identifier
-      @metadata.identifier_by_id(unique_identifier)
+    def identifier(identifier=UNASSIGNED)
+      if unassigned?(identifier)
+        @metadata.identifier_by_id(unique_identifier)
+      else
+        self.identifier=(identifier)
+      end
     end
     
     def identifier=(identifier)
-      set_primary_identifier(identifier, nil, nil)
+      primary_identifier(identifier, nil, nil)
     end
     
-    def set_primary_identifier(identifier, id = nil, type = nil)
-      set_unique_identifier(id || @id_pool.generate_key(:prefix => 'BookId', :without_count => true))
+    def primary_identifier(identifier, id = nil, type = nil)
+      unique_identifier(id || @id_pool.generate_key(:prefix => 'BookId', :without_count => true))
       @metadata.add_identifier identifier, unique_identifier, type
     end
 
@@ -181,11 +195,19 @@ module GEPUB
       @manifest.item_list
     end
     
-    def version
-      @attributes['version']
+    def version(val=UNASSIGNED)
+      if unassigned?(val)
+        @attributes['version']
+      else
+        @attributes['version'] = val
+        @metadata.opf_version = val
+        @manifest.opf_version = val
+        @spine.opf_version = val
+      end
     end
 
     def set_version(val)
+      warn 'set_version is obsolete: use verion instead.'
       @attributes['version'] = val
       @metadata.opf_version = val
       @manifest.opf_version = val
@@ -193,7 +215,7 @@ module GEPUB
     end
 
     def version=(val)
-      set_version(val)
+      version(val)
     end
     
     def enable_rendition

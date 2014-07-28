@@ -39,7 +39,7 @@ describe GEPUB::Package do
     it 'should generate opf' do
       opf = GEPUB::Package.new('OEBPS/package.package') {
         |package|
-        package.set_primary_identifier('http://example.jp', 'BookID', 'url')
+        package.primary_identifier('http://example.jp', 'BookID', 'url')
         package['xml:lang'] = 'ja'
 
         # metadata add: style 1
@@ -53,12 +53,12 @@ describe GEPUB::Package do
                                'th' => 'EPUB3 ตัวอย่าง (ญี่ปุ่น)')
         }
         # metadata add: style2
-        package.metadata.add_title('これでEPUB3もばっちり', nil, GEPUB::TITLE_TYPE::SUBTITLE).set_display_seq(2).add_alternates('en' => 'you need nothing but this book!')
-        package.metadata.add_creator('小嶋智').set_display_seq(1).add_alternates('en' => 'KOJIMA Satoshi')
-        package.metadata.add_contributor('電書部').set_display_seq(1).add_alternates('en' => 'Denshobu')
-        package.metadata.add_contributor('アサガヤデンショ').set_display_seq(2).add_alternates('en' => 'Asagaya Densho')
-        package.metadata.add_contributor('湘南電書鼎談').set_display_seq(3).add_alternates('en' => 'Shonan Densho Teidan')
-        package.metadata.add_contributor('電子雑誌トルタル').set_display_seq(4).add_alternates('en' => 'eMagazine Torutaru')
+        package.metadata.add_title('これでEPUB3もばっちり', nil, GEPUB::TITLE_TYPE::SUBTITLE).display_seq(2).add_alternates('en' => 'you need nothing but this book!')
+        package.metadata.add_creator('小嶋智').display_seq(1).add_alternates('en' => 'KOJIMA Satoshi')
+        package.metadata.add_contributor('電書部').display_seq(1).add_alternates('en' => 'Denshobu')
+        package.metadata.add_contributor('アサガヤデンショ').display_seq(2).add_alternates('en' => 'Asagaya Densho')
+        package.metadata.add_contributor('湘南電書鼎談').display_seq(3).add_alternates('en' => 'Shonan Densho Teidan')
+        package.metadata.add_contributor('電子雑誌トルタル').display_seq(4).add_alternates('en' => 'eMagazine Torutaru')
         package.add_item('img/image1.jpg')
         package.add_item('img/cover.jpg').add_property('cover-image')
         package.ordered {
@@ -78,7 +78,7 @@ describe GEPUB::Package do
     it 'should generate package with prefix attribute' do
       opf = GEPUB::Package.new('OEBPS/package.opf') do
         |package|
-        package.set_primary_identifier('http://example.jp', 'BookID', 'url')
+        package.primary_identifier('http://example.jp', 'BookID', 'url')
         package['xml:lang'] = 'ja'
         package.enable_rendition
       end
@@ -113,7 +113,7 @@ describe GEPUB::Package do
     it 'should generate opf2.0' do
       opf = GEPUB::Package.new('OEBPS/package.opf', { 'version' => '2.0'}) {
         |package|
-        package.set_primary_identifier('http://example.jp', 'BookID', 'url')
+        package.primary_identifier('http://example.jp', 'BookID', 'url')
         package['xml:lang'] = 'ja'
 
         # metadata add: style 1
@@ -127,12 +127,12 @@ describe GEPUB::Package do
                                'th' => 'EPUB3 ตัวอย่าง (ญี่ปุ่น)')
         }
         # metadata add: style2
-        package.metadata.add_title('これでEPUB3もばっちり', nil, GEPUB::TITLE_TYPE::SUBTITLE).set_display_seq(2).add_alternates('en' => 'you need nothing but this book!')
-        package.metadata.add_creator('小嶋智').set_display_seq(1).add_alternates('en' => 'KOJIMA Satoshi')
-        package.metadata.add_contributor('電書部').set_display_seq(1).add_alternates('en' => 'Denshobu')
-        package.metadata.add_contributor('アサガヤデンショ').set_display_seq(2).add_alternates('en' => 'Asagaya Densho')
-        package.metadata.add_contributor('湘南電書鼎談').set_display_seq(3).add_alternates('en' => 'Shonan Densho Teidan')
-        package.metadata.add_contributor('電子雑誌トルタル').set_display_seq(4).add_alternates('en' => 'eMagazine Torutaru')
+        package.metadata.add_title('これでEPUB3もばっちり', nil, GEPUB::TITLE_TYPE::SUBTITLE).display_seq(2).add_alternates('en' => 'you need nothing but this book!')
+        package.metadata.add_creator('小嶋智').display_seq(1).add_alternates('en' => 'KOJIMA Satoshi')
+        package.metadata.add_contributor('電書部').display_seq(1).add_alternates('en' => 'Denshobu')
+        package.metadata.add_contributor('アサガヤデンショ').display_seq(2).add_alternates('en' => 'Asagaya Densho')
+        package.metadata.add_contributor('湘南電書鼎談').display_seq(3).add_alternates('en' => 'Shonan Densho Teidan')
+        package.metadata.add_contributor('電子雑誌トルタル').display_seq(4).add_alternates('en' => 'eMagazine Torutaru')
         package.add_item('img/image1.jpg')
         package.ordered {
           package.add_item('text/chapter1.xhtml')

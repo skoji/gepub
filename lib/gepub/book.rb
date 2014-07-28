@@ -72,8 +72,10 @@ module GEPUB
   # === Book#contributors_list (delegated to Metadata)
   # returns contributors list by display-seq or defined order.
   # the contributors without display-seq is appear after contributors with display-seq.
-  # === Book#set_lastmodified(date=nil) (delegated to Metadata#set_lastmodified)
-  # set last modified date.if date is nil, it sets current time.
+  # === Book#lastmodified(date) (delegated to Metadata#lastmodified)
+  # set last modified date.
+  # === Book#modified_now (delegated to Metadata#modified_now)
+  # set last modified date to current time.
   # === Book#lastmodified (delegated to Metadata#lastmodified)
   # returns Meta object contains last modified time.
   # === setting and reading other metadata: publisher, language, coverage, date, description, format, relation, rights, source, subject, type (delegated to Metadata)
@@ -228,7 +230,7 @@ module GEPUB
       entries.sort_by { |k,v| k }.each {
         |k,v|
         epub.put_next_entry(k)
-        epub << v.force_to_bin
+        epub << v.force_encoding('us-ascii')
       }
     end
 
@@ -384,7 +386,7 @@ EOF
     end
     def cleanup_for_epub3
       if version.to_f >=3.0
-        @package.metadata.set_lastmodified
+        @package.metadata.modified_now
         
         if @package.manifest.item_list.select {
           |href, item|

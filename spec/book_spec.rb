@@ -48,11 +48,11 @@ describe GEPUB::Book do
         end
       end 
     end
-    describe 'set_primary_identifier=' do 
+    describe 'primary_identifier' do 
       context 'set identifier with id and type' do
         it 'will set unique-identifier and related attributes' do
           book = GEPUB::Book.new do
-            set_primary_identifier 'http//example.com/the-identifier', 'MyBookID', 'URL'
+            primary_identifier 'http//example.com/the-identifier', 'MyBookID', 'URL'
           end
           expect(book.identifier).to eq('http//example.com/the-identifier')
           expect(book.unique_identifier).to eq('MyBookID')
@@ -231,12 +231,12 @@ describe GEPUB::Book do
       it 'set current time' do
         book = GEPUB::Book.new
         now = Time.now
-        book.set_lastmodified
+        book.modified_now
         expect((book.lastmodified.content - now).abs).to be < 2
       end
       it 'set time in string' do
         book = GEPUB::Book.new
-        book.set_lastmodified(Time.parse('2012-9-12 00:00:00Z'))
+        book.lastmodified(Time.parse('2012-9-12 00:00:00Z'))
         expect(book.lastmodified.content).to eq(Time.parse('2012-9-12 00:00:00 UTC'))
       end
     end

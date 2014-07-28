@@ -102,7 +102,7 @@ describe GEPUB::Metadata do
     it 'should write and read multipletitle with type' do
       metadata = GEPUB::Metadata.new
       metadata.add_title('The Main Title', 'maintitle', GEPUB::TITLE_TYPE::MAIN)
-      metadata.add_title('The Book Series', 'series', GEPUB::TITLE_TYPE::COLLECTION).set_group_position(1)
+      metadata.add_title('The Book Series', 'series', GEPUB::TITLE_TYPE::COLLECTION).group_position(1)
       expect(metadata.title.to_s).to eq('The Main Title')
       expect(metadata.title.title_type.to_s).to eq('main')
 
@@ -113,7 +113,7 @@ describe GEPUB::Metadata do
 
     it 'should handle alternate-script metadata of creator, not using method chain' do
       metadata = GEPUB::Metadata.new
-      metadata.add_creator('TheCreator', 'author', 'aut').set_display_seq(1).set_file_as('Creator, The').add_alternates({ 'ja-JP' => '作成者' })
+      metadata.add_creator('TheCreator', 'author', 'aut').display_seq(1).file_as('Creator, The').add_alternates({ 'ja-JP' => '作成者' })
       expect(metadata.creator.to_s).to eq('TheCreator')
       expect(metadata.creator.to_s('ja')).to eq('作成者')
     end
@@ -180,7 +180,7 @@ describe GEPUB::Metadata do
 
     it 'should generate metadata with creator refiner' do
       metadata = GEPUB::Metadata.new
-      metadata.add_creator('TheCreator', nil, 'aut').set_display_seq(1).set_file_as('Creator, The').add_alternates({ 'ja-JP' => '作成者' })
+      metadata.add_creator('TheCreator', nil, 'aut').display_seq(1).file_as('Creator, The').add_alternates({ 'ja-JP' => '作成者' })
       builder = Nokogiri::XML::Builder.new { |xml|
         xml.package('xmlns' => "http://www.idpf.org/2007/opf",'version' => "3.0",'unique-identifier' => "pub-id",'xml:lang' => "ja") {
           metadata.to_xml(xml)
@@ -198,7 +198,7 @@ describe GEPUB::Metadata do
 
     it 'should generate metadata with old style meta tag' do
       metadata = GEPUB::Metadata.new
-      metadata.add_creator('TheCreator', nil, 'aut').set_display_seq(1).set_file_as('Creator, The').add_alternates({ 'ja-JP' => '作成者' })
+      metadata.add_creator('TheCreator', nil, 'aut').display_seq(1).file_as('Creator, The').add_alternates({ 'ja-JP' => '作成者' })
       metadata.add_oldstyle_meta(nil, { 'name' => 'cover', 'content' => 'cover.jpg' })
       builder = Nokogiri::XML::Builder.new { |xml|
         xml.package('xmlns' => "http://www.idpf.org/2007/opf",'version' => "3.0",'unique-identifier' => "pub-id",'xml:lang' => "ja") {

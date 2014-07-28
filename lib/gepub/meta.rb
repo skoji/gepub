@@ -4,6 +4,7 @@ require 'nokogiri'
 module GEPUB
   # Holds one metadata with refine meta elements.
   class Meta
+    include DSLUtil
     attr_accessor :content
     attr_reader :name
     def initialize(name, content, parent, attributes= {}, refiners = {})
@@ -64,17 +65,30 @@ module GEPUB
     ['title-type', 'identifier-type', 'display-seq', 'file-as', 'group-position', 'role'].each {
       |name|
       methodbase = name.sub('-','_')
-      define_method(methodbase + '=') { |val| refine(name, val); }
-      define_method('set_' + methodbase) { |val| refine(name, val); }        
-      define_method(methodbase) { refiner(name) }
+      define_method(methodbase + '=') { |val| refine(name, val) }
+      define_method('set_' + methodbase) { |val|
+        warn "set_#{methodbase} is obsolete. use #{methodbase} instead."
+        refine(name, val)
+      }        
+      define_method(methodbase, ->(value = UNASSIGNED) {
+                      if unassigned?(value)
+                        refiner(name)
+                      else
+                        refine(name,value)
+                      end
+                    })
     }
 
     def lang=(lang)
       @attributes['xml:lang'] = lang
     end
 
-    def lang
-      @attributes['xml:lang']
+    def lang(lang = UNASSIGNED)
+      if unassigned?(lang)
+        @attributes['xml:lang']
+      else
+        self.lang=(lang)
+      end
     end
     
     # add alternate script refiner.

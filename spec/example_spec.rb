@@ -71,7 +71,7 @@ describe 'GEPUB usage' do
 
     it 'should generate simple EPUB3 with rather complicated matadata' do
       book = GEPUB::Book.new
-      book.set_primary_identifier('http:/example.jp/bookid_in_url', 'BookID', 'URL')
+      book.primary_identifier('http:/example.jp/bookid_in_url', 'BookID', 'URL')
       book.language = 'ja'
 
       # you can add metadata and its property using block
@@ -86,16 +86,16 @@ describe 'GEPUB usage' do
                              'th' => 'GEPUB ตัวอย่าง (ญี่ปุ่น)')
       }
       # you can do the same thing using method chain
-      book.add_title('これはあくまでサンプルです',nil, GEPUB::TITLE_TYPE::SUBTITLE).set_display_seq(2).add_alternates('en' => 'this book is just a sample.')
+      book.add_title('これはあくまでサンプルです',nil, GEPUB::TITLE_TYPE::SUBTITLE).display_seq(2).add_alternates('en' => 'this book is just a sample.')
       book.add_creator('小嶋智') {
         |creator|
         creator.display_seq = 1
         creator.add_alternates('en' => 'KOJIMA Satoshi')
       }
-      book.add_contributor('電書部').set_display_seq(1).add_alternates('en' => 'Denshobu')
-      book.add_contributor('アサガヤデンショ').set_display_seq(2).add_alternates('en' => 'Asagaya Densho')
-      book.add_contributor('湘南電書鼎談').set_display_seq(3).add_alternates('en' => 'Shonan Densho Teidan')
-      book.add_contributor('電子雑誌トルタル').set_display_seq(4).add_alternates('en' => 'eMagazine Torutaru')
+      book.add_contributor('電書部').display_seq(1).add_alternates('en' => 'Denshobu')
+      book.add_contributor('アサガヤデンショ').display_seq(2).add_alternates('en' => 'Asagaya Densho')
+      book.add_contributor('湘南電書鼎談').display_seq(3).add_alternates('en' => 'Shonan Densho Teidan')
+      book.add_contributor('電子雑誌トルタル').display_seq(4).add_alternates('en' => 'eMagazine Torutaru')
 
       imgfile = File.join(File.dirname(__FILE__),  'fixtures', 'testdata', 'image1.jpg')
       book.add_item('img/image1.jpg',imgfile).cover_image

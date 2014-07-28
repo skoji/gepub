@@ -17,7 +17,7 @@ module GEPUB
         nil
       end
     end
-    include XMLUtil
+    include XMLUtil, DSLUtil
     attr_accessor :opf_version
     # parse metadata element. metadata_xml should be Nokogiri::XML::Node object.
     def self.parse(metadata_xml, opf_version = '3.0', id_pool = Package::IDPool.new)
@@ -106,7 +106,7 @@ module GEPUB
       @oldstyle_meta = []
     end
     
-    CONTENT_NODE_LIST = ['identifier','title', 'language', 'contributor', 'creator', 'coverage', 'date','description','format','publisher','relation','rights','source','subject','type'].each {
+    CONTENT_NODE_LIST = ['identifier', 'title', 'language', 'contributor', 'creator', 'coverage', 'date','description','format','publisher','relation','rights','source','subject','type'].each {
       |node|
       define_method(node + '_list') { @content_nodes[node].dup.sort_as_meta }
       define_method(node + '_clear') {
@@ -116,9 +116,14 @@ module GEPUB
         end
       }
 
-      define_method(node) {
-        get_first_node(node)
-      }
+      define_method(node, ->(content=UNASSIGNED, id=nil) {
+                      if unassigned?(content)
+                        get_first_node(node)
+                      else
+                        send(node + "_clear")
+                        add_metadata(node, content, id)
+                      end
+                    })
 
       define_method('add_' + node) {
         |content, id|
@@ -127,13 +132,15 @@ module GEPUB
       
       define_method('set_' + node) {
         |content, id|
+        warn "obsolete : set_#{node}. use #{node} instead."
         send(node + "_clear")
         add_metadata(node, content, id)
       }
       
       define_method(node+'=') {
         |content|
-        send('set_' + node, content, nil)
+        send(node + "_clear")
+        add_metadata(node, content, nil)
       }
     }
 
@@ -148,15 +155,23 @@ module GEPUB
       end
     end
 
-    def title
-      if !@content_nodes['title'].nil?
-        @content_nodes['title'].each do
-          |titlenode|
-          return titlenode if titlenode.title_type.to_s == TITLE_TYPE::MAIN
+    def title(content=UNASSIGNED, id = nil, title_type = nil)
+      if unassigned?(content)
+        if !@content_nodes['title'].nil?
+          @content_nodes['title'].each do
+            |titlenode|
+            return titlenode if titlenode.title_type.to_s == TITLE_TYPE::MAIN
+          end
         end
+        get_first_node('title')
+      else
+        title_clear
+        meta = add_title(content, id, title_type)
+        yield meta if block_given?
+        meta
       end
-      get_first_node('title')
     end
+
     
     def get_first_node(node)
       if !@content_nodes[node].nil? && @content_nodes[node].size > 0
@@ -198,6 +213,7 @@ module GEPUB
     end
 
     def set_title(content, id = nil, title_type = nil)
+      warn "obsolete : set_title. use title instead."
       title_clear
       meta = add_title(content, id, title_type)
       yield meta if block_given?
@@ -222,15 +238,31 @@ module GEPUB
       meta
     end
 
-    def lastmodified
-      ret = (@content_nodes['meta'] ||=[]).select {
-        |meta|
-        meta['property'] == 'dcterms:modified'
-      }
-      ret.size == 0 ? nil : ret[0]
+    def lastmodified(date=UNASSIGNED)
+      if unassigned?(date)
+        ret = (@content_nodes['meta'] ||=[]).select {
+          |meta|
+          meta['property'] == 'dcterms:modified'
+        }
+        ret.size == 0 ? nil : ret[0]
+      else
+        date ||= Time.now
+        (@content_nodes['meta'] ||= []).each {
+          |meta|
+          if (meta['property'] == 'dcterms:modified')
+            @content_nodes['meta'].delete meta
+          end
+        }
+        add_metadata('meta', date.utc.strftime('%Y-%m-%dT%H:%M:%SZ'), nil, DateMeta)['property'] = 'dcterms:modified'
+      end
     end
-    
+
+    def modified_now
+      lastmodified Time.now
+    end
+
     def set_lastmodified(date=nil)
+      warn "obsolete : set_lastmodified. use lastmodified instead."
       date ||= Time.now
       (@content_nodes['meta'] ||= []).each {
         |meta|
