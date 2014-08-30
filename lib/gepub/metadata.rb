@@ -48,6 +48,8 @@ module GEPUB
               @spread = metanode
             when 'ibooks:version'
               @ibooks_version = metanode
+            when 'ibooks:scroll-axis'
+              @ibooks_scroll_axis = metanode
             end
 
           }
@@ -70,6 +72,7 @@ module GEPUB
       @orientation = NilContent
       @spread = NilContent
       @ibooks_version = NilContent
+      @ibooks_scroll_axis = NilContent
       yield self if block_given?
     end
 
@@ -330,13 +333,25 @@ module GEPUB
       @ibooks_version = Meta.new('meta', val, self, { 'property' => 'ibooks:version' })
       (@content_nodes['meta'] ||= []) << @ibooks_version
     end
+
+    def ibooks_scroll_axis
+      @ibooks_scroll_axis.content || ''      
+    end
+
+    def ibooks_scroll_axis=(val)
+      if ![:vertical, :horizontal, :default].member? val.to_sym
+        raise 'ibooks_scroll_axis should be one of vertical, horizontal or default'
+      end
+      @ibooks_scroll_axis = Meta.new('meta', val, self, { 'property' => 'ibooks:scroll-axis' })
+      (@content_nodes['meta'] ||= []) << @ibooks_scroll_axis
+    end
     
     def rendition_specified?
       @layout.content || @orientation.content || @spread.content
     end
 
     def ibooks_vocaburaly_specified?
-      @ibooks_version.content
+      @ibooks_version.content || @ibooks_scroll_axis.content
     end
     
     private

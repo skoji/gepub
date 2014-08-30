@@ -24,6 +24,8 @@ module GEPUB
     def_delegators :@metadata, :rendition_spread=
     def_delegators :@metadata, :ibooks_version
     def_delegators :@metadata, :ibooks_version=
+    def_delegators :@metadata, :ibooks_scroll_axis
+    def_delegators :@metadata, :ibooks_scroll_axis=
 
     def_delegators :@spine, :page_progression_direction=
     def_delegators :@spine, :page_progression_direction

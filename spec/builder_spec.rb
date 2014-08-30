@@ -407,8 +407,26 @@ describe GEPUB::Builder do
       }
       expect(xml.root['prefix']).to eq 'ibooks: http://vocabulary.itunes.apple.com/rdf/ibooks/vocabulary-extensions-1.0/'
       expect(xml.at_xpath("//xmlns:meta[@property='ibooks:version']").content).to eq '1.1.1'
-
     end
+
+    it 'handle ibooks scroll-axis' do
+      workdir = File.join(File.dirname(__FILE__),'fixtures', 'builder')
+      builder = GEPUB::Builder.new {
+        ibooks_scroll_axis :vertical
+        resources(:workdir => workdir)  {
+          ordered {
+            file('text/cover.xhtml')
+            file('text/memo.txt')
+          }
+        }
+      }
+      xml =  builder.instance_eval{
+        Nokogiri::XML::Document.parse @book.opf_xml
+      }
+      expect(xml.root['prefix']).to eq 'ibooks: http://vocabulary.itunes.apple.com/rdf/ibooks/vocabulary-extensions-1.0/'
+      expect(xml.at_xpath("//xmlns:meta[@property='ibooks:scroll-axis']").content).to eq 'vertical'
+    end
+
     it 'should handle fallback chain' do
       workdir = File.join(File.dirname(__FILE__),'fixtures', 'builder')
       builder = GEPUB::Builder.new {

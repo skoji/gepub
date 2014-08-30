@@ -269,6 +269,11 @@ module GEPUB
     def ibooks_version(val)
       @book.ibooks_version=val
     end
+    # specify scroll axis for ibooks
+    def ibooks_scroll_axis(val)
+      @book.ibooks_scroll_axis = val
+    end
+    
     # set optional file.
     # val should be String or Hash.
     # if val is String, file is read from the File specified by string and stored in EPUB to the path specified by string.
