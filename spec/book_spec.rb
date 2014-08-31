@@ -239,6 +239,11 @@ describe GEPUB::Book do
         book.lastmodified(Time.parse('2012-9-12 00:00:00Z'))
         expect(book.lastmodified.content).to eq(Time.parse('2012-9-12 00:00:00 UTC'))
       end
+      it 'set time in string : using assign method' do
+        book = GEPUB::Book.new
+        book.lastmodified = Time.parse('2012-9-12 00:00:00Z')
+        expect(book.lastmodified.content).to eq(Time.parse('2012-9-12 00:00:00 UTC'))
+      end
     end
     describe 'page_progression_direction=' do
       it 'set page_progression_direction' do 

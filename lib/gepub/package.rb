@@ -15,6 +15,7 @@ module GEPUB
     }.flatten
     def_delegators :@metadata, :set_lastmodified
     def_delegators :@metadata, :lastmodified
+    def_delegators :@metadata, :lastmodified=
     def_delegators :@metadata, :modified_now
     def_delegators :@metadata, :rendition_layout
     def_delegators :@metadata, :rendition_layout=

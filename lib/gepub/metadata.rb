@@ -264,6 +264,10 @@ module GEPUB
       lastmodified Time.now
     end
 
+    def lastmodified=(date)
+      lastmodified(date)
+    end
+    
     def set_lastmodified(date=nil)
       warn "obsolete : set_lastmodified. use lastmodified instead."
       date ||= Time.now
