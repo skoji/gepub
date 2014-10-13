@@ -385,10 +385,10 @@ describe GEPUB::Builder do
       expect(builder.instance_eval{ @book.spine.itemref_list[1].properties[0] }).to eq('rendition:layout-pre-paginated')
       expect(builder.instance_eval{ @book.spine.itemref_list[1].properties[1] }).to eq('rendition:orientation-landscape')
       expect(builder.instance_eval{ @book.spine.itemref_list[1].properties[2] }).to eq('rendition:spread-both')
-      builder.instance_eval{
-        xml = Nokogiri::XML::Document.parse @book.opf_xml
-        xml.root['prefix'].should == 'rendition: http://www.idpf.org/vocab/rendition/#'
+      xml = builder.instance_eval{
+        Nokogiri::XML::Document.parse @book.opf_xml
       }
+      expect(xml.root['prefix']).to eq 'rendition: http://www.idpf.org/vocab/rendition/#'
     end
 
     it 'whould handle ibooks version' do
@@ -519,9 +519,10 @@ describe GEPUB::Builder do
           file 'with_remote.xhtml' => StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops"><head></head><body><div><p><video src="http://foo.bar">no video</video></p></div></body></html>')
         }
       }
-      builder.instance_eval {
-        @book.item_by_href('with_remote.xhtml').properties[0].should == 'remote-resources'
+      prop = builder.instance_eval {
+        @book.item_by_href('with_remote.xhtml').properties[0]
       }
+      expect(prop).to eq 'remote-resources'
     end
 
     it 'should handle remote resource URL' do
@@ -541,9 +542,10 @@ describe GEPUB::Builder do
           file 'mathml.xhtml' => StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops"><head></head><body><div><p><math xmlns="http://www.w3.org/1998/Math/MathML"></math></p></div></body></html>')
         }
       }
-      builder.instance_eval {
-        @book.item_by_href('mathml.xhtml').properties[0].should == 'mathml'
+      prop = builder.instance_eval {
+        @book.item_by_href('mathml.xhtml').properties[0]
       }
+      expect(prop).to eq 'mathml'
     end
 
     it 'should handle svg' do
@@ -553,9 +555,10 @@ describe GEPUB::Builder do
           file 'svg.xhtml' => StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops"><head></head><body><div><p><svg xmlns="http://www.w3.org/2000/svg"></svg></p></div></body></html>')
         }
       }
-      builder.instance_eval {
-        @book.item_by_href('svg.xhtml').properties[0].should == 'svg'
+      prop = builder.instance_eval {
+        @book.item_by_href('svg.xhtml').properties[0]
       }
+      expect(prop).to eq 'svg'
     end
 
     it 'should handle epub:switch' do
@@ -577,9 +580,10 @@ describe GEPUB::Builder do
 </epub:switch></p></div></body></html>')
         }
       }
-      builder.instance_eval {
-        @book.item_by_href('switch.xhtml').properties[0].should == 'switch'
+      prop = builder.instance_eval {
+        @book.item_by_href('switch.xhtml').properties[0]
       }
+      expect(prop).to eq 'switch'
     end
 
     it 'should handle scripted property' do
@@ -589,18 +593,19 @@ describe GEPUB::Builder do
           file 'scripted.xhtml' => StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops"><head><script>alert("scripted");</script></head><body><div><p>text comes here</p></div></body></html>')
         }
       }
-      builder.instance_eval {
-        @book.item_by_href('scripted.xhtml').properties[0].should == 'scripted'
-      }
+      expect(builder.instance_eval {
+        @book.item_by_href('scripted.xhtml').properties[0]
+      }).to eq 'scripted'
     end
 
     it 'should handle optional file' do
       builder = GEPUB::Builder.new {
         optional_file 'META-INF/test.xml' => StringIO.new('<test></test>')
       }
-      builder.instance_eval {
-        @book.optional_files.size.should == 1
-      }
+      expect(builder.instance_eval {
+        @book.optional_files.size
+      }).to eq 1
+      
       expect(builder.instance_eval {      
         @book.optional_files['META-INF/test.xml']
       }).not_to be_nil
