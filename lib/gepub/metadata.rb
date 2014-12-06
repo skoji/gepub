@@ -158,6 +158,10 @@ module GEPUB
       end
     end
 
+    def title=(content)
+      title(content)
+    end
+
     def title(content=UNASSIGNED, id = nil, title_type = nil)
       if unassigned?(content)
         if !@content_nodes['title'].nil?
@@ -216,7 +220,7 @@ module GEPUB
     end
 
     def set_title(content, id = nil, title_type = nil)
-      warn "obsolete : set_title. use title instead."
+      warn "obsolete : set_title. use title or title= instead."
       title_clear
       meta = add_title(content, id, title_type)
       yield meta if block_given?
