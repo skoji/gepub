@@ -264,11 +264,59 @@ module GEPUB
 EOF
     end
 
+
+    # add tocdata like this : [ {link: chapter1.xhtml, text: 'Capter 1', level: 1} ] .
+    # if item corresponding to the link does not exists, error will be thrown.
+    def add_tocdata(toc_yaml)
+      newtoc = []
+      toc_yaml.each do |toc_entry|
+        href, id = toc_entry[:link].split('#')
+        item = @package.manifest.item_by_href(href)
+        throw "#{href} does not exist." if item.nil?
+        newtoc.push({item: item, id: id, text: toc_entry[:text], level: toc_entry[:level] })
+      end
+      @toc = @toc + newtoc
+    end
+      
     def generate_nav_doc(title = 'Table of Contents')
       add_item('nav.html', StringIO.new(nav_doc(title)), 'nav').add_property('nav')
     end
-
+    
     def nav_doc(title = 'Table of Contents')
+      # handle cascaded toc
+      start_level = @toc && @toc[0][:level] || 1
+      stacked_toc = {level: start_level, tocs: [] }
+      @toc.inject(stacked_toc) do |current_stack, toc_entry|
+        toc_entry_level = toc_entry[:level] || 1
+        if current_stack[:level] < toc_entry_level
+          new_stack = { level: toc_entry_level, tocs: [], parent: current_stack}
+          current_stack[:tocs].last[:child_stack] = new_stack
+          current_stack = new_stack
+        else
+          while current_stack[:level] > toc_entry_level and
+               !current_stack[:parent].nil?
+            current_stack = current_stack[:parent]
+          end
+        end
+        current_stack[:tocs].push toc_entry
+        current_stack
+      end
+      # write toc 
+      def write_toc xml_doc, tocs
+        xml_doc.ol {
+          tocs.each {
+            |x|
+            id = x[:id].nil? ? "" : "##{x[:id]}"
+            xml_doc.li {
+              xml_doc.a({'href' => x[:item].href + id} ,x[:text])
+              if x[:child_stack] && x[:child_stack][:tocs].size > 0
+                write_toc(xml_doc, x[:child_stack][:tocs])
+              end
+            }
+          }
+        }
+      end
+      # build nav
       builder = Nokogiri::XML::Builder.new {
         |doc|
         doc.html('xmlns' => "http://www.w3.org/1999/xhtml",'xmlns:epub' => "http://www.idpf.org/2007/ops") {
@@ -276,15 +324,7 @@ EOF
           doc.body {
             doc.nav('epub:type' => 'toc', 'id' => 'toc') {
               doc.h1 "#{title}"
-              doc.ol {
-                @toc.each {
-                  |x|
-                  id = x[:id].nil? ? "" : "##{x[:id]}"
-                  doc.li {
-                    doc.a({'href' => x[:item].href + id} ,x[:text])
-                  }
-                }
-              }
+              write_toc(doc, stacked_toc[:tocs])
             }
           }
         }
@@ -309,7 +349,7 @@ EOF
           xml.navMap {
             @toc.each {
               |x|
-              xml.navPoint('id' => "#{x[:item].itemid}", 'playOrder' => "#{count}") {
+              xml.navPoint('id' => "#{x[:item].itemid}##{x[:id]}", 'playOrder' => "#{count}") {
                 xml.navLabel {
                   xml.text_  "#{x[:text]}"
                 }

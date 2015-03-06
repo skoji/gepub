@@ -113,7 +113,7 @@ EOF
 
     expect(ncx.xpath('xmlns:navMap').size).to be > 0
     nav_point = ncx.at_xpath('xmlns:navMap/xmlns:navPoint')
-    expect(nav_point['id']).to eq('c2')
+    expect(nav_point['id']).to eq('c2#')
     expect(nav_point['playOrder']).to eq('1')
     
     expect(nav_point.at_xpath('xmlns:navLabel/xmlns:text').content).to eq('test chapter')

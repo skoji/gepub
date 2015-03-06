@@ -296,7 +296,9 @@ module GEPUB
     def resources(attributes = {}, &block)
       ResourceBuilder.new(@book, attributes, &block)
     end
-    
+    def book
+      @book
+    end
     def generate_epub_stream
       @book.generate_epub_stream
     end
