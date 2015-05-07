@@ -1,4 +1,6 @@
 # gepub  
+
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/skoji/gepub?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [<img src="https://secure.travis-ci.org/skoji/gepub.png" />](http://travis-ci.org/skoji/gepub) 
 [![Coverage Status](https://coveralls.io/repos/skoji/gepub/badge.png?branch=master)](https://coveralls.io/r/skoji/gepub?branch=master)
 [![Dependency Status](https://gemnasium.com/skoji/gepub.png)](https://gemnasium.com/skoji/gepub)
