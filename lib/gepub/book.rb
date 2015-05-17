@@ -307,8 +307,10 @@ EOF
           tocs.each {
             |x|
             id = x[:id].nil? ? "" : "##{x[:id]}"
+            toc_text = x[:text]
+            toc_text = x[:item].href if toc_text.nil? or toc_text == ''
             xml_doc.li {
-              xml_doc.a({'href' => x[:item].href + id} ,x[:text])
+              xml_doc.a({'href' => x[:item].href + id} ,toc_text)
               if x[:child_stack] && x[:child_stack][:tocs].size > 0
                 write_toc(xml_doc, x[:child_stack][:tocs])
               end
