@@ -291,6 +291,15 @@ describe GEPUB::Book do
        filehandle = File.new(File.dirname(__FILE__) + '/fixtures/testdata/wasteland-20120118.epub')
        book = GEPUB::Book.parse(filehandle)
        expect(book).to be_instance_of GEPUB::Book
+       expect(book.items.size).to eq 6
+       expect(book.items['t1'].href).to eq 'wasteland-content.xhtml'
+       expect(book.items['nav'].href).to eq 'wasteland-nav.xhtml'
+       expect(book.items['cover'].href).to eq 'wasteland-cover.jpg'
+       expect(book.items['css'].href).to eq 'wasteland.css'
+       expect(book.items['css-night'].href).to eq 'wasteland-night.css'
+       expect(book.items['ncx'].href).to eq 'wasteland.ncx'              
+       expect(book.spine_items.size).to eq 1
+       expect(book.spine_items[0].href).to eq 'wasteland-content.xhtml'
       end
      end
     end
