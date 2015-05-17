@@ -205,4 +205,25 @@ EOF
     @book.generate_epub(epubname)
     epubcheck(epubname)
   end
+
+  it 'should generate valid EPUB when @toc is empty' do
+    epubname = File.join(File.dirname(__FILE__), 'testepub4.epub')
+    @book = GEPUB::Book.new('OEPBS/package.opf', { 'version' => '3.0'} ) 
+    @book.title = 'thetitle'
+    @book.creator = "theauthor"
+    @book.contributor = "contributors contributors!"
+    @book.publisher = "thepublisher"
+    @book.date = "2015-05-05"
+    @book.identifier = "http://example.jp/foobar/"
+    @book.language = 'ja'
+    item1 = @book.add_item('text/foobar.xhtml',nil, 'c1')
+    item1.add_content(StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c1</title></head><body><p>the first page</p></body></html>'))
+    @book.spine.push(item1)
+    item2 = @book.add_ordered_item('text/barbar.xhtml',
+                                   StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title></head><body><p>second page, whith is test chapter.</p></body></html>'),
+                                   'c2')
+    @book.generate_epub(epubname)
+    epubcheck(epubname)
+
+  end
 end
