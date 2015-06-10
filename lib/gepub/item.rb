@@ -73,7 +73,7 @@ module GEPUB
 
     # guess and set content property from contents.
     def guess_content_property
-      if File.extname(self.href) =~ /.x?html/
+      if File.extname(self.href) =~ /.x?html/ && @attributes['media-type'] === 'application/xhtml+xml'
         @attributes['properties'] = (@attributes['properties'] || []).reject {
           |x| x == 'svg' || x == 'mathml' || x == 'switch' || x == 'remote-resources'
         }
