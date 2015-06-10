@@ -78,6 +78,7 @@ module GEPUB
           |x| x == 'svg' || x == 'mathml' || x == 'switch' || x == 'remote-resources'
         }
         parsed = Nokogiri::XML::Document.parse(@content)
+        return unless parsed.root.node_name === "html"
         ns_prefix =  parsed.namespaces.invert['http://www.w3.org/1999/xhtml']
         if ns_prefix.nil?
           prefix = ''
@@ -99,7 +100,7 @@ module GEPUB
           self.add_property('switch')
         end
         scripts = parsed.xpath("//#{prefix}script") + parsed.xpath("//#{prefix}form")
-        if scripts.size > 0 && parsed.root.node_name === "html"
+        if scripts.size > 0
           self.add_property('scripted')
         end
       end
