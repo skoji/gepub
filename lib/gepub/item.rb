@@ -98,7 +98,8 @@ module GEPUB
         if parsed.xpath("//epub:switch", { 'epub' => 'http://www.idpf.org/2007/ops' }).size > 0
           self.add_property('switch')
         end
-        if parsed.xpath("//#{prefix}script").size > 0
+        scripts = parsed.xpath("//#{prefix}script") + parsed.xpath("//#{prefix}form")
+        if scripts.size > 0 && parsed.root.node_name === "html"
           self.add_property('scripted')
         end
       end
