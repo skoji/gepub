@@ -73,19 +73,20 @@ module GEPUB
 
     # guess and set content property from contents.
     def guess_content_property
-      if File.extname(self.href) =~ /.x?html/
+      if File.extname(self.href) =~ /.x?html/ && @attributes['media-type'] === 'application/xhtml+xml'
         @attributes['properties'] = (@attributes['properties'] || []).reject {
           |x| x == 'svg' || x == 'mathml' || x == 'switch' || x == 'remote-resources'
         }
         parsed = Nokogiri::XML::Document.parse(@content)
+        return unless parsed.root.node_name === "html"
         ns_prefix =  parsed.namespaces.invert['http://www.w3.org/1999/xhtml']
         if ns_prefix.nil?
           prefix = ''
         else
           prefix = "#{ns_prefix}:"
         end
-        videos = parsed.xpath("//#{prefix}video[starts-with(@src,'http')]")
-        audios = parsed.xpath("//#{prefix}audio[starts-with(@src,'http')]")
+        videos = parsed.xpath("//#{prefix}video[starts-with(@src,'http')]") + parsed.xpath("//#{prefix}video/#{prefix}source[starts-with(@src,'http')]")
+        audios = parsed.xpath("//#{prefix}audio[starts-with(@src,'http')]") + parsed.xpath("//#{prefix}audio/#{prefix}source[starts-with(@src,'http')]")
         if videos.size > 0 || audios.size > 0
           self.add_property('remote-resources')
         end
@@ -98,7 +99,8 @@ module GEPUB
         if parsed.xpath("//epub:switch", { 'epub' => 'http://www.idpf.org/2007/ops' }).size > 0
           self.add_property('switch')
         end
-        if parsed.xpath("//#{prefix}script").size > 0
+        scripts = parsed.xpath("//#{prefix}script") + parsed.xpath("//#{prefix}form")
+        if scripts.size > 0
           self.add_property('scripted')
         end
       end
