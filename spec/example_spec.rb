@@ -28,7 +28,7 @@ describe 'GEPUB usage' do
             file 'text/chap1.xhtml' => StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c1</title></head><body><p>the first page</p></body></html>')
             heading 'Chapter 1'
             file 'text/chap1-1.xhtml' => StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title></head><body><p>the second page</p></body></html>')
-            file 'text/chap2.html' => StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c3</title></head><body><p>the third page</p></body></html>')
+            file 'text/chap2.xhtml' => StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c3</title></head><body><p>the third page</p></body></html>')
             heading 'Chapter 2'
           }
         }
@@ -59,7 +59,7 @@ describe 'GEPUB usage' do
             file 'text/chap1.xhtml' => StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c1</title></head><body><p>the first page</p></body></html>')
             heading 'Chapter 1'
             file 'text/chap1-1.xhtml' => StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title></head><body><p>the second page</p></body></html>')
-            file 'text/chap2.html' => StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c3</title></head><body><p>the third page</p></body></html>')
+            file 'text/chap2.xhtml' => StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c3</title></head><body><p>the third page</p></body></html>')
             heading 'Chapter 2'
           }
         }

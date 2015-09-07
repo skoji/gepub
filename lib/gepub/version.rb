@@ -1,4 +1,4 @@
 module GEPUB
   # GEPUB gem version 
-  VERSION = "0.7.0beta2"
+  VERSION = "0.7.0beta3"
 end

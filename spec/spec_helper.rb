@@ -32,9 +32,9 @@ RSpec.configure do |config|
   end
 
   def epubcheck(epubname)
-    jar = File.join(File.dirname(__FILE__), 'fixtures/epubcheck-3.0.1/epubcheck-3.0.1.jar')    
+    jar = File.join(File.dirname(__FILE__), 'fixtures/epubcheck-4.0.0/epubcheck.jar')    
     stdout = capture(:stdout) do 
-      puts %x(java -jar #{jar} #{epubname})
+      puts %x(java -Duser.language=en -jar #{jar} #{epubname})
     end
     expect(stdout).to include("No errors or warnings detected.")
   end

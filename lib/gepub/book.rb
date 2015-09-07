@@ -279,7 +279,7 @@ EOF
     end
       
     def generate_nav_doc(title = 'Table of Contents')
-      add_item('nav.html', StringIO.new(nav_doc(title)), 'nav').add_property('nav')
+      add_item('nav.xhtml', StringIO.new(nav_doc(title)), 'nav').add_property('nav')
     end
     
     def nav_doc(title = 'Table of Contents')
@@ -351,7 +351,7 @@ EOF
           xml.navMap {
             @toc.each {
               |x|
-              xml.navPoint('id' => "#{x[:item].itemid}##{x[:id]}", 'playOrder' => "#{count}") {
+              xml.navPoint('id' => "#{x[:item].itemid}_#{x[:id]}", 'playOrder' => "#{count}") {
                 xml.navLabel {
                   xml.text_  "#{x[:text]}"
                 }
