@@ -109,7 +109,7 @@ module GEPUB
       @oldstyle_meta = []
     end
     
-    CONTENT_NODE_LIST = ['identifier', 'title', 'language', 'contributor', 'creator', 'coverage', 'date','description','format','publisher','relation','rights','source','subject','type'].each {
+    CONTENT_NODE_LIST = ['identifier', 'title', 'language', 'contributor', 'creator', 'coverage', 'date', 'description', 'format', 'publisher', 'relation', 'rights', 'source', 'subject', 'type', 'isbn'].each {
       |node|
       define_method(node + '_list') { @content_nodes[node].dup.sort_as_meta }
       define_method(node + '_clear') {
