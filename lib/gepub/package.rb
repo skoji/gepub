@@ -11,7 +11,11 @@ module GEPUB
     def_delegators :@manifest, :item_by_href
     def_delegators :@metadata, *Metadata::CONTENT_NODE_LIST.map {
       |x|
-      ["#{x}", "#{x}_list", "set_#{x}", "#{x}=", "add_#{x}"]
+      if x == "identifier"
+        ["#{x}_list", "set_#{x}", "add_#{x}"]
+      else
+        ["#{x}", "#{x}_list", "set_#{x}", "#{x}=", "add_#{x}"]
+      end
     }.flatten
     def_delegators :@metadata, :set_lastmodified
     def_delegators :@metadata, :lastmodified

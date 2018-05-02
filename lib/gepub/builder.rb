@@ -190,7 +190,9 @@ module GEPUB
     # define base methods.
     GEPUB::Metadata::CONTENT_NODE_LIST.each {
       |name|
-      define_method(name) { |val| @last_defined_item = MetaItem.new(@book.send("add_#{name}".to_sym, val, nil)) }
+      if !["title", "creator", "contributor"].include?(name)
+        define_method(name) { |val| @last_defined_item = MetaItem.new(@book.send("add_#{name}".to_sym, val, nil)) }
+      end
     }
 
     GEPUB::TITLE_TYPE::TYPES.each {
@@ -205,7 +207,9 @@ module GEPUB
       else
         methodname = type
       end
-      define_method(methodname) { |val| @last_defined_item = MetaItem.new(@book.add_title(val, nil, type)) }
+      if methodname != "collection"
+        define_method(methodname) { |val| @last_defined_item = MetaItem.new(@book.add_title(val, nil, type)) }
+      end
     }
 
     def collection(val, count = 1)
