@@ -143,7 +143,7 @@ module GEPUB
         }.reverse
         localized = candidates[0].content if candidates.size > 0
       end
-      (localized || self.content || super).to_s
+      (localized || self.content || super()).to_s
     end
   end
 end
