@@ -119,6 +119,8 @@ module GEPUB
         end
       }
 
+      next if node == 'title'
+
       define_method(node, ->(content=UNASSIGNED, id=nil) {
                       if unassigned?(content)
                         get_first_node(node)
@@ -128,11 +130,6 @@ module GEPUB
                       end
                     })
 
-      define_method('add_' + node) {
-        |content, id|
-        add_metadata(node, content, id)
-      }
-      
       define_method('set_' + node) {
         |content, id|
         warn "obsolete : set_#{node}. use #{node} instead."
@@ -144,6 +141,13 @@ module GEPUB
         |content|
         send(node + "_clear")
         add_metadata(node, content, nil)
+      }
+
+      next if ["identifier", "date", "creator", "contributor"].include?(node)
+
+      define_method('add_' + node) {
+        |content, id|
+        add_metadata(node, content, id)
       }
     }
 
