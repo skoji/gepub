@@ -140,7 +140,11 @@ module GEPUB
       define_method(node+'=') {
         |content|
         send(node + "_clear")
-        add_metadata(node, content, nil)
+        if node == 'date'
+          add_date(content, nil)
+        else
+          add_metadata(node, content, nil)
+        end
       }
 
       next if ["identifier", "date", "creator", "contributor"].include?(node)

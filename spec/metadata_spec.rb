@@ -153,6 +153,13 @@ describe GEPUB::Metadata do
       expect(metadata.date.to_s).to eq('2012-02-27T20:00:00Z')
     end
 
+    it 'should handle date with `date=` method and Time object' do
+      metadata = GEPUB::Metadata.new
+      a = Time.parse '2012-02-27 20:00:00 UTC'
+      metadata.date = a
+      expect(metadata.date.to_s).to eq('2012-02-27T20:00:00Z')
+    end
+
     it 'should handle date with Time object by content = ' do
       metadata = GEPUB::Metadata.new
       a = Time.parse '2012-02-27 20:00:00 UTC'
