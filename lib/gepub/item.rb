@@ -110,6 +110,7 @@ module GEPUB
     def add_raw_content(data)
       @content = data
       guess_content_property
+      self
     end
 
     # add content form io or file to the item
