@@ -114,8 +114,14 @@ module GEPUB
         @attributes['id'] = id_pool.generate_key(:prefix => name) if @attributes['id'].nil?
       end
 
-      # using eval to parametarize Namespace and content.
-      eval "builder#{ ns.nil? || @name == 'meta' ? '' : '[ns]'}.#{@name}(@attributes.reject{|k,v| v.nil?}.merge(additional_attr)#{@content.nil? ? '' : ',  self.to_s'})"
+      # using __send__ to parametarize Namespace and content.
+      target = ns.nil? || @name == 'meta' ? builder : builder[ns]
+      attr = @attributes.reject{|k,v| v.nil?}.merge(additional_attr)
+      if @content.nil?
+        target.__send__(@name, attr)
+      else
+        target.__send__(@name, attr, self.to_s)
+      end
 
       if @refiners.size > 0 && opf_version.to_f >= 3.0
         additional_attr['refines'] = "##{@attributes['id']}"
