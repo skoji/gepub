@@ -140,6 +140,7 @@ module GEPUB
       define_method(node+'=') {
         |content|
         send(node + "_clear")
+        return if content.nil?
         if node == 'date'
           add_date(content, nil)
         else
