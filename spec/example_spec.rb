@@ -110,5 +110,23 @@ describe 'GEPUB usage' do
       book.generate_epub(epubname)
       epubcheck(epubname)
     end
+
+    it 'should generate simple EPUB3 with some nil metadata' do
+      book = GEPUB::Book.new
+      book.identifier = 'http://example.jp/bookid_in_url'
+      book.title = 'GEPUB Sample Book'
+      book.creator = 'KOJIMA Satoshi'
+      book.language = 'ja'
+      book.publisher = nil
+
+      book.ordered do
+        item = book.add_item('name.xhtml')
+        item.add_content StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c1</title></head><body><p>the first page</p></body></html>')
+      end
+
+      epubname = File.join(File.dirname(__FILE__), 'example_test.epub')
+      book.generate_epub(epubname)
+      epubcheck(epubname)
+    end
   end
 end
