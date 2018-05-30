@@ -169,14 +169,16 @@ module GEPUB
     
     # add an item(i.e. html, images, audios, etc)  to Book.
     # the added item will be referenced by the first argument in the EPUB container.
-    def add_item(href, attributes: {}, id: nil, content: nil)
+    def add_item(href, deprecated_content = nil, deprecated_id = nil, deprecated_attributes = nil, content: nil, id: nil, attributes: {})
+      content, id, attributes = handle_deprecated_add_item_arguments(deprecated_content, deprecated_id, deprecated_attributes, content, id, attributes)
       item = @package.add_item(href, attributes: attributes, id: id, content: content)
       set_singleton_methods_to_item(item)
       item
     end
 
     # same as add_item, but the item will be added to spine of the EPUB.
-    def add_ordered_item(href, attributes: {}, id: nil, content: nil)
+    def add_ordered_item(href, deprecated_content = nil, deprecated_id = nil, deprecated_attributes = nil,  content:nil, id: nil, attributes: {})
+      content, id, attributes = handle_deprecated_add_item_arguments(deprecated_content, deprecated_id, deprecated_attributes, content, id, attributes)
       item = @package.add_ordered_item(href,attributes: attributes, id:id, content: content)
       set_singleton_methods_to_item(item)
       yield item if block_given?
@@ -442,5 +444,28 @@ EOF
         }.reject(&:nil?)
       end
     end
+    private
+    def handle_deprecated_add_item_arguments(deprecated_content, deprecated_id, deprecated_attributes, content, id, attributes) 
+      if deprecated_content
+        msg = 'deprecated argument; use content keyword argument instead of 2nd argument' 
+        fail msg if content
+        warn msg
+        content = deprecated_content
+      end
+      if deprecated_id
+        msg = 'deprecated argument; use id keyword argument instead of 3rd argument' 
+        fail msg if id
+        warn msg
+        id = deprecated_id
+      end
+      if deprecated_attributes
+        msg = 'deprecated argument; use argument keyword attributes instead of 4th argument' 
+        fail msg if attributes.size > 0
+        warn msg
+        attributes = deprecated_attributes
+      end
+      return content, id, attributes
+    end
+
   end
 end
