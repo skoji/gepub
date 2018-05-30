@@ -169,16 +169,15 @@ module GEPUB
     
     # add an item(i.e. html, images, audios, etc)  to Book.
     # the added item will be referenced by the first argument in the EPUB container.
-    def add_item(href, io_or_filename = nil, id = nil, attributes = {})
-      item = @package.add_item(href,nil,id,attributes)
+    def add_item(href, id = nil, attributes = {}, content: nil)
+      item = @package.add_item(href,id,attributes, content: content)
       set_singleton_methods_to_item(item)
-      item.add_content io_or_filename unless io_or_filename.nil?
       item
     end
 
     # same as add_item, but the item will be added to spine of the EPUB.
-    def add_ordered_item(href, io_or_filename = nil, id = nil, attributes = {})
-      item = @package.add_ordered_item(href,io_or_filename,id,attributes)
+    def add_ordered_item(href, id = nil, attributes = {}, content: nil)
+      item = @package.add_ordered_item(href,id,attributes, content: content)
       set_singleton_methods_to_item(item)
       yield item if block_given?
       item
@@ -279,7 +278,7 @@ EOF
     end
       
     def generate_nav_doc(title = 'Table of Contents')
-      add_item('nav.xhtml', StringIO.new(nav_doc(title)), 'nav').add_property('nav')
+      add_item('nav.xhtml', 'nav', content: StringIO.new(nav_doc(title))).add_property('nav')
     end
     
     def nav_doc(title = 'Table of Contents')
@@ -422,7 +421,7 @@ EOF
           if (@toc.size == 0)
             @toc << { :item => @package.manifest.item_list[@package.spine.itemref_list[0].idref] }
           end
-          add_item('toc.ncx', StringIO.new(ncx_xml), 'ncx')
+          add_item('toc.ncx', 'ncx', content: StringIO.new(ncx_xml))
         end
       end
     end

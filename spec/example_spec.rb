@@ -98,7 +98,7 @@ describe 'GEPUB usage' do
       book.add_contributor('電子雑誌トルタル').display_seq(4).add_alternates('en' => 'eMagazine Torutaru')
 
       imgfile = File.join(File.dirname(__FILE__),  'fixtures', 'testdata', 'image1.jpg')
-      book.add_item('img/image1.jpg',imgfile).cover_image
+      book.add_item('img/image1.jpg',content: imgfile).cover_image
       
       # within ordered block, add_item will be added to spine.
       book.ordered {

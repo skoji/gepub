@@ -48,17 +48,18 @@ describe GEPUB::Book do
     @book.date = "2010-05-05"
     @book.identifier = "http://example.jp/foobar/"
     @book.language = 'ja'
-    item1 = @book.add_item('text/foobar.xhtml',nil, 'c1')
+    item1 = @book.add_item('text/foobar.xhtml', 'c1')
     item1.add_content(StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c1</title></head><body><p>the first page</p></body></html>'))
     @book.spine.push(item1)
 
     item2 = @book.add_ordered_item('text/barbar.xhtml',
-                                   StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title></head><body><p>second page, whith is test chapter.</p></body></html>'),
-                                   'c2')
+                                   'c2',
+                                   content: StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title></head><body><p>second page, whith is test chapter.</p></body></html>'),
+                                  )
     item2.toc_text 'test chapter'
 
     item3 = @book.add_item('text/handler.xhtml',
-                           StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title><script>alert("foo");</script></head><body><p>this is scripted item</p></body></html>')
+                           content: StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title><script>alert("foo");</script></head><body><p>this is scripted item</p></body></html>')
                            )
     item3.add_property('scripted')
     item3.is_handler_of('application/x-some-media-type')
@@ -78,7 +79,7 @@ describe GEPUB::Book do
 </body>
 </html>
 EOF
-    item3 = @book.add_ordered_item('text/nav.xhtml', StringIO.new(nav_string), 'nav').add_property('nav')
+    item3 = @book.add_ordered_item('text/nav.xhtml', 'nav', content: StringIO.new(nav_string)).add_property('nav')
   end
 
   it "should have titile"  do
@@ -189,12 +190,12 @@ EOF
     @book.date = "2010-05-05"
     @book.identifier = "http://example.jp/foobar/"
     @book.language = 'ja'
-    item1 = @book.add_item('text/foobar.xhtml',nil, 'c1')
+    item1 = @book.add_item('text/foobar.xhtml', 'c1')
     item1.add_content(StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c1</title></head><body><p>the first page</p></body></html>'))
     @book.spine.push(item1)
     item2 = @book.add_ordered_item('text/barbar.xhtml',
-                                   StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title></head><body><p>second page, whith is test chapter.</p></body></html>'),
-                                   'c2')
+                                   'c2',
+                                   content: StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title></head><body><p>second page, whith is test chapter.</p></body></html>'))
     item2.toc_text 'test chapter'
     @book.generate_epub(epubname)
     epubcheck(epubname)
@@ -216,12 +217,13 @@ EOF
     @book.date = "2015-05-05"
     @book.identifier = "http://example.jp/foobar/"
     @book.language = 'ja'
-    item1 = @book.add_item('text/foobar.xhtml',nil, 'c1')
+    item1 = @book.add_item('text/foobar.xhtml', 'c1')
     item1.add_content(StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c1</title></head><body><p>the first page</p></body></html>'))
     @book.spine.push(item1)
     item2 = @book.add_ordered_item('text/barbar.xhtml',
-                                   StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title></head><body><p>second page, whith is test chapter.</p></body></html>'),
-                                   'c2')
+                                   'c2',
+                                   content: StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title></head><body><p>second page, whith is test chapter.</p></body></html>')
+                                   )
     @book.generate_epub(epubname)
     epubcheck(epubname)
 
