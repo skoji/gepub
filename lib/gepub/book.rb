@@ -169,15 +169,15 @@ module GEPUB
     
     # add an item(i.e. html, images, audios, etc)  to Book.
     # the added item will be referenced by the first argument in the EPUB container.
-    def add_item(href, attributes = {}, id: nil, content: nil)
-      item = @package.add_item(href, attributes, id: id, content: content)
+    def add_item(href, attributes: {}, id: nil, content: nil)
+      item = @package.add_item(href, attributes: attributes, id: id, content: content)
       set_singleton_methods_to_item(item)
       item
     end
 
     # same as add_item, but the item will be added to spine of the EPUB.
-    def add_ordered_item(href, attributes = {}, id: nil, content: nil)
-      item = @package.add_ordered_item(href,attributes, id:id, content: content)
+    def add_ordered_item(href, attributes: {}, id: nil, content: nil)
+      item = @package.add_ordered_item(href,attributes: attributes, id:id, content: content)
       set_singleton_methods_to_item(item)
       yield item if block_given?
       item
