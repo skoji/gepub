@@ -171,18 +171,13 @@ module GEPUB
     # the added item will be referenced by the first argument in the EPUB container.
     def add_item(href, deprecated_content = nil, deprecated_id = nil, deprecated_attributes = nil, content: nil, id: nil, attributes: {})
       content, id, attributes = handle_deprecated_add_item_arguments(deprecated_content, deprecated_id, deprecated_attributes, content, id, attributes)
-      item = @package.add_item(href, attributes: attributes, id: id, content: content)
-      set_singleton_methods_to_item(item)
-      item
+      add_item_internal(href, content: content, id: id, attributes: attributes)
     end
 
     # same as add_item, but the item will be added to spine of the EPUB.
     def add_ordered_item(href, deprecated_content = nil, deprecated_id = nil, deprecated_attributes = nil,  content:nil, id: nil, attributes: {})
       content, id, attributes = handle_deprecated_add_item_arguments(deprecated_content, deprecated_id, deprecated_attributes, content, id, attributes)
-      item = @package.add_ordered_item(href,attributes: attributes, id:id, content: content)
-      set_singleton_methods_to_item(item)
-      yield item if block_given?
-      item
+      add_ordered_item_internal(href, content: content, id: id, attributes: attributes)
     end
 
 
@@ -444,7 +439,21 @@ EOF
         }.reject(&:nil?)
       end
     end
+
     private
+
+    def add_item_internal(href, content: nil, id: nil, attributes: {})
+      item = @package.add_item(href, attributes: attributes, id: id, content: content)
+      set_singleton_methods_to_item(item)
+      item
+    end
+
+    def add_ordered_item_internal(href, content:nil, id: nil, attributes: {})
+      item = @package.add_ordered_item(href,attributes: attributes, id:id, content: content)
+      set_singleton_methods_to_item(item)
+      item
+    end
+
     def handle_deprecated_add_item_arguments(deprecated_content, deprecated_id, deprecated_attributes, content, id, attributes) 
       if deprecated_content
         msg = 'deprecated argument; use content keyword argument instead of 2nd argument' 
