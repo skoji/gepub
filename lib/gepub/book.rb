@@ -42,9 +42,9 @@ module GEPUB
   # same as identifier=, but can specify id (in the opf xml) and identifier type(i.e. URL, uuid, ISBN, etc)
   # === Book#add_identifier(string, id, type=nil) (delegated to Metadata#add_identifier)
   # Set an identifier metadata. It it not unique-identifier in opf. Many EPUB files do not set identifier other than unique-identifier.
-  # === Book#add_title(content, id = nil, title_type = nil) (delegated to Metadata#add_title)
+  # === Book#add_title(content, id: nil, title_type: nil) (delegated to Metadata#add_title)
   # add title metadata. title_type candidates is defined in TITLE_TYPES.
-  # === Book#set_title(content, id = nil, title_type = nil) (delegated to Metadata#set_title)
+  # === Book#title(content, id = nil, title_type = nil) (delegated to Metadata#title)
   # clear all titles and then add title.
   # === Book#title (delegated to Metadata)
   # returns 'main' title Meta object. 'main' title is determined by this order:
@@ -79,7 +79,7 @@ module GEPUB
   # === Book#lastmodified (delegated to Metadata#lastmodified)
   # returns Meta object contains last modified time.
   # === setting and reading other metadata: publisher, language, coverage, date, description, format, relation, rights, source, subject, type (delegated to Metadata)
-  # they all have methods like: publisher(which returns 'main' publisher), add_publisher(content, id) (which add publisher), set_publisher or publisher= (clears and set publisher), and publisher_list(returns publisher Meta object in display-seq order). 
+  # they all have methods like: publisher(which returns 'main' publisher), add_publisher(content, id) (which add publisher), publisher= (clears and set publisher), and publisher_list(returns publisher Meta object in display-seq order). 
   # === Book#page_progression_direction= (delegated to Spine#page_progression_direction=)
   # set page-proression-direction attribute to spine.
 

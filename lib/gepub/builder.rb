@@ -208,13 +208,13 @@ module GEPUB
         methodname = type
       end
       if methodname != "collection"
-        define_method(methodname) { |val| @last_defined_item = MetaItem.new(@book.add_title(val, nil, type)) }
+        define_method(methodname) { |val| @last_defined_item = MetaItem.new(@book.add_title(val, title_type: type)) }
       end
     }
 
     def collection(val, count = 1)
       @last_defined_item =
-        MetaItem.new(@book.add_title(val, nil, GEPUB::TITLE_TYPE::COLLECTION).group_position(count.to_s))
+        MetaItem.new(@book.add_title(val, title_type: GEPUB::TITLE_TYPE::COLLECTION).group_position(count.to_s))
     end
 
     def creator(val, role = 'aut')

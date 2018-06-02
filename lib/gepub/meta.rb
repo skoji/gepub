@@ -62,7 +62,7 @@ module GEPUB
       self
     end
 
-    ['title-type', 'identifier-type', 'display-seq', 'file-as', 'group-position', 'role'].each {
+    REFINERS = ['title-type', 'identifier-type', 'display-seq', 'file-as', 'group-position', 'role'].each {
       |name|
       methodbase = name.sub('-','_')
       define_method(methodbase + '=') { |val| refine(name, val) }
