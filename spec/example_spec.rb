@@ -104,11 +104,14 @@ describe 'GEPUB usage' do
       book.ordered {
         book.add_item('text/chap1.xhtml').add_content(StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c1</title></head><body><p>the first page</p></body></html>')).toc_text('Chapter 1')
         book.add_item('text/chap1-1.xhtml').add_content(StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title></head><body><p>the second page</p></body></html>')) # do not appear on table of contents
-        book.add_item('text/chap2.xhtml').add_content(StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c3</title></head><body><p>the third page</p></body></html>')).toc_text('Chapter 2')
+        book.add_item('text/chap2.xhtml',
+                      content: StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c3</title></head><body><p>the third page</p></body></html>'),
+                      toc_text: 'Chapter 2')
       }
       epubname = File.join(File.dirname(__FILE__), 'example_test.epub')
       book.generate_epub(epubname)
       epubcheck(epubname)
+      fail "should write a test for toc_text: argument here or somewhere else."
     end
 
     it 'should generate simple EPUB3 with some nil metadata' do
