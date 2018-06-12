@@ -48,18 +48,17 @@ describe GEPUB::Book do
     @book.date = "2010-05-05"
     @book.identifier = "http://example.jp/foobar/"
     @book.language = 'ja'
-    item1 = @book.add_item('text/foobar.xhtml', id: 'c1')
+    item1 = @book.add_item('text/foobar.xhtml',nil, 'c1')
     item1.add_content(StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c1</title></head><body><p>the first page</p></body></html>'))
     @book.spine.push(item1)
 
     item2 = @book.add_ordered_item('text/barbar.xhtml',
-                                   id: 'c2',
-                                   content: StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title></head><body><p>second page, whith is test chapter.</p></body></html>'),
-                                   toc_text: 'test chapter'
-                                  )
+                                   StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title></head><body><p>second page, whith is test chapter.</p></body></html>'),
+                                   'c2')
+    item2.toc_text 'test chapter'
 
     item3 = @book.add_item('text/handler.xhtml',
-                           content: StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title><script>alert("foo");</script></head><body><p>this is scripted item</p></body></html>')
+                           StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title><script>alert("foo");</script></head><body><p>this is scripted item</p></body></html>')
                            )
     item3.add_property('scripted')
     item3.is_handler_of('application/x-some-media-type')
@@ -79,7 +78,7 @@ describe GEPUB::Book do
 </body>
 </html>
 EOF
-    item3 = @book.add_ordered_item('text/nav.xhtml', id: 'nav', content: StringIO.new(nav_string)).add_property('nav')
+    item3 = @book.add_ordered_item('text/nav.xhtml', StringIO.new(nav_string), 'nav').add_property('nav')
   end
 
   it "should have titile"  do
@@ -190,13 +189,13 @@ EOF
     @book.date = "2010-05-05"
     @book.identifier = "http://example.jp/foobar/"
     @book.language = 'ja'
-    item1 = @book.add_item('text/foobar.xhtml', id: 'c1')
+    item1 = @book.add_item('text/foobar.xhtml',nil, 'c1')
     item1.add_content(StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c1</title></head><body><p>the first page</p></body></html>'))
     @book.spine.push(item1)
     item2 = @book.add_ordered_item('text/barbar.xhtml',
-                                   id: 'c2',
-                                   content: StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title></head><body><p>second page, whith is test chapter.</p></body></html>'),
-                                  toc_text: 'test chapter')
+                                   StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title></head><body><p>second page, whith is test chapter.</p></body></html>'),
+                                   'c2')
+    item2.toc_text 'test chapter'
     @book.generate_epub(epubname)
     epubcheck(epubname)
   end
@@ -217,13 +216,12 @@ EOF
     @book.date = "2015-05-05"
     @book.identifier = "http://example.jp/foobar/"
     @book.language = 'ja'
-    item1 = @book.add_item('text/foobar.xhtml', id: 'c1')
+    item1 = @book.add_item('text/foobar.xhtml',nil, 'c1')
     item1.add_content(StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c1</title></head><body><p>the first page</p></body></html>'))
     @book.spine.push(item1)
     item2 = @book.add_ordered_item('text/barbar.xhtml',
-                                   id: 'c2',
-                                   content: StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title></head><body><p>second page, whith is test chapter.</p></body></html>')
-                                   )
+                                   StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title></head><body><p>second page, whith is test chapter.</p></body></html>'),
+                                   'c2')
     @book.generate_epub(epubname)
     epubcheck(epubname)
 

@@ -75,7 +75,7 @@ describe 'GEPUB usage' do
       book.language = 'ja'
 
       # you can add metadata and its property using block
-      book.add_title('GEPUBサンプル文書', title_type: GEPUB::TITLE_TYPE::MAIN) {
+      book.add_title('GEPUBサンプル文書', nil, GEPUB::TITLE_TYPE::MAIN) {
         |title|
         title.lang = 'ja'
         title.file_as = 'GEPUB Sample Book'
@@ -86,7 +86,7 @@ describe 'GEPUB usage' do
                              'th' => 'GEPUB ตัวอย่าง (ญี่ปุ่น)')
       }
       # you can do the same thing using method chain
-      book.add_title('これはあくまでサンプルです', title_type: GEPUB::TITLE_TYPE::SUBTITLE).display_seq(2).add_alternates('en' => 'this book is just a sample.')
+      book.add_title('これはあくまでサンプルです',nil, GEPUB::TITLE_TYPE::SUBTITLE).display_seq(2).add_alternates('en' => 'this book is just a sample.')
       book.add_creator('小嶋智') {
         |creator|
         creator.display_seq = 1
@@ -98,15 +98,13 @@ describe 'GEPUB usage' do
       book.add_contributor('電子雑誌トルタル').display_seq(4).add_alternates('en' => 'eMagazine Torutaru')
 
       imgfile = File.join(File.dirname(__FILE__),  'fixtures', 'testdata', 'image1.jpg')
-      book.add_item('img/image1.jpg',content: imgfile).cover_image
+      book.add_item('img/image1.jpg',imgfile).cover_image
       
       # within ordered block, add_item will be added to spine.
       book.ordered {
         book.add_item('text/chap1.xhtml').add_content(StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c1</title></head><body><p>the first page</p></body></html>')).toc_text('Chapter 1')
         book.add_item('text/chap1-1.xhtml').add_content(StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title></head><body><p>the second page</p></body></html>')) # do not appear on table of contents
-        book.add_item('text/chap2.xhtml',
-                      content: StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c3</title></head><body><p>the third page</p></body></html>'),
-                      toc_text: 'Chapter 2')
+        book.add_item('text/chap2.xhtml').add_content(StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c3</title></head><body><p>the third page</p></body></html>')).toc_text('Chapter 2')
       }
       epubname = File.join(File.dirname(__FILE__), 'example_test.epub')
       book.generate_epub(epubname)
