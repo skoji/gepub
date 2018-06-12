@@ -430,7 +430,7 @@ EOF
     private
 
     def add_item_internal(href, content: nil, item_attributes: , attributes: {}, ordered: )
-      id = item_attributes[:id]
+      id = item_attributes.delete(:id)
       item = 
         if ordered
           @package.add_ordered_item(href,attributes: attributes, id:id, content: content)
@@ -438,6 +438,15 @@ EOF
           @package.add_item(href, attributes: attributes, id: id, content: content)
         end
       set_singleton_methods_to_item(item)
+      item_attributes.each do |attr, val|
+        next if val.nil?
+        method_name = if attr == :toc_text
+                        attr.to_s
+                      else
+                        "add_" + attr.to_s
+                      end
+        item.send(method_name, val)
+      end
       item
     end
 
