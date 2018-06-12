@@ -429,14 +429,14 @@ EOF
 
     private
 
-    def add_item_internal(href, content: nil, id: nil, attributes: {})
-      item = @package.add_item(href, attributes: attributes, id: id, content: content)
-      set_singleton_methods_to_item(item)
-      item
-    end
-
-    def add_ordered_item_internal(href, content:nil, id: nil, attributes: {})
-      item = @package.add_ordered_item(href,attributes: attributes, id:id, content: content)
+    def add_item_internal(href, content: nil, item_attributes: , attributes: {}, ordered: )
+      id = item_attributes[:id]
+      item = 
+        if ordered
+          @package.add_ordered_item(href,attributes: attributes, id:id, content: content)
+        else
+          @package.add_item(href, attributes: attributes, id: id, content: content)
+        end
       set_singleton_methods_to_item(item)
       item
     end

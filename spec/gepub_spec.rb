@@ -55,8 +55,8 @@ describe GEPUB::Book do
     item2 = @book.add_ordered_item('text/barbar.xhtml',
                                    id: 'c2',
                                    content: StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title></head><body><p>second page, whith is test chapter.</p></body></html>'),
+                                   toc_text: 'test chapter'
                                   )
-    item2.toc_text 'test chapter'
 
     item3 = @book.add_item('text/handler.xhtml',
                            content: StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title><script>alert("foo");</script></head><body><p>this is scripted item</p></body></html>')
@@ -195,8 +195,8 @@ EOF
     @book.spine.push(item1)
     item2 = @book.add_ordered_item('text/barbar.xhtml',
                                    id: 'c2',
-                                   content: StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title></head><body><p>second page, whith is test chapter.</p></body></html>'))
-    item2.toc_text 'test chapter'
+                                   content: StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title></head><body><p>second page, whith is test chapter.</p></body></html>'),
+                                  toc_text: 'test chapter')
     @book.generate_epub(epubname)
     epubcheck(epubname)
   end

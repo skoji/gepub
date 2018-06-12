@@ -111,7 +111,6 @@ describe 'GEPUB usage' do
       epubname = File.join(File.dirname(__FILE__), 'example_test.epub')
       book.generate_epub(epubname)
       epubcheck(epubname)
-      fail "should write a test for toc_text: argument here or somewhere else."
     end
 
     it 'should generate simple EPUB3 with some nil metadata' do
