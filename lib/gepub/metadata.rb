@@ -216,10 +216,9 @@ module GEPUB
       return nil
     end
     
-    def add_metadata(name, content, id: nil, itemclass: Meta)
+    def add_metadata_internal(name, content, id: nil, itemclass: Meta)
       meta = itemclass.new(name, content, self, { 'id' => id })
       (@content_nodes[name] ||= []) << meta
-      yield meta if block_given?
       meta
     end
 

@@ -29,3 +29,40 @@ module GEPUB
   end
 end
 EOF
+
+require_relative '../lib/gepub/dsl_util.rb'
+require_relative '../lib/gepub/meta.rb'
+
+refiners = GEPUB::Meta::REFINERS.map do |refiner|
+	refiner.sub('-', '_')
+end
+
+refiners_arguments_string = refiners.map { |refiner| "#{refiner}: nil" }.join(',')
+refiners_string = "[" + GEPUB::Meta::REFINERS.map { |refiner| "{ value: #{refiner.sub('-', '_')}, name: '#{refiner}'}" }.join(",") + "]"
+
+File.write(File.join(File.dirname(__FILE__), "../lib/gepub/metadata_add.rb"), <<EOF)
+module GEPUB
+	class Metadata
+		def add_metadata(name, content, id: nil, itemclass: Meta,
+		#{refiners_arguments_string},
+		lang: nil,
+		alternates: {}
+		)
+			meta = add_metadata_internal(name, content, id: id, itemclass: itemclass)
+      #{refiners_string}.each do |refiner|
+				if refiner[:value]
+				  meta.refine(refiner[:name], refiner[:value])
+				end
+	    end	
+			if lang
+			  meta.lang = lang
+			end
+			if alternates
+			  meta.add_alternates alternates
+			end
+      yield meta if block_given?
+			meta
+		end
+	end
+end
+EOF
