@@ -38,15 +38,64 @@ refiners = GEPUB::Meta::REFINERS.map do |refiner|
 end
 
 refiners_arguments_string = refiners.map { |refiner| "#{refiner}: nil" }.join(',')
+refiners_arguments_set_string = refiners.map { |refiner| "#{refiner}: #{refiner}" }.join(',')
 refiners_string = "[" + GEPUB::Meta::REFINERS.map { |refiner| "{ value: #{refiner.sub('-', '_')}, name: '#{refiner}'}" }.join(",") + "]"
+
+meta_attr_arguments_string = "lang: nil, alternates: {}"
+meta_attr_arguments_set_string = "lang: lang, alternates: alternates"
 
 File.write(File.join(File.dirname(__FILE__), "../lib/gepub/metadata_add.rb"), <<EOF)
 module GEPUB
 	class Metadata
+    CONTENT_NODE_LIST = ['identifier', 'title', 'language', 'contributor', 'creator', 'coverage', 'date','description','format','publisher','relation','rights','source','subject','type'].each {
+      |node|
+      define_method(node + '_list') { @content_nodes[node].dup.sort_as_meta }
+      define_method(node + '_clear') {
+        if !@content_nodes[node].nil?
+          @content_nodes[node].each { |x| unregister_meta(x) };
+          @content_nodes[node] = []
+        end
+      }
+
+      next if node == 'title'
+
+      define_method(node, ->(content=UNASSIGNED, deprecated_id=nil, id:nil,
+                             #{refiners_arguments_string},
+														 #{meta_attr_arguments_string}) {
+                      if unassigned?(content)
+                        get_first_node(node)
+                      else
+                        if deprecated_id
+                          warn "secound argument is deprecated. use id: keyword argument"
+                          id = deprecated_id
+                        end
+                        send(node + "_clear")
+                        add_metadata(node, content, id: id, #{refiners_arguments_set_string}, #{meta_attr_arguments_set_string})
+                      end
+                    })
+      
+      define_method(node+'=') {
+        |content|
+        send(node + "_clear")
+        return if content.nil?
+        if node == 'date'
+          add_date(content)
+        else
+          add_metadata(node, content)
+        end
+      }
+
+      next if ["identifier", "date", "creator", "contributor"].include?(node)
+
+      define_method('add_' + node) {
+        |content, id|
+        add_metadata(node, content, id: id)
+      }
+    }
+
 		def add_metadata(name, content, id: nil, itemclass: Meta,
 		#{refiners_arguments_string},
-		lang: nil,
-		alternates: {}
+		#{meta_attr_arguments_string}
 		)
 			meta = add_metadata_internal(name, content, id: id, itemclass: itemclass)
       #{refiners_string}.each do |refiner|
@@ -66,3 +115,4 @@ module GEPUB
 	end
 end
 EOF
+

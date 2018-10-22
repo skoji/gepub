@@ -109,50 +109,6 @@ module GEPUB
       @oldstyle_meta = []
     end
     
-    CONTENT_NODE_LIST = ['identifier', 'title', 'language', 'contributor', 'creator', 'coverage', 'date','description','format','publisher','relation','rights','source','subject','type'].each {
-      |node|
-      define_method(node + '_list') { @content_nodes[node].dup.sort_as_meta }
-      define_method(node + '_clear') {
-        if !@content_nodes[node].nil?
-          @content_nodes[node].each { |x| unregister_meta(x) };
-          @content_nodes[node] = []
-        end
-      }
-
-      next if node == 'title'
-
-      define_method(node, ->(content=UNASSIGNED, deprecated_id=nil, id:nil) {
-                      if unassigned?(content)
-                        get_first_node(node)
-                      else
-                        if deprecated_id
-                          warn "secound argument is deprecated. use id: keyword argument"
-                          id = deprecated_id
-                        end
-                        send(node + "_clear")
-                        add_metadata(node, content, id: id)
-                      end
-                    })
-      
-      define_method(node+'=') {
-        |content|
-        send(node + "_clear")
-        return if content.nil?
-        if node == 'date'
-          add_date(content)
-        else
-          add_metadata(node, content)
-        end
-      }
-
-      next if ["identifier", "date", "creator", "contributor"].include?(node)
-
-      define_method('add_' + node) {
-        |content, id|
-        add_metadata(node, content, id: id)
-      }
-    }
-
     def meta_list
       (@content_nodes['meta'] || []).sort_as_meta.dup
     end
