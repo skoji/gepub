@@ -192,20 +192,44 @@ module GEPUB
       meta
     end
 
-    def add_person(name, content, id = nil, role = nil)
+    def add_person(name, content, deprecated_id = nil, deprecated_role = nil, id: nil, role:nil)
+      if deprecated_id
+        warn 'second argument for add_title is deprecated. use id: instead'
+        id = deprecated_id
+      end
+      if deprecated_role
+        warn 'third argument for add_title is deprecated. use title_type: instead'
+        role = deprecated_role
+      end
       meta = add_metadata(name, content, id: id).refine('role', role)
       yield meta if block_given?
       meta
     end
 
-    def add_creator(content, id = nil, role = 'aut')
-      meta = add_person('creator', content, id, role)
+    def add_creator(content, deprecated_id = nil, deprecated_role = 'aut', id: nil, role: 'aut')
+      if deprecated_id
+        warn 'second argument for add_title is deprecated. use id: instead'
+        id = deprecated_id
+      end
+      if deprecated_role
+        warn 'third argument for add_title is deprecated. use title_type: instead'
+        role = deprecated_role
+      end
+      meta = add_person('creator', content, id: id, role: role)
       yield meta if block_given?
       meta
     end
 
-    def add_contributor(content, id=nil, role=nil)
-      meta = add_person('contributor', content, id, role)
+    def add_contributor(content, deprecated_id = nil, deprecated_role = nil, id: nil, role: nil)
+      if deprecated_id
+        warn 'second argument for add_title is deprecated. use id: instead'
+        id = deprecated_id
+      end
+      if deprecated_role
+        warn 'third argument for add_title is deprecated. use title_type: instead'
+        role = deprecated_role
+      end
+      meta = add_person('contributor', content, id: id, role: role)
       yield meta if block_given?
       meta
     end
