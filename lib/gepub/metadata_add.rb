@@ -46,6 +46,79 @@ module GEPUB
       }
     }
 
+    def add_title(content, deprecated_id = nil, deprecated_title_type = nil, id: nil,
+                  title_type: nil,identifier_type: nil,display_seq: nil,file_as: nil,group_position: nil,role: nil,
+									lang: nil, alternates: {})
+      if deprecated_id
+        warn 'second argument for add_title is deprecated. use id: instead'
+        id = deprecated_id
+      end
+      if deprecated_title_type
+        warn 'third argument for add_title is deprecated. use title_type: instead'
+        title_type = deprecated_title_type
+      end
+      meta = add_metadata('title', content, id: id, 
+			                    title_type: title_type,identifier_type: identifier_type,display_seq: display_seq,file_as: file_as,group_position: group_position,role: role,
+													lang: lang, alternates: alternates)
+      yield meta if block_given?
+      meta
+    end
+
+    def add_person(name, content, deprecated_id = nil, deprecated_role = nil, id: nil,
+                  title_type: nil,identifier_type: nil,display_seq: nil,file_as: nil,group_position: nil,role: nil,
+									lang: nil, alternates: {})
+      if deprecated_id
+        warn 'second argument for add_title is deprecated. use id: instead'
+        id = deprecated_id
+      end
+      if deprecated_role
+        warn 'third argument for add_title is deprecated. use title_type: instead'
+        role = deprecated_role
+      end
+      meta = add_metadata(name, content, id: id,
+			                    title_type: title_type,identifier_type: identifier_type,display_seq: display_seq,file_as: file_as,group_position: group_position,role: role,
+													lang: lang, alternates: alternates)
+      yield meta if block_given?
+      meta
+    end
+
+    def add_creator(content, deprecated_id = nil, deprecated_role = nil, id: nil, 
+                    title_type: nil,identifier_type: nil,display_seq: nil,file_as: nil,group_position: nil,role: nil,
+  									lang: nil, alternates: {}) 
+      if deprecated_id
+        warn 'second argument for add_title is deprecated. use id: instead'
+        id = deprecated_id
+      end
+      if deprecated_role
+        warn 'third argument for add_title is deprecated. use title_type: instead'
+        role = deprecated_role
+      end
+			role = 'aut' if role.nil?
+      meta = add_person('creator', content, id: id,
+			                    title_type: title_type,identifier_type: identifier_type,display_seq: display_seq,file_as: file_as,group_position: group_position,role: role,
+													lang: lang, alternates: alternates)
+      yield meta if block_given?
+      meta
+    end
+
+    def add_contributor(content, deprecated_id = nil, deprecated_role = nil, id: nil,
+                        title_type: nil,identifier_type: nil,display_seq: nil,file_as: nil,group_position: nil,role: nil,
+											  lang: nil, alternates: {}) 
+      if deprecated_id
+        warn 'second argument for add_title is deprecated. use id: instead'
+        id = deprecated_id
+      end
+      if deprecated_role
+        warn 'third argument for add_title is deprecated. use title_type: instead'
+        role = deprecated_role
+      end
+      meta = add_person('contributor', content, id: id, 
+			                  title_type: title_type,identifier_type: identifier_type,display_seq: display_seq,file_as: file_as,group_position: group_position,role: role,
+												lang: lang, alternates: alternates)
+      yield meta if block_given?
+      meta
+    end
+
 		def add_metadata(name, content, id: nil, itemclass: Meta,
 		title_type: nil,identifier_type: nil,display_seq: nil,file_as: nil,group_position: nil,role: nil,
 		lang: nil, alternates: {}
