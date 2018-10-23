@@ -115,7 +115,7 @@ describe GEPUB::Book do
         it 'returns main title' do
           book = GEPUB::Book.new()
           book.add_title 'sub title' 
-          book.add_title('the main title', nil, GEPUB::TITLE_TYPE::MAIN) 
+          book.add_title('the main title', title_type: GEPUB::TITLE_TYPE::MAIN) 
           expect(book.title.to_s).to eq('the main title')
         end
       end
@@ -136,7 +136,7 @@ describe GEPUB::Book do
         it 'returns titles in defined order' do
           book = GEPUB::Book.new()
           book.add_title 'sub title' 
-          book.add_title('the main title', nil, GEPUB::TITLE_TYPE::MAIN) 
+          book.add_title('the main title', title_type: GEPUB::TITLE_TYPE::MAIN) 
           expect(book.title_list[0].to_s).to eq('sub title')
           expect(book.title_list[1].to_s).to eq('the main title')
         end

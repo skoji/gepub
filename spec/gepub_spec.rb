@@ -188,12 +188,12 @@ EOF
     @book.date = "2010-05-05"
     @book.identifier = "http://example.jp/foobar/"
     @book.language = 'ja'
-    item1 = @book.add_item('text/foobar.xhtml',nil, 'c1')
+    item1 = @book.add_item('text/foobar.xhtml',id: 'c1')
     item1.add_content(StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c1</title></head><body><p>the first page</p></body></html>'))
     @book.spine.push(item1)
     item2 = @book.add_ordered_item('text/barbar.xhtml',
-                                   StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title></head><body><p>second page, whith is test chapter.</p></body></html>'),
-                                   'c2')
+                                   content: StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title></head><body><p>second page, whith is test chapter.</p></body></html>'),
+                                   id: 'c2')
     item2.toc_text 'test chapter'
     @book.generate_epub(epubname)
     epubcheck(epubname)
@@ -215,12 +215,12 @@ EOF
     @book.date = "2015-05-05"
     @book.identifier = "http://example.jp/foobar/"
     @book.language = 'ja'
-    item1 = @book.add_item('text/foobar.xhtml',nil, 'c1')
+    item1 = @book.add_item('text/foobar.xhtml',id: 'c1')
     item1.add_content(StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c1</title></head><body><p>the first page</p></body></html>'))
     @book.spine.push(item1)
     item2 = @book.add_ordered_item('text/barbar.xhtml',
-                                   StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title></head><body><p>second page, whith is test chapter.</p></body></html>'),
-                                   'c2')
+                                   content: StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title></head><body><p>second page, whith is test chapter.</p></body></html>'),
+                                   id: 'c2')
     @book.spine.push(item2)
     @book.generate_epub(epubname)
     epubcheck(epubname)
