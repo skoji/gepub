@@ -68,11 +68,11 @@ module GEPUB
                   title_type: nil,identifier_type: nil,display_seq: nil,file_as: nil,group_position: nil,role: nil,
 									lang: nil, alternates: {})
       if deprecated_id
-        warn 'second argument for add_title is deprecated. use id: instead'
+        warn 'second argument for add_person is deprecated. use id: instead'
         id = deprecated_id
       end
       if deprecated_role
-        warn 'third argument for add_title is deprecated. use title_type: instead'
+        warn 'third argument for add_person is deprecated. use title_type: instead'
         role = deprecated_role
       end
       meta = add_metadata(name, content, id: id,
@@ -86,11 +86,11 @@ module GEPUB
                     title_type: nil,identifier_type: nil,display_seq: nil,file_as: nil,group_position: nil,role: nil,
   									lang: nil, alternates: {}) 
       if deprecated_id
-        warn 'second argument for add_title is deprecated. use id: instead'
+        warn 'second argument for add_creator is deprecated. use id: instead'
         id = deprecated_id
       end
       if deprecated_role
-        warn 'third argument for add_title is deprecated. use title_type: instead'
+        warn 'third argument for add_creator is deprecated. use title_type: instead'
         role = deprecated_role
       end
 			role = 'aut' if role.nil?
@@ -105,11 +105,11 @@ module GEPUB
                         title_type: nil,identifier_type: nil,display_seq: nil,file_as: nil,group_position: nil,role: nil,
 											  lang: nil, alternates: {}) 
       if deprecated_id
-        warn 'second argument for add_title is deprecated. use id: instead'
+        warn 'second argument for add_contributor is deprecated. use id: instead'
         id = deprecated_id
       end
       if deprecated_role
-        warn 'third argument for add_title is deprecated. use title_type: instead'
+        warn 'third argument for add_contributor is deprecated. use title_type: instead'
         role = deprecated_role
       end
       meta = add_person('contributor', content, id: id, 

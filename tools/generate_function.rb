@@ -115,11 +115,11 @@ module GEPUB
                   #{refiners_arguments_string},
 									#{meta_attr_arguments_string})
       if deprecated_id
-        warn 'second argument for add_title is deprecated. use id: instead'
+        warn 'second argument for add_person is deprecated. use id: instead'
         id = deprecated_id
       end
       if deprecated_role
-        warn 'third argument for add_title is deprecated. use title_type: instead'
+        warn 'third argument for add_person is deprecated. use title_type: instead'
         role = deprecated_role
       end
       meta = add_metadata(name, content, id: id,
@@ -133,11 +133,11 @@ module GEPUB
                     #{refiners_arguments_string},
   									#{meta_attr_arguments_string}) 
       if deprecated_id
-        warn 'second argument for add_title is deprecated. use id: instead'
+        warn 'second argument for add_creator is deprecated. use id: instead'
         id = deprecated_id
       end
       if deprecated_role
-        warn 'third argument for add_title is deprecated. use title_type: instead'
+        warn 'third argument for add_creator is deprecated. use title_type: instead'
         role = deprecated_role
       end
 			role = 'aut' if role.nil?
@@ -152,11 +152,11 @@ module GEPUB
                         #{refiners_arguments_string},
 											  #{meta_attr_arguments_string}) 
       if deprecated_id
-        warn 'second argument for add_title is deprecated. use id: instead'
+        warn 'second argument for add_contributor is deprecated. use id: instead'
         id = deprecated_id
       end
       if deprecated_role
-        warn 'third argument for add_title is deprecated. use title_type: instead'
+        warn 'third argument for add_contributor is deprecated. use title_type: instead'
         role = deprecated_role
       end
       meta = add_person('contributor', content, id: id, 
