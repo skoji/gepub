@@ -7,7 +7,7 @@ book.primary_identifier('http://example.jp/bookid_in_url', 'BookID', 'URL')
 book.language = 'ja'
 
 # you can add metadata and its property using block
-book.add_title('GEPUBサンプル文書', nil, GEPUB::TITLE_TYPE::MAIN) {
+book.add_title('GEPUBサンプル文書', title_type: GEPUB::TITLE_TYPE::MAIN) {
   |title|
   title.lang = 'ja'
   title.file_as = 'GEPUB Sample Book'
@@ -18,7 +18,7 @@ book.add_title('GEPUBサンプル文書', nil, GEPUB::TITLE_TYPE::MAIN) {
                        'th' => 'GEPUB ตัวอย่าง (ญี่ปุ่น)')
 }
 # you can do the same thing using method chain
-book.add_title('これはあくまでサンプルです',nil, GEPUB::TITLE_TYPE::SUBTITLE).display_seq(1).add_alternates('en' => 'this book is just a sample.')
+book.add_title('これはあくまでサンプルです', title_type: GEPUB::TITLE_TYPE::SUBTITLE).display_seq(1).add_alternates('en' => 'this book is just a sample.')
 book.add_creator('小嶋智') {
   |creator|
   creator.display_seq = 1

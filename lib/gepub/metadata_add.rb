@@ -72,7 +72,7 @@ module GEPUB
         id = deprecated_id
       end
       if deprecated_role
-        warn 'third argument for add_person is deprecated. use title_type: instead'
+        warn 'third argument for add_person is deprecated. use role: instead'
         role = deprecated_role
       end
       meta = add_metadata(name, content, id: id,
@@ -90,7 +90,7 @@ module GEPUB
         id = deprecated_id
       end
       if deprecated_role
-        warn 'third argument for add_creator is deprecated. use title_type: instead'
+        warn 'third argument for add_creator is deprecated. use role: instead'
         role = deprecated_role
       end
 			role = 'aut' if role.nil?
@@ -109,7 +109,7 @@ module GEPUB
         id = deprecated_id
       end
       if deprecated_role
-        warn 'third argument for add_contributor is deprecated. use title_type: instead'
+        warn 'third argument for add_contributor is deprecated. use role: instead'
         role = deprecated_role
       end
       meta = add_person('contributor', content, id: id, 
