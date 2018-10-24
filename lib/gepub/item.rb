@@ -29,10 +29,10 @@ module GEPUB
       self
     end
 
-    ['id', 'href', 'media-type', 'fallback', 'properties', 'media-overlay'].each { |name|
+    ATTRIBUTES = ['id', 'href', 'media-type', 'fallback', 'properties', 'media-overlay'].each { |name|
       methodbase = name.sub('-','_')
       define_method(methodbase + '=') { |val| @attributes[name] = val }
-      define_method('set_' + methodbase) { |val| @attributes[name] = val }
+      define_method('set_' + methodbase) { |val| @attributes[name] = val; self }
       define_method(methodbase) { @attributes[name] }
     }
 

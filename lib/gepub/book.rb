@@ -42,9 +42,9 @@ module GEPUB
   # same as identifier=, but can specify id (in the opf xml) and identifier type(i.e. URL, uuid, ISBN, etc)
   # === Book#add_identifier(string, id, type=nil) (delegated to Metadata#add_identifier)
   # Set an identifier metadata. It it not unique-identifier in opf. Many EPUB files do not set identifier other than unique-identifier.
-  # === Book#add_title(content, id = nil, title_type = nil) (delegated to Metadata#add_title)
+  # === Book#add_title(content, id: nil, title_type: nil) (delegated to Metadata#add_title)
   # add title metadata. title_type candidates is defined in TITLE_TYPES.
-  # === Book#set_title(content, id = nil, title_type = nil) (delegated to Metadata#set_title)
+  # === Book#title(content, id = nil, title_type = nil) (delegated to Metadata#title)
   # clear all titles and then add title.
   # === Book#title (delegated to Metadata)
   # returns 'main' title Meta object. 'main' title is determined by this order:
@@ -79,7 +79,7 @@ module GEPUB
   # === Book#lastmodified (delegated to Metadata#lastmodified)
   # returns Meta object contains last modified time.
   # === setting and reading other metadata: publisher, language, coverage, date, description, format, relation, rights, source, subject, type (delegated to Metadata)
-  # they all have methods like: publisher(which returns 'main' publisher), add_publisher(content, id) (which add publisher), set_publisher or publisher= (clears and set publisher), and publisher_list(returns publisher Meta object in display-seq order). 
+  # they all have methods like: publisher(which returns 'main' publisher), add_publisher(content, id) (which add publisher), publisher= (clears and set publisher), and publisher_list(returns publisher Meta object in display-seq order). 
   # === Book#page_progression_direction= (delegated to Spine#page_progression_direction=)
   # set page-proression-direction attribute to spine.
 
@@ -167,23 +167,6 @@ module GEPUB
                                
     end
     
-    # add an item(i.e. html, images, audios, etc)  to Book.
-    # the added item will be referenced by the first argument in the EPUB container.
-    def add_item(href, io_or_filename = nil, id = nil, attributes = {})
-      item = @package.add_item(href,nil,id,attributes)
-      set_singleton_methods_to_item(item)
-      item.add_content io_or_filename unless io_or_filename.nil?
-      item
-    end
-
-    # same as add_item, but the item will be added to spine of the EPUB.
-    def add_ordered_item(href, io_or_filename = nil, id = nil, attributes = {})
-      item = @package.add_ordered_item(href,io_or_filename,id,attributes)
-      set_singleton_methods_to_item(item)
-      yield item if block_given?
-      item
-    end
-
 
     # get handler item which defined in bindings for media type, 
     def get_handler_of(media_type)
@@ -279,7 +262,7 @@ EOF
     end
       
     def generate_nav_doc(title = 'Table of Contents')
-      add_item('nav.xhtml', StringIO.new(nav_doc(title)), 'nav').add_property('nav')
+      add_item('nav.xhtml', id: 'nav', content: StringIO.new(nav_doc(title))).add_property('nav')
     end
     
     def nav_doc(title = 'Table of Contents')
@@ -422,7 +405,7 @@ EOF
           if (@toc.size == 0)
             @toc << { :item => @package.manifest.item_list[@package.spine.itemref_list[0].idref] }
           end
-          add_item('toc.ncx', StringIO.new(ncx_xml), 'ncx')
+          add_item('toc.ncx', id: 'ncx', content: StringIO.new(ncx_xml))
         end
       end
     end
@@ -443,5 +426,51 @@ EOF
         }.reject(&:nil?)
       end
     end
+
+    private
+
+    def add_item_internal(href, content: nil, item_attributes: , attributes: {}, ordered: )
+      id = item_attributes.delete(:id)
+      item = 
+        if ordered
+          @package.add_ordered_item(href,attributes: attributes, id:id, content: content)
+        else
+          @package.add_item(href, attributes: attributes, id: id, content: content)
+        end
+      set_singleton_methods_to_item(item)
+      item_attributes.each do |attr, val|
+        next if val.nil?
+        method_name = if attr == :toc_text
+                        attr.to_s
+                      else
+                        "add_" + attr.to_s
+                      end
+        item.send(method_name, val)
+      end
+      item
+    end
+
+    def handle_deprecated_add_item_arguments(deprecated_content, deprecated_id, deprecated_attributes, content, id, attributes) 
+      if deprecated_content
+        msg = 'deprecated argument; use content keyword argument instead of 2nd argument' 
+        fail msg if content
+        warn msg
+        content = deprecated_content
+      end
+      if deprecated_id
+        msg = 'deprecated argument; use id keyword argument instead of 3rd argument' 
+        fail msg if id
+        warn msg
+        id = deprecated_id
+      end
+      if deprecated_attributes
+        msg = 'deprecated argument; use argument keyword attributes instead of 4th argument' 
+        fail msg if attributes.size > 0
+        warn msg
+        attributes = deprecated_attributes
+      end
+      return content, id, attributes
+    end
+
   end
 end

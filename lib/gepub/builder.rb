@@ -208,17 +208,17 @@ module GEPUB
         methodname = type
       end
       if methodname != "collection"
-        define_method(methodname) { |val| @last_defined_item = MetaItem.new(@book.add_title(val, nil, type)) }
+        define_method(methodname) { |val| @last_defined_item = MetaItem.new(@book.add_title(val, title_type: type)) }
       end
     }
 
     def collection(val, count = 1)
       @last_defined_item =
-        MetaItem.new(@book.add_title(val, nil, GEPUB::TITLE_TYPE::COLLECTION).group_position(count.to_s))
+        MetaItem.new(@book.add_title(val, title_type: GEPUB::TITLE_TYPE::COLLECTION).group_position(count.to_s))
     end
 
     def creator(val, role = 'aut')
-      MetaItem.new(@book.add_creator(val, nil, role))
+      MetaItem.new(@book.add_creator(val, role: role))
     end
 
     def creators(*vals)
@@ -227,7 +227,7 @@ module GEPUB
         name = v
         role = 'aut'
         name,role = v[0], v[1] if Array === name
-        MetaItem.new(@book.add_creator(name, nil, role))
+        MetaItem.new(@book.add_creator(name, role: role))
       }
     end
 
@@ -237,14 +237,14 @@ module GEPUB
         name = v
         role = nil
         name,role = v[0], v[1] if Array === name
-        MetaItem.new(@book.add_contributor(name, nil, role))
+        MetaItem.new(@book.add_contributor(name, role: role))
       }
     end
 
     def publishers(*vals)
       @last_defined_item = vals.map {
         |v|
-        MetaItem.new(@book.add_publisher(v, nil))
+        MetaItem.new(@book.add_publisher(v))
       }
     end
 
@@ -261,7 +261,7 @@ module GEPUB
     end
     
     def contributor(val, role = nil)
-      MetaItem.new(@book.add_contributor(val, nil, role))
+      MetaItem.new(@book.add_contributor(val, role: role))
     end
 
     # set page progression direction.

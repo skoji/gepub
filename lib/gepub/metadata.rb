@@ -109,53 +109,6 @@ module GEPUB
       @oldstyle_meta = []
     end
     
-    CONTENT_NODE_LIST = ['identifier', 'title', 'language', 'contributor', 'creator', 'coverage', 'date','description','format','publisher','relation','rights','source','subject','type'].each {
-      |node|
-      define_method(node + '_list') { @content_nodes[node].dup.sort_as_meta }
-      define_method(node + '_clear') {
-        if !@content_nodes[node].nil?
-          @content_nodes[node].each { |x| unregister_meta(x) };
-          @content_nodes[node] = []
-        end
-      }
-
-      next if node == 'title'
-
-      define_method(node, ->(content=UNASSIGNED, id=nil) {
-                      if unassigned?(content)
-                        get_first_node(node)
-                      else
-                        send(node + "_clear")
-                        add_metadata(node, content, id)
-                      end
-                    })
-
-      define_method('set_' + node) {
-        |content, id|
-        warn "obsolete : set_#{node}. use #{node} instead."
-        send(node + "_clear")
-        add_metadata(node, content, id)
-      }
-      
-      define_method(node+'=') {
-        |content|
-        send(node + "_clear")
-        return if content.nil?
-        if node == 'date'
-          add_date(content, nil)
-        else
-          add_metadata(node, content, nil)
-        end
-      }
-
-      next if ["identifier", "date", "creator", "contributor"].include?(node)
-
-      define_method('add_' + node) {
-        |content, id|
-        add_metadata(node, content, id)
-      }
-    }
-
     def meta_list
       (@content_nodes['meta'] || []).sort_as_meta.dup
     end
@@ -171,7 +124,7 @@ module GEPUB
       title(content)
     end
 
-    def title(content=UNASSIGNED, id = nil, title_type = nil)
+    def title(content=UNASSIGNED, id: nil, title_type: nil)
       if unassigned?(content)
         if !@content_nodes['title'].nil?
           @content_nodes['title'].each do
@@ -182,7 +135,7 @@ module GEPUB
         get_first_node('title')
       else
         title_clear
-        meta = add_title(content, id, title_type)
+        meta = add_title(content, id: id, title_type: title_type)
         yield meta if block_given?
         meta
       end
@@ -198,13 +151,17 @@ module GEPUB
     def add_identifier(string, id=nil, type=nil)
       id = @id_pool.generate_key(:prefix => 'BookId') if id.nil?
       raise "id #{id} is already in use" if @id_pool[id]
-      identifier = add_metadata('identifier', string, id)
+      identifier = add_metadata('identifier', string, id: id)
       identifier.refine('identifier-type', type) unless type.nil?
       identifier
     end
 
-    def add_date(date, id)
-      add_metadata('date', date, id, DateMeta)
+    def add_date(date, deprecated_id = nil, id: nil)
+      if deprecated_id
+        warn "secound argument is deprecated. use id: keyword argument"
+        id = deprecated_id
+      end
+      add_metadata('date', date, id: id, itemclass: DateMeta)
     end
 
     def identifier_by_id(id)
@@ -215,42 +172,9 @@ module GEPUB
       return nil
     end
     
-    def add_metadata(name, content, id = nil, itemclass = Meta)
+    def add_metadata_internal(name, content, id: nil, itemclass: Meta)
       meta = itemclass.new(name, content, self, { 'id' => id })
       (@content_nodes[name] ||= []) << meta
-      yield meta if block_given?
-      meta
-    end
-
-    def add_title(content, id = nil, title_type = nil)
-      meta = add_metadata('title', content, id).refine('title-type', title_type)
-      yield meta if block_given?
-      meta
-    end
-
-    def set_title(content, id = nil, title_type = nil)
-      warn "obsolete : set_title. use title or title= instead."
-      title_clear
-      meta = add_title(content, id, title_type)
-      yield meta if block_given?
-      meta
-    end
-    
-    def add_person(name, content, id = nil, role = nil)
-      meta = add_metadata(name, content, id).refine('role', role)
-      yield meta if block_given?
-      meta
-    end
-
-    def add_creator(content, id = nil, role = 'aut')
-      meta = add_person('creator', content, id, role)
-      yield meta if block_given?
-      meta
-    end
-
-    def add_contributor(content, id=nil, role=nil)
-      meta = add_person('contributor', content, id, role)
-      yield meta if block_given?
       meta
     end
 
@@ -269,7 +193,7 @@ module GEPUB
             @content_nodes['meta'].delete meta
           end
         }
-        add_metadata('meta', date.utc.strftime('%Y-%m-%dT%H:%M:%SZ'), nil, DateMeta)['property'] = 'dcterms:modified'
+        add_metadata('meta', date.utc.strftime('%Y-%m-%dT%H:%M:%SZ'), itemclass: DateMeta)['property'] = 'dcterms:modified'
       end
     end
 
@@ -290,7 +214,7 @@ module GEPUB
           @content_nodes['meta'].delete meta
         end
       }
-      add_metadata('meta', date.utc.strftime('%Y-%m-%dT%H:%M:%SZ'), nil, DateMeta)['property'] = 'dcterms:modified'
+      add_metadata('meta', date.utc.strftime('%Y-%m-%dT%H:%M:%SZ'), itemclass: DateMeta)['property'] = 'dcterms:modified'
     end
 
     def add_oldstyle_meta(content, attributes = {})
