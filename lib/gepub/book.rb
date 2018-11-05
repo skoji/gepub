@@ -148,22 +148,14 @@ module GEPUB
     def set_singleton_methods_to_item(item)
       toc = @toc
       metaclass = (class << item;self;end)
-      metaclass.send(:define_method, :toc_text,
-                                    Proc.new { |text|
-                                      toc.push(:item => item, :text => text, :id => nil)
-                                      item
-                     })
-      metaclass.send(:define_method, :toc_text_with_id,
-                                    Proc.new { |text, id|
-                                      toc.push(:item => item, :text => text, :id => id)
-                                      item
-                     })
+      metaclass.send(:define_method, :toc, Proc.new {
+        toc
+      })
       bindings = @package.bindings
-      metaclass.send(:define_method, :is_handler_of,
-                     Proc.new { |media_type|
-                       bindings.add(item.id, media_type)
-                       item
-                     })
+      metaclass.send(:define_method, :bindings,
+                     Proc.new {
+        bindings
+      })
                                
     end
     
