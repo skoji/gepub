@@ -179,11 +179,14 @@ describe 'GEPUB usage' do
       expect(tocs[1].content.strip).to eq 'Chapter 2'
 
       # check landmarks 
-      landmarks = xml.at_xpath("//xmlns:nav[@epub:type='landmarks']").xpath("//xmlns:ol/smlns:li")
+      landmarks = xml.at_xpath("//xmlns:nav[@epub:type='landmarks']").xpath("//xmlns:ol/xmlns:li/xmlns:a")
       expect(landmarks.size).to eq 3
       expect(landmarks[0]['@epub:type']).to eq 'cover'
+      expect(landmarks[0]['href']).to eq 'cover.xhtml'
       expect(landmarks[1]['@epub:type']).to eq 'toc'
+      expect(landmarks[1]['href']).to eq '#toc'
       expect(landmarks[2]['@epub:type']).to eq 'bodymatter'
+      expect(landmarks[2]['href']).to eq 'chapt.xhtml'
       book.generate_epub(epubname)
       epubcheck(epubname)
     end
