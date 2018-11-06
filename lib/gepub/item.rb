@@ -89,6 +89,10 @@ module GEPUB
       self
     end
 
+    def landmarks(type:, title:)
+      self
+    end
+
     # guess and set content property from contents.
     def guess_content_property
       if File.extname(self.href) =~ /.x?html/ && @attributes['media-type'] === 'application/xhtml+xml'

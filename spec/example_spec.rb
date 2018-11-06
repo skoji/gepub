@@ -168,7 +168,22 @@ describe 'GEPUB usage' do
         book.add_item('text/chap2.xhtml').add_content(StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c3</title></head><body><p>the third page</p></body></html>')).toc_text('Chapter 2')
       }
       epubname = File.join(File.dirname(__FILE__), 'example_test.epub')
-      fail 'should check landmarks.'
+
+      # check nav doc
+      xml = Nokogiri::XML::Document.parse book.nav_doc
+
+      # check toc
+			tocs =  xml.at_xpath("//xmlns:nav[@epub:type='toc']").xpath("//xmlns:li") 
+      expect(tocs.size).to eq 2
+      expect(tocs[0].content.strip).to eq 'Chapter 1'
+      expect(tocs[1].content.strip).to eq 'Chapter 2'
+
+      # check landmarks 
+      landmarks = xml.at_xpath("//xmlns:nav[@epub:type='landmarks']").xpath("//xmlns:ol/smlns:li")
+      expect(landmarks.size).to eq 3
+      expect(landmarks[0]['@epub:type']).to eq 'cover'
+      expect(landmarks[1]['@epub:type']).to eq 'toc'
+      expect(landmarks[2]['@epub:type']).to eq 'bodymatter'
       book.generate_epub(epubname)
       epubcheck(epubname)
     end
