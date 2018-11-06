@@ -124,6 +124,7 @@ module GEPUB
       end
       @package = Package.new(path, attributes)
       @toc = []
+      @landmarks = []
       if block
         block.arity < 1 ? instance_eval(&block) : block[self]        
       end
@@ -151,9 +152,12 @@ module GEPUB
       metaclass.send(:define_method, :toc, Proc.new {
         toc
       })
+      landmarks = @landmarks
+      metaclass.send(:define_method, :landmarks, Proc.new {
+        landmarks
+      })
       bindings = @package.bindings
-      metaclass.send(:define_method, :bindings,
-                     Proc.new {
+      metaclass.send(:define_method, :bindings, Proc.new {
         bindings
       })
                                
@@ -293,6 +297,19 @@ EOF
           }
         }
       end
+      def write_landmarks xml_doc, landmarks
+        xml_doc.ol {
+          landmarks.each {
+            |landmark|
+            id = landmark[:id].nil? ? "" : "##{x[:id]}"
+            landmark_title = landmark[:title]
+            type = landmark[:type]
+            xml_doc.li {
+              xml_doc.a({'href' => landmark[:item].href + id, 'epub:type' => landmark[:type]}, landmark_title)
+            }
+          }
+        }
+      end
       # build nav
       builder = Nokogiri::XML::Builder.new {
         |doc|
@@ -302,6 +319,9 @@ EOF
             doc.nav('epub:type' => 'toc', 'id' => 'toc') {
               doc.h1 "#{title}"
               write_toc(doc, stacked_toc[:tocs])
+            }
+            doc.nav('epub:type' => 'landmarks', 'id' => 'landmarks') {
+              write_landmarks(doc, @landmarks)
             }
           }
         }

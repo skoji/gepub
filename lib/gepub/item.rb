@@ -89,7 +89,8 @@ module GEPUB
       self
     end
 
-    def landmarks(type:, title:)
+    def landmark(type:, title:, id: nil)
+      landmarks.push(:type => type, :title => title, :item => self, :id => id)
       self
     end
 

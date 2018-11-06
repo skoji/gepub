@@ -162,8 +162,8 @@ describe 'GEPUB usage' do
       
       # within ordered block, add_item will be added to spine.
       book.ordered {
-				book.add_item('text/cover.xhtml').add_content(StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>cover</title></head><body><h1>the book title</h1><img src="../img/image1.jpg" /></body></html>')).landmarks(type: 'cover', title: '表紙')
-				book.add_item('text/chap1.xhtml').add_content(StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c1</title></head><body><p>the first page</p></body></html>')).toc_text('Chapter 1').landmarks(type: 'bodymatter', title: '本文')
+				book.add_item('text/cover.xhtml').add_content(StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>cover</title></head><body><h1>the book title</h1><img src="../img/image1.jpg" /></body></html>')).landmark(type: 'cover', title: '表紙')
+				book.add_item('text/chap1.xhtml').add_content(StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c1</title></head><body><p>the first page</p></body></html>')).toc_text('Chapter 1').landmark(type: 'bodymatter', title: '本文')
         book.add_item('text/chap1-1.xhtml').add_content(StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title></head><body><p>the second page</p></body></html>')) # do not appear on table of contents
         book.add_item('text/chap2.xhtml').add_content(StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c3</title></head><body><p>the third page</p></body></html>')).toc_text('Chapter 2')
       }
@@ -173,20 +173,18 @@ describe 'GEPUB usage' do
       xml = Nokogiri::XML::Document.parse book.nav_doc
 
       # check toc
-			tocs =  xml.at_xpath("//xmlns:nav[@epub:type='toc']").xpath("//xmlns:li") 
+			tocs =  xml.xpath("//xmlns:nav[@epub:type='toc']/xmlns:ol/xmlns:li") 
       expect(tocs.size).to eq 2
       expect(tocs[0].content.strip).to eq 'Chapter 1'
       expect(tocs[1].content.strip).to eq 'Chapter 2'
 
       # check landmarks 
-      landmarks = xml.at_xpath("//xmlns:nav[@epub:type='landmarks']").xpath("//xmlns:ol/xmlns:li/xmlns:a")
-      expect(landmarks.size).to eq 3
-      expect(landmarks[0]['@epub:type']).to eq 'cover'
-      expect(landmarks[0]['href']).to eq 'cover.xhtml'
-      expect(landmarks[1]['@epub:type']).to eq 'toc'
-      expect(landmarks[1]['href']).to eq '#toc'
-      expect(landmarks[2]['@epub:type']).to eq 'bodymatter'
-      expect(landmarks[2]['href']).to eq 'chapt.xhtml'
+      landmarks = xml.xpath("//xmlns:nav[@epub:type='landmarks']/xmlns:ol/xmlns:li/xmlns:a")
+      expect(landmarks.size).to eq 2
+      expect(landmarks[0]['epub:type']).to eq 'cover'
+      expect(landmarks[0]['href']).to eq 'text/cover.xhtml'
+      expect(landmarks[1]['epub:type']).to eq 'bodymatter'
+      expect(landmarks[1]['href']).to eq 'text/chap1.xhtml'
       book.generate_epub(epubname)
       epubcheck(epubname)
     end
