@@ -71,6 +71,29 @@ module GEPUB
       add_property('nav')
     end
 
+    # set toc text to the item
+    def toc_text text
+      toc.push(:item => self, :text => text, :id => nil)
+      self
+    end
+
+    # set toc text with id to the item
+    def toc_text_with_id text, toc_id
+      toc.push(:item => self, :text => text, :id => toc_id)
+      self
+    end
+
+    # set bindings: item is a handler for media_type
+    def is_handler_of media_type
+      bindings.add(self.id, media_type)
+      self
+    end
+
+    def landmark(type:, title:, id: nil)
+      landmarks.push(:type => type, :title => title, :item => self, :id => id)
+      self
+    end
+
     # guess and set content property from contents.
     def guess_content_property
       if File.extname(self.href) =~ /.x?html/ && @attributes['media-type'] === 'application/xhtml+xml'
