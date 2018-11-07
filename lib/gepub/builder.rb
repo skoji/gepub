@@ -3,6 +3,8 @@ module GEPUB
   #
   # Builder is a wrapper class of Book. It provides DSL to create new EPUB file.
   #
+  # * Builder is obsolete on v0.7 and after. We will continue to support GEPUB::Builder works fine on version 1.x, but Builder will not be updated any more. For example, landmarks are not supported with Builder.
+  #
   # = Synopsys
   #      # -*- coding: utf-8 -*-
   #      # GEPUB::Builder example.

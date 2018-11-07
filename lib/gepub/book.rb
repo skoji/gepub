@@ -9,7 +9,6 @@ require 'fileutils'
 # namespace for gepub library.
 # The core class is GEPUB::Book. It holds metadata and contents of EPUB file. metadata and contents can be accessed
 # through GEPUB::Meta and GEPUB::Item.
-# For generating EPUB file,  use GEPUB::Builder.
 # GEPUB::Item holds information and data  of resources like xhtml text, css, scripts, images, videos, etc.
 # GEPUB::Meta holds metadata(title, creator, publisher, etc.) with its information (alternate script, display sequence, etc.)
 
@@ -18,10 +17,6 @@ module GEPUB
   # 
   # It can generate and parse EPUB2/EPUB3 files.
   #
-  # If you want to generate a new EPUB file, consider using GEPUB::Builder instead
-  # of using Book directly.
-  # Builder is a wrapper class of Book specialized for generating EPUB.
-  # 
   # Book delegates many methods to objects in other class, so you can't find
   # them in Book#methods or in ri/rdoc documentation. Their descriptions are below.
   #

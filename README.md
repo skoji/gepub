@@ -22,7 +22,7 @@ If you are using GEPUB::Builder and do not like its behaviour(e.g. the block ins
 
 ## SYNOPSIS:
 
-### Builder Example
+### Example
 
 ```ruby
 require 'rubygems'
