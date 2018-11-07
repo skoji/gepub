@@ -43,7 +43,7 @@ describe GEPUB::Package do
         package['xml:lang'] = 'ja'
 
         # metadata add: style 1
-        package.metadata.add_title('EPUB3 Sample', nil, GEPUB::TITLE_TYPE::MAIN) {
+        package.metadata.add_title('EPUB3 Sample', title_type: GEPUB::TITLE_TYPE::MAIN) {
           |title|
           title.display_seq = 1
           title.file_as = 'Sample EPUB3'
@@ -53,7 +53,7 @@ describe GEPUB::Package do
                                'th' => 'EPUB3 ตัวอย่าง (ญี่ปุ่น)')
         }
         # metadata add: style2
-        package.metadata.add_title('これでEPUB3もばっちり', nil, GEPUB::TITLE_TYPE::SUBTITLE).display_seq(2).add_alternates('en' => 'you need nothing but this book!')
+        package.metadata.add_title('これでEPUB3もばっちり', title_type: GEPUB::TITLE_TYPE::SUBTITLE).display_seq(2).add_alternates('en' => 'you need nothing but this book!')
         package.metadata.add_creator('小嶋智').display_seq(1).add_alternates('en' => 'KOJIMA Satoshi')
         package.metadata.add_contributor('電書部').display_seq(1).add_alternates('en' => 'Denshobu')
         package.metadata.add_contributor('アサガヤデンショ').display_seq(2).add_alternates('en' => 'Asagaya Densho')
@@ -117,7 +117,7 @@ describe GEPUB::Package do
         package['xml:lang'] = 'ja'
 
         # metadata add: style 1
-        package.metadata.add_title('EPUB3 Sample', nil, GEPUB::TITLE_TYPE::MAIN) {
+        package.metadata.add_title('EPUB3 Sample', title_type: GEPUB::TITLE_TYPE::MAIN) {
           |title|
           title.display_seq = 1
           title.file_as = 'Sample EPUB3'
@@ -127,7 +127,7 @@ describe GEPUB::Package do
                                'th' => 'EPUB3 ตัวอย่าง (ญี่ปุ่น)')
         }
         # metadata add: style2
-        package.metadata.add_title('これでEPUB3もばっちり', nil, GEPUB::TITLE_TYPE::SUBTITLE).display_seq(2).add_alternates('en' => 'you need nothing but this book!')
+        package.metadata.add_title('これでEPUB3もばっちり', title_type: GEPUB::TITLE_TYPE::SUBTITLE).display_seq(2).add_alternates('en' => 'you need nothing but this book!')
         package.metadata.add_creator('小嶋智').display_seq(1).add_alternates('en' => 'KOJIMA Satoshi')
         package.metadata.add_contributor('電書部').display_seq(1).add_alternates('en' => 'Denshobu')
         package.metadata.add_contributor('アサガヤデンショ').display_seq(2).add_alternates('en' => 'Asagaya Densho')
