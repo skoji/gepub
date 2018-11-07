@@ -168,9 +168,9 @@ module GEPUB
       @metadata.add_identifier identifier, unique_identifier, type
     end
 
-    def add_item(href, io_or_filename = nil, id = nil, attributes = {})
+    def add_item(href, content:nil, id: nil, attributes: {})
       item = @manifest.add_item(id, href, nil, attributes)
-      item.add_content(io_or_filename) unless io_or_filename.nil?
+      item.add_content(content) unless content.nil?
       @spine.push(item) if @ordered
       yield item if block_given?
       item
@@ -183,11 +183,10 @@ module GEPUB
       @ordered = nil
     end
 
-    def add_ordered_item(href, io_or_filename = nil, id = nil, attributes = {})
+    def add_ordered_item(href, content:nil, id: nil, attributes: {})
       raise 'do not call add_ordered_item within ordered block.' if @ordered
-      item = add_item(href, io_or_filename, id, attributes)
+      item = add_item(href, attributes: attributes, id:id, content: content)
       @spine.push(item)
-      
       item
     end
 

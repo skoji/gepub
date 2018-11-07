@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+# We will continue to support GEPUB::Builder works fine on version 1.x, but Builder will not be updated any more. For example, landmarks are not supported with Builder.
+
     require 'rubygems'
     require 'gepub'
     workdir = 'epub/example/'
