@@ -79,7 +79,7 @@ module GEPUB
     def to_xml(builder) 
       builder.metadata(@namespaces) {
         @content_nodes.each {
-          |name, list|
+          |_name, list|
           list.each {
             |meta|
             meta.to_xml(builder, @id_pool, ns_prefix(DC_NS), nil, @opf_version)

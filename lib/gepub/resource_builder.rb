@@ -45,12 +45,12 @@ module GEPUB
       raise "can't specify multiple files on file keyword" if Hash === val && val.length > 1
 
       @file_preprocess.each {
-        |k,p|
+        |_k,p|
         p.call
       }
       @last_defined_item = ResourceItem.new(create_one_file(val))
       @file_postprocess.each {
-        |k,p|
+        |_k,p|
         p.call
       }
     end
@@ -58,7 +58,7 @@ module GEPUB
     def files(*arg)
       arg = arg[0] if arg.size == 1 && Hash === arg[0]
       @files_preprocess.each {
-        |k,p|
+        |_k,p|
         p.call
       }
       @last_defined_item = arg.map {
@@ -66,7 +66,7 @@ module GEPUB
         ResourceItem.new(create_one_file(val))
       }
       @files_postprocess.each {
-        |k,p|
+        |_k,p|
         p.call
       }
     end

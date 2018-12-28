@@ -17,7 +17,7 @@ module GEPUB
       @content = date
     end
 
-    def to_s(locale = nil)
+    def to_s(_locale = nil)
       # date type don't have alternate scripts.
       @content.utc.iso8601
     end

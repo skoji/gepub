@@ -116,7 +116,7 @@ module GEPUB
 
       # using __send__ to parametarize Namespace and content.
       target = ns.nil? || @name == 'meta' ? builder : builder[ns]
-      attr = @attributes.reject{|k,v| v.nil?}.merge(additional_attr)
+      attr = @attributes.reject{|_k,v| v.nil?}.merge(additional_attr)
       if @content.nil?
         target.__send__(@name, attr)
       else
@@ -126,7 +126,7 @@ module GEPUB
       if @refiners.size > 0 && opf_version.to_f >= 3.0
         additional_attr['refines'] = "##{@attributes['id']}"
         @refiners.each {
-          |k, ref_list|
+          |_k, ref_list|
           ref_list.each {
             |ref|
             ref.to_xml(builder, id_pool, nil, additional_attr)

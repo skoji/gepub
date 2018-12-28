@@ -88,7 +88,7 @@ module GEPUB
     def self.rootfile_from_container(rootfile)
       doc = Nokogiri::XML::Document.parse(rootfile)
       ns = doc.root.namespaces
-      defaultns = ns.select{ |name, value| value == CONTAINER_NS }.to_a[0][0]
+      defaultns = ns.select{ |_name, value| value == CONTAINER_NS }.to_a[0][0]
       doc.css("#{defaultns}|rootfiles > #{defaultns}|rootfile")[0]['full-path']
     end
 
@@ -195,13 +195,13 @@ module GEPUB
       entries['META-INF/container.xml'] = container_xml
       entries[@package.path] = opf_xml
       @package.manifest.item_list.each {
-        |k, item|
+        |_k, item|
         if item.content != nil
           entries[@package.contents_prefix + item.href] = item.content
         end
       }
 
-      entries.sort_by { |k,v| k }.each {
+      entries.sort_by { |k,_v| k }.each {
         |k,v|
         epub.put_next_entry(k)
         epub << v.force_encoding('us-ascii')
@@ -406,7 +406,7 @@ EOF
     def  cleanup_for_epub2
       if version.to_f < 3.0 || @package.epub_backward_compat
         if @package.manifest.item_list.select {
-          |x,item|
+          |_x,item|
           item.media_type == 'application/x-dtbncx+xml'
         }.size == 0
           if (@toc.size == 0)
@@ -421,14 +421,14 @@ EOF
         @package.metadata.modified_now
         
         if @package.manifest.item_list.select {
-          |href, item|
+          |_href, item|
           (item.properties||[]).member? 'nav'
           }.size == 0
           generate_nav_doc
         end
         
         @package.spine.remove_with_idlist @package.manifest.item_list.map {
-          |href, item|
+          |_href, item|
           item.fallback
         }.reject(&:nil?)
       end

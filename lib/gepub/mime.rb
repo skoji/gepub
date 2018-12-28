@@ -42,7 +42,7 @@ module GEPUB
      #guess mediatype by mime type mask
     def self.guess_mediatype(href)
       ext = File.extname(href)
-      @@mime_types_compiled.select { |pattern, mime| ext =~ pattern }.values[0]
+      @@mime_types_compiled.select { |pattern, _mime| ext =~ pattern }.values[0]
     end
     
   end

@@ -181,7 +181,7 @@ module GEPUB
       end
     end
 
-    def initialize(attributes = {},  &block)
+    def initialize(_attributes = {},  &block)
       @last_defined_item = nil
       @book = Book.new
       instance_eval(&block)

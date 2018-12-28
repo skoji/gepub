@@ -9,7 +9,7 @@ module GEPUB
     attr_accessor :content
     def self.create(parent, attributes = {})
       Item.new(attributes['id'], attributes['href'], attributes['media-type'], parent,
-               attributes.reject { |k,v| ['id','href','media-type'].member?(k) })
+               attributes.reject { |k,_v| ['id','href','media-type'].member?(k) })
     end
 
     #
@@ -152,7 +152,7 @@ module GEPUB
     def to_xml(builder, opf_version = '3.0')
       attr = @attributes.dup
       if opf_version.to_f < 3.0
-        attr.reject!{ |k,v| k == 'properties' }
+        attr.reject!{ |k,_v| k == 'properties' }
       end
       if !attr['properties'].nil?
         attr['properties'] = attr['properties'].uniq.join(' ')

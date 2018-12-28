@@ -6,7 +6,7 @@ module GEPUB
     attr_accessor :opf_version
     class Itemref
       def self.create(parent, attributes = {})
-        Itemref.new(attributes['idref'], parent, attributes.reject{|k,v| k == 'idref'})
+        Itemref.new(attributes['idref'], parent, attributes.reject{|k,_v| k == 'idref'})
       end
       
       def initialize(idref, parent = nil, attributes = {})
@@ -70,7 +70,7 @@ module GEPUB
       def to_xml(builder, opf_version)
         attr = @attributes.dup
         if opf_version.to_f < 3.0
-          attr.reject!{ |k,v| k == 'properties' }
+          attr.reject!{ |k,_v| k == 'properties' }
         end
         if !attr['properties'].nil?
           attr['properties'] = attr['properties'].join(' ')

@@ -249,7 +249,7 @@ module GEPUB
           }.length == 0
           
           @manifest.item_list.each {
-            |k, item|
+            |_k, item|
             if item.properties && item.properties.member?('cover-image')
               @metadata.add_oldstyle_meta(nil, 'name' => 'cover', 'content' => item.id)
             end

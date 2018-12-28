@@ -5,7 +5,7 @@ class SortedArray < Array
     self.sort!() &sort_by
   end
 
-  def insert(i, v)
+  def insert(_i, v)
     insert_before = index(find { |x| @sort_by.call(x, v) == 1 })
     super(insert_before ? insert_before : -1, v)
   end

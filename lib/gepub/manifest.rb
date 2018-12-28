@@ -62,7 +62,7 @@ module GEPUB
     def to_xml(builder)
       builder.manifest(@attributes) {
         @items.each {
-          |itemid, item|
+          |_itemid, item|
           item.to_xml(builder, @opf_version)
         }
       }
