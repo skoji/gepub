@@ -277,6 +277,7 @@ EOF
       end
       # write toc 
       def write_toc xml_doc, tocs
+        return if tocs.empty?
         xml_doc.ol {
           tocs.each {
             |x|
@@ -311,13 +312,17 @@ EOF
         doc.html('xmlns' => "http://www.w3.org/1999/xhtml",'xmlns:epub' => "http://www.idpf.org/2007/ops") {
           doc.head { doc.text ' ' }
           doc.body {
-            doc.nav('epub:type' => 'toc', 'id' => 'toc') {
-              doc.h1 "#{title}"
-              write_toc(doc, stacked_toc[:tocs])
-            }
-            doc.nav('epub:type' => 'landmarks', 'id' => 'landmarks') {
-              write_landmarks(doc, @landmarks)
-            }
+            if !stacked_toc.empty?
+              doc.nav('epub:type' => 'toc', 'id' => 'toc') {
+                doc.h1 "#{title}"
+                write_toc(doc, stacked_toc[:tocs])
+              }
+            end
+            if !@landmarks.empty?
+              doc.nav('epub:type' => 'landmarks', 'id' => 'landmarks') {
+                write_landmarks(doc, @landmarks)
+              }
+            end
           }
         }
       }
