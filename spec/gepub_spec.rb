@@ -209,9 +209,7 @@ EOF
     item2 = @book.add_ordered_item('text/barbar.xhtml',
                                    content: StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title></head><body><p>second page, whith is test chapter.</p></body></html>'),
                                    id: 'c2')
-    @book.spine.push(item2)
     @book.generate_epub(epubname)
     epubcheck(epubname)
-
   end
 end
