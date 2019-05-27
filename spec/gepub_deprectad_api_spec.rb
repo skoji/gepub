@@ -57,12 +57,6 @@ describe GEPUB::Book do
                                    'c2')
     item2.toc_text 'test chapter'
 
-    item3 = @book.add_item('text/handler.xhtml',
-                           StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title><script>alert("foo");</script></head><body><p>this is scripted item</p></body></html>')
-                           )
-    item3.add_property('scripted')
-    item3.is_handler_of('application/x-some-media-type')
-    @item3_id = item3.id
 
     nav_string = <<EOF
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops">
@@ -150,13 +144,6 @@ EOF
     expect(spine.at_xpath('xmlns:itemref')['idref']).to eq('c1')
   end
 
-  it "should have correct bindings in opf" do
-    opf = Nokogiri::XML.parse(@book.opf_xml).root
-    bindings = opf.at_xpath('xmlns:bindings')
-    expect(bindings.at_xpath('xmlns:mediaType')['handler']).to eq(@item3_id)
-    expect(bindings.at_xpath('xmlns:mediaType')['media-type']).to eq('application/x-some-media-type')
-  end
-  
   it "should have correct cover image id" do
     item = @book.add_item("img/img.jpg").cover_image
 
