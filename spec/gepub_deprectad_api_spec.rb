@@ -66,7 +66,9 @@ describe GEPUB::Book do
 
     nav_string = <<EOF
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops">
-<head></head>
+<head>
+<title>Table of contents</title>
+</head>
 <body>
 <nav epub:type="toc" id="toc">
   <h1>Table of contents</h1>

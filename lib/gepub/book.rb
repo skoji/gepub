@@ -310,7 +310,9 @@ EOF
       builder = Nokogiri::XML::Builder.new {
         |doc|
         doc.html('xmlns' => "http://www.w3.org/1999/xhtml",'xmlns:epub' => "http://www.idpf.org/2007/ops") {
-          doc.head { doc.text ' ' }
+          doc.head {
+            doc.title title
+          }
           doc.body {
             if !stacked_toc.empty?
               doc.nav('epub:type' => 'toc', 'id' => 'toc') {
