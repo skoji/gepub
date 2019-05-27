@@ -31,6 +31,9 @@ Licenses of third-party dependencies
   TwelveMonkeys :: ImageIO :: Metadata, 3.4.1
     The BSD License
 
+  isorelax, 20030108
+    Unknown license
+
   Saxon-HE, 9.8.0-8
     Mozilla Public License Version 2.0
 
@@ -50,11 +53,14 @@ Licenses of third-party dependencies
   Animal Sniffer Annotations, 1.14
     MIT license
 
-  Jing, 20120724.0.0
-    New BSD License
+  Jing, 20181222
+    3-clause BSD license
 
   Simple API for CSS, 1.3
     The W3C Software License
+
+  Xerces2 Java Parser, 2.9.1
+    The Apache Software License, Version 2.0
 
 
 Copies of the licenses are provided in the 'licenses' directory.
