@@ -11,8 +11,6 @@ Gem::Specification.new do |s|
   s.summary     = %q{a generic EPUB library for Ruby.}
   s.description = %q{gepub is a generic EPUB parser/generator. Generates and parse EPUB2 and EPUB3}
 
-  s.rubyforge_project = "gepub"
-
   s.files         = `git ls-files`.split("\n").reject { |f| f.match(%r{^spec/}) }
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
