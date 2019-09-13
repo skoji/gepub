@@ -32,7 +32,7 @@ RSpec.configure do |config|
   end
 
   def epubcheck(epubname)
-    jar = File.join(File.dirname(__FILE__), 'fixtures/epubcheck-4.2.1/epubcheck.jar')    
+    jar = File.join(File.dirname(__FILE__), 'fixtures/epubcheck-4.2.2/epubcheck.jar')    
     stdout = capture(:stdout) do 
       puts %x(java -Duser.language=en -jar #{jar} #{epubname} 2>&1)
     end
