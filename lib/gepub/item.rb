@@ -132,6 +132,9 @@ module GEPUB
     # add content data to the item.
     def add_raw_content(data)
       @content = data
+      if File.extname(self.href) =~ /x?html$/
+        @content.force_encoding('utf-8')
+      end
       guess_content_property
       self
     end
@@ -144,6 +147,9 @@ module GEPUB
       end
       io.binmode
       @content = io.read
+      if File.extname(self.href) =~ /x?html$/
+        @content.force_encoding('utf-8')
+      end
       guess_content_property
       self
     end

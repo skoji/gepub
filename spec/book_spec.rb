@@ -1,7 +1,7 @@
 require File.dirname(__FILE__) + '/spec_helper.rb'
 require 'rubygems'
 require 'nokogiri'
-
+require 'byebug'
 describe GEPUB::Book do
   context 'on creating new book' do
     describe 'initialize' do
@@ -293,6 +293,7 @@ describe GEPUB::Book do
        expect(book).to be_instance_of GEPUB::Book
        expect(book.items.size).to eq 6
        expect(book.items['t1'].href).to eq 'wasteland-content.xhtml'
+       expect(book.items['t1'].content.encoding).to eq Encoding::UTF_8
        expect(book.items['nav'].href).to eq 'wasteland-nav.xhtml'
        expect(book.items['cover'].href).to eq 'wasteland-cover.jpg'
        expect(book.items['css'].href).to eq 'wasteland.css'
@@ -300,6 +301,12 @@ describe GEPUB::Book do
        expect(book.items['ncx'].href).to eq 'wasteland.ncx'              
        expect(book.spine_items.size).to eq 1
        expect(book.spine_items[0].href).to eq 'wasteland-content.xhtml'
+      end
+      it 'loads non-latin EPUB as UTF-8' do
+       filehandle = File.new(File.dirname(__FILE__) + '/fixtures/testdata/lemon.epub')
+       book = GEPUB::Book.parse(filehandle)
+       expect(book.items['p-001'].href).to eq 'xhtml/p-001.xhtml'
+       expect(book.items['p-001'].content.encoding).to eq Encoding::UTF_8       
       end
      end
     end
