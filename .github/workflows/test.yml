@@ -1,0 +1,19 @@
+name: Test
+
+jobs:
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ruby: [2.5.x, 2.6.x]
+    steps:
+    - uses: actions/checkout@master
+    - name: Set up Ruby 2.6
+      uses: actions/setup-ruby@v1
+      with:
+        version: ${{ matrix.node }}
+    - name: run test
+      run: |
+        bundle exec rake spec
+        
