@@ -9,10 +9,10 @@ jobs:
         ruby: [2.5.x, 2.6.x]
     steps:
     - uses: actions/checkout@master
-    - name: Set up Ruby 2.6
+    - name: Set up Ruby
       uses: actions/setup-ruby@v1
       with:
-        version: ${{ matrix.node }}
+        ruby-version: ${{ matrix.node }}
     - name: run test
       run: |
         bundle install
