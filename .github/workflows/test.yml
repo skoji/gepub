@@ -12,7 +12,7 @@ jobs:
     - name: Set up Ruby
       uses: actions/setup-ruby@v1
       with:
-        ruby-version: ${{ matrix.node }}
+        ruby-version: ${{ matrix.ruby }}
     - name: run test
       run: |
         bundle install
