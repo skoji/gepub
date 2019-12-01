@@ -2,7 +2,7 @@
 
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/skoji/gepub?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![GitHub Actions Status](https://github.com/skoji/gepub/workflows/Test/badge.svg)](https://github.com/skoji/gepub/actions?query=workflow%3ATest)
-[![Coverage Status](https://coveralls.io/repos/skoji/gepub/badge.svg?branch=master)](https://coveralls.io/r/skoji/gepub?branch=master)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/acd6df07e071a4bbb399/test_coverage)](https://codeclimate.com/github/skoji/gepub/test_coverage)
 [![Gem Version](https://badge.fury.io/rb/gepub.svg)](http://badge.fury.io/rb/gepub)
 
 * http://rdoc.info/github/skoji/gepub/master/frames
