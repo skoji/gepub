@@ -15,5 +15,6 @@ jobs:
         version: ${{ matrix.node }}
     - name: run test
       run: |
+        bundle install
         bundle exec rake spec
         
