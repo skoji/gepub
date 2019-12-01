@@ -15,17 +15,14 @@ jobs:
       uses: actions/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}
-    - name: setup codelimate reporter
-      run: |
-        curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > test-reporter
-        chmod +x test-reporter
-        ./test-reporter before-build
-    - name: run test
+    - name: setup gems
       run: |
         gem install bundler
         bundle install
-        bundle exec rake spec
-    - name: codeclimate report
-      run: |
-        ./test-reporter after-build 
+    - name: run test and publish code coverage
+      uses: paambaati/codeclimate-action@v2.3.0
+      env:
+        CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+      with:
+        coverageCommand: bundle exec rake spec
         
