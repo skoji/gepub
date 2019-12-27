@@ -299,7 +299,6 @@ EOF
             |landmark|
             id = landmark[:id].nil? ? "" : "##{x[:id]}"
             landmark_title = landmark[:title]
-            type = landmark[:type]
             xml_doc.li {
               xml_doc.a({'href' => landmark[:item].href + id, 'epub:type' => landmark[:type]}, landmark_title)
             }
@@ -390,6 +389,7 @@ EOF
       end
       return package, package_path
     end
+    private_class_method :parse_container
 
     def self.check_consistency_of_package(package, package_path)
       if package.nil?
@@ -397,9 +397,11 @@ EOF
       end
 
       if package_path != package.path
-        warn 'inconsistend EPUB file: container says opf is #{package_path}, but actually #{package.path}'
+        warn "inconsistend EPUB file: container says opf is #{package_path}, but actually #{package.path}"
       end
     end
+    private_class_method :check_consistency_of_package
+    
     def self.parse_files_into_package(files, package)
       files.each {
         |k, content|
@@ -410,6 +412,8 @@ EOF
         end
       }
     end
+    private_class_method :parse_files_into_package
+    
     def  cleanup_for_epub2
       if version.to_f < 3.0 || @package.epub_backward_compat
         if @package.manifest.item_list.select {
