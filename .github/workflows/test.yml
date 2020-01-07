@@ -1,12 +1,13 @@
 name: Test
-on: push
+on: [push, pull_request]
 jobs:
   test:
-    name: test
-    runs-on: ubuntu-latest
+    name: Ruby ${{ matrix.ruby }} on ${{ matrix.platform }}
     strategy:
       matrix:
         ruby: [2.5.x, 2.6.x]
+        platform: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.platform }}
     env:
       CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
     steps:
@@ -20,9 +21,12 @@ jobs:
         gem install bundler
         bundle install
     - name: run test and publish code coverage
+      if: runner.os == 'Linux' && env.CC_TEST_REPORTER_ID != ''
       uses: paambaati/codeclimate-action@v2.3.0
       env:
         CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
       with:
         coverageCommand: bundle exec rake spec
-        
+    - name: run test
+      if: runner.os != 'Linux' || env.CC_TEST_REPORTER_ID == ''
+      run: bundle exec rake spec
