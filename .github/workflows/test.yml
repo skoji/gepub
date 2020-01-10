@@ -13,7 +13,7 @@ jobs:
     steps:
     - uses: actions/checkout@master
     - name: Set up Ruby
-      uses: actions/setup-ruby@v1
+      uses: eregon/use-ruby-action@master
       with:
         ruby-version: ${{ matrix.ruby }}
     - name: setup gems
