@@ -2,14 +2,17 @@ name: Test
 on: [push, pull_request]
 jobs:
   test:
-    name: Ruby ${{ matrix.ruby }} on ${{ matrix.platform }}
     strategy:
       matrix:
-        ruby: [2.5.7, 2.6.5, 2.7.0]
+        ruby: [2.4, 2.5, 2.6, 2.7, jruby]
         platform: [ubuntu-latest, macos-latest, windows-latest]
         exclude:
+          # TODO: https://github.com/sparklemotion/nokogiri/issues/1961
           # exclude windows with ruby 2.7 ; nokogiri is not supported for the present
-          - ruby: 2.7.0
+          - ruby: 2.7
+            platform: windows-latest
+          # eregon/use-ruby-action doesn't support JRuby on Windows
+          - ruby: jruby
             platform: windows-latest
     runs-on: ${{ matrix.platform }}
     env:
@@ -25,12 +28,12 @@ jobs:
         gem install bundler
         bundle install
     - name: run test and publish code coverage
-      if: runner.os == 'Linux' && matrix.ruby == '2.7.0' && env.CC_TEST_REPORTER_ID != ''
+      if: runner.os == 'Linux' && matrix.ruby == '2.7' && env.CC_TEST_REPORTER_ID != ''
       uses: paambaati/codeclimate-action@v2.3.0
       env:
         CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
       with:
         coverageCommand: bundle exec rake spec
     - name: run test
-      if: runner.os != 'Linux' || matrix.ruby != '2.7.0' || env.CC_TEST_REPORTER_ID == ''
+      if: runner.os != 'Linux' || matrix.ruby != '2.7' || env.CC_TEST_REPORTER_ID == ''
       run: bundle exec rake spec
