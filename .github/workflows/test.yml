@@ -11,9 +11,6 @@ jobs:
           # exclude windows with ruby 2.7 ; nokogiri is not supported for the present
           - ruby: 2.7
             platform: windows-latest
-          # eregon/use-ruby-action doesn't support JRuby on Windows
-          - ruby: jruby
-            platform: windows-latest
     runs-on: ${{ matrix.platform }}
     env:
       CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
