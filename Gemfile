@@ -2,4 +2,7 @@ source "http://rubygems.org"
 
 # Specify your gem's dependencies in gepub.gemspec
 gemspec
-gem 'simplecov', require: false
+
+# workarond : simplecov 0.18 with cc-reporter is broken
+# https://github.com/codeclimate/test-reporter/issues/418
+gem 'simplecov', '~> 0.10', '< 0.18', require: false
