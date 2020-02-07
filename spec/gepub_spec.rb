@@ -157,6 +157,7 @@ EOF
     @book.generate_epub(epubname)
     epubcheck(epubname)
   end
+
   it "should generate correct epub with buffer" do
     epubname = File.join(File.dirname(__FILE__), 'testepub_buf.epub')
     File.open(epubname, 'wb') {
@@ -212,4 +213,16 @@ EOF
     @book.generate_epub(epubname)
     epubcheck(epubname)
   end
+
+  it 'should generate EPUB with specified date' do
+    epubname = File.join(File.dirname(__FILE__), 'testepub.epub')
+    mod_time = Time.mktime(2010,5,5,8,10,15)
+    @book.lastmodified = mod_time
+    @book.generate_epub(epubname)
+    File.open(epubname) do |f|
+      parsed_book = GEPUB::Book.parse(f)
+      expect(parsed_book.lastmodified.content).to eq mod_time.utc.strftime('%Y-%m-%dT%H:%M:%SZ')
+    end
+  end
+
 end
