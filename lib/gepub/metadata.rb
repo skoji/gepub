@@ -19,7 +19,6 @@ module GEPUB
     end
     include XMLUtil, DSLUtil
     attr_accessor :opf_version
-    attr_accessor :lastmodified_set
     # parse metadata element. metadata_xml should be Nokogiri::XML::Node object.
     def self.parse(metadata_xml, opf_version = '3.0', id_pool = Package::IDPool.new)
       Metadata.new(opf_version, id_pool) {
@@ -55,7 +54,7 @@ module GEPUB
 
           }
         }
-        # do not set @lastmodified_set here
+        # do not set @lastmodified_updated here
       }
     end
     
@@ -75,8 +74,12 @@ module GEPUB
       @spread = NilContent
       @ibooks_version = NilContent
       @ibooks_scroll_axis = NilContent
-      @lastmodified_set = false
+      @lastmodified_updated = false
       yield self if block_given?
+    end
+
+    def lastmodified_updated?
+      @lastmodified_updated
     end
 
     def to_xml(builder) 
@@ -189,7 +192,7 @@ module GEPUB
         }
         ret.size == 0 ? nil : ret[0]
       else
-        @lastmodified_set = true
+        @lastmodified_updated = true
         date ||= Time.now
         (@content_nodes['meta'] ||= []).each {
           |meta|
