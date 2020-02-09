@@ -194,13 +194,14 @@ module GEPUB
       else
         @lastmodified_updated = true
         date ||= Time.now
+        date = DateTime.parse(date) if date.is_a? String
         (@content_nodes['meta'] ||= []).each {
           |meta|
           if (meta['property'] == 'dcterms:modified')
             @content_nodes['meta'].delete meta
           end
         }
-        add_metadata('meta', date.utc.strftime('%Y-%m-%dT%H:%M:%SZ'), itemclass: DateMeta)['property'] = 'dcterms:modified'
+        add_metadata('meta', date.to_time.utc.strftime('%Y-%m-%dT%H:%M:%SZ'), itemclass: DateMeta)['property'] = 'dcterms:modified'
       end
     end
 

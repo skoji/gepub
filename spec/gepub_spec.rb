@@ -225,6 +225,18 @@ EOF
     end
   end
 
+
+  it 'should generate EPUB with specified lastmodified by string' do
+    epubname = File.join(File.dirname(__FILE__), 'testepub.epub')
+    mod_time = "2010-05-05T08:10:15Z"
+    @book.lastmodified = mod_time
+    @book.generate_epub(epubname)
+    File.open(epubname) do |f|
+      parsed_book = GEPUB::Book.parse(f)
+      expect(parsed_book.lastmodified.content).to eq mod_time
+    end
+  end
+
   it 'should generate parsed and generated EPUB with renewed lastmodified' do
     originalfile = File.join(File.dirname(__FILE__), 'fixtures/testdata/wasteland-20120118.epub')
     epubname = File.join(File.dirname(__FILE__), 'testepub.epub')    
