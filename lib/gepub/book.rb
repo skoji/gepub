@@ -429,7 +429,7 @@ EOF
     end
     def cleanup_for_epub3
       if version.to_f >=3.0
-        @package.metadata.modified_now unless @package.metadata.lastmodified
+        @package.metadata.modified_now unless @package.metadata.lastmodified_set
         
         if @package.manifest.item_list.select {
           |_href, item|
