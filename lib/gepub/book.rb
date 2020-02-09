@@ -68,7 +68,7 @@ module GEPUB
   # returns contributors list by display-seq or defined order.
   # the contributors without display-seq is appear after contributors with display-seq.
   # === Book#lastmodified(date) (delegated to Metadata#lastmodified)
-  # set last modified date.
+  # set last modified date. date is a Time, DateTime or string that can be parsed by DateTime#parse.
   # === Book#modified_now (delegated to Metadata#modified_now)
   # set last modified date to current time.
   # === Book#lastmodified (delegated to Metadata#lastmodified)
