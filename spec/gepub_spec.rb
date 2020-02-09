@@ -248,8 +248,8 @@ EOF
     original_book.generate_epub(epubname)
     File.open(epubname) do |f|
       parsed_book = GEPUB::Book.parse(f)
-      parsed_time = Time.new(parsed_book.lastmodified.content)
-      original_time = Time.new(original_lastmodified)
+      parsed_time = parsed_book.lastmodified.content
+      original_time = original_lastmodified
       expect(parsed_time).to be > original_time
     end
   end
