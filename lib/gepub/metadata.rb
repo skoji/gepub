@@ -54,6 +54,7 @@ module GEPUB
 
           }
         }
+        # do not set @lastmodified_updated here
       }
     end
     
@@ -73,7 +74,12 @@ module GEPUB
       @spread = NilContent
       @ibooks_version = NilContent
       @ibooks_scroll_axis = NilContent
+      @lastmodified_updated = false
       yield self if block_given?
+    end
+
+    def lastmodified_updated?
+      @lastmodified_updated
     end
 
     def to_xml(builder) 
@@ -186,6 +192,7 @@ module GEPUB
         }
         ret.size == 0 ? nil : ret[0]
       else
+        @lastmodified_updated = true
         date ||= Time.now
         (@content_nodes['meta'] ||= []).each {
           |meta|
