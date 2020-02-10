@@ -183,7 +183,13 @@ module GEPUB
 
     # write EPUB to stream specified by the argument.
     def write_to_epub_container(epub)
-      epub.put_next_entry('mimetype', '', '', Zip::Entry::STORED)
+      mod_time = Zip::DOSTime.now
+      unless (last_mod = lastmodified).nil?
+        mod_time = Zip::DOSTime.from_time(last_mod.content)
+      end
+
+      mimetype_entry = Zip::Entry.new(nil, 'mimetype', nil, nil, nil, nil, nil, nil, mod_time)
+      epub.put_next_entry(mimetype_entry, nil, nil, Zip::Entry::STORED)
       epub << "application/epub+zip"
 
       entries = {}
@@ -203,7 +209,8 @@ module GEPUB
 
       entries.sort_by { |k,_v| k }.each {
         |k,v|
-        epub.put_next_entry(k)
+        zip_entry = Zip::Entry.new(nil, k, nil, nil, nil, nil, nil, nil, mod_time)
+        epub.put_next_entry(zip_entry)
         epub << v.force_encoding('us-ascii')
       }
     end
