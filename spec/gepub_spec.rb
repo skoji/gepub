@@ -270,4 +270,18 @@ EOF
     end
   end
 
+
+  it 'should produce deterministic output when lastmodified is specified' do
+    epubname1 = File.join(File.dirname(__FILE__), 'testepub1.epub')
+    epubname2 = File.join(File.dirname(__FILE__), 'testepub2.epub')
+    mod_time = "2010-05-05T08:10:15Z"
+    @book.lastmodified = mod_time
+
+    @book.generate_epub(epubname1)
+    sleep 2
+    @book.generate_epub(epubname2)
+
+    expect(FileUtils.compare_file(epubname1, epubname2)).to be true
+  end
+
 end
