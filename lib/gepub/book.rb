@@ -185,7 +185,8 @@ module GEPUB
     def write_to_epub_container(epub)
       mod_time = Zip::DOSTime.now
       unless (last_mod = lastmodified).nil?
-        mod_time = Zip::DOSTime.from_time(last_mod.content)
+        tm = last_mod.content
+        mod_time = Zip::DOSTime.local(tm.year, tm.month, tm.day, tm.hour, tm.min, tm.sec)
       end
 
       mimetype_entry = Zip::Entry.new(nil, 'mimetype', nil, nil, nil, nil, nil, nil, mod_time)
