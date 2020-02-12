@@ -40,7 +40,7 @@ end
 
 describe GEPUB::Book do
   before do
-    @book = GEPUB::Book.new('OEPBS/package.opf') 
+    @book = GEPUB::Book.new('OEPBS/package.opf')
     @book.title = 'thetitle'
     @book.creator = "theauthor"
     @book.contributor = "contributors contributors!"
@@ -270,6 +270,15 @@ EOF
     end
   end
 
+  it 'should produce empty EPUB2 book' do
+    @book = GEPUB::Book.new('OEPBS/package.opf', { 'version' => '2.0'})
+    @book.generate_epub_stream
+  end
+
+  it 'should produce empty EPUB3 book' do
+    @book = GEPUB::Book.new('OEPBS/package.opf', { 'version' => '3.0'})
+    @book.generate_epub_stream
+  end
 
   it 'should produce deterministic output when lastmodified is specified' do
     epubname1 = File.join(File.dirname(__FILE__), 'testepub1.epub')

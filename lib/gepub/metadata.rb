@@ -171,7 +171,7 @@ module GEPUB
     end
 
     def identifier_by_id(id)
-      @content_nodes['identifier'].each {
+      (@content_nodes['identifier'] || []).each {
         |x|
         return x.content if x['id'] == id
       }
