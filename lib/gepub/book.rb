@@ -266,7 +266,7 @@ EOF
     
     def nav_doc(title = 'Table of Contents')
       # handle cascaded toc
-      start_level = @toc && @toc[0][:level] || 1
+      start_level = @toc && !@toc.empty? && @toc[0][:level] || 1
       stacked_toc = {level: start_level, tocs: [] }
       @toc.inject(stacked_toc) do |current_stack, toc_entry|
         toc_entry_level = toc_entry[:level] || 1
@@ -428,7 +428,7 @@ EOF
           |_x,item|
           item.media_type == 'application/x-dtbncx+xml'
         }.size == 0
-          if (@toc.size == 0)
+          if (@toc.size == 0 && !@package.spine.itemref_list.empty?)
             @toc << { :item => @package.manifest.item_list[@package.spine.itemref_list[0].idref] }
           end
           add_item('toc.ncx', id: 'ncx', content: StringIO.new(ncx_xml))
