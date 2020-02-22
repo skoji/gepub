@@ -293,4 +293,18 @@ EOF
     expect(FileUtils.compare_file(epubname1, epubname2)).to be true
   end
 
+  it 'should not forget svg attribute when parsing book' do
+    @book = GEPUB::Book.new
+    @book.identifier = 'test'
+    @book.add_ordered_item('foobar.xhtml', content: StringIO.new('<html><img src="image.svg" /></html>')).add_property 'svg'
+    epubname = File.join(__dir__, 'testepub.epub')
+    @book.generate_epub(epubname)
+    File.open(epubname) do |f|
+      parsed_book = GEPUB::Book.parse(f)
+      item = parsed_book.item_by_href 'foobar.xhtml'
+      expect(item).not_to be_nil
+      expect(item['properties']).to include 'svg'
+    end
+  end
+  
 end
