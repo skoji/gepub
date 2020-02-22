@@ -272,8 +272,95 @@ describe GEPUB::Book do
       end
     end
     describe 'add_item' do
+      it 'adds item with media type' do
+        book = GEPUB::Book.new
+        book.add_item 'chap3.xml', content: nil, media_type: 'application/docbook+xml'
+        expect(book.items.size).to eq 1
+      end
+
+      it 'adds item with fallback' do
+        book = GEPUB::Book.new
+        xhtml_item = book.add_item 'chap3.xhtml'
+        docbook_item = book.add_item 'chap3.xml', content: nil, media_type: 'application/docbook+xml', fallback: xhtml_item.id
+        expect(docbook_item.fallback).to eq xhtml_item.id
+        expect(book.items.size).to eq 2
+      end
+
+      it 'add item with toc text' do
+        book = GEPUB::Book.new
+        book.add_item 'chap3.xhtml', toc_text: 'chapter 3'
+        expect(book.instance_eval { @toc[0][:text] } ).to eq 'chapter 3'
+        expect(book.items.size).to eq 1
+      end
+
+      it 'add item with properties' do
+        book = GEPUB::Book.new
+        item = book.add_item 'chap3.xhtml', properties: ['page-spread-right']
+        expect(item.properties.size).to eq 1
+        expect(item.properties[0]).to eq 'page-spread-right'
+        expect(book.items.size).to eq 1
+      end
+
+      it 'add item with property' do
+        book = GEPUB::Book.new
+        item = book.add_item 'chap3.xhtml', property: 'page-spread-right'
+        expect(item.properties.size).to eq 1
+        expect(item.properties[0]).to eq 'page-spread-right'
+        expect(book.items.size).to eq 1
+      end
+
+      it 'add item with media_overlay' do
+        book = GEPUB::Book.new
+        item = book.add_item 'chap3.xhtml', media_overlay: 'id-for-media-overlay'
+        expect(item.media_overlay).to eq 'id-for-media-overlay'
+        expect(book.items.size).to eq 1        
+      end
     end
     describe 'add_ordered_item' do
+      it 'adds ordered item with media type' do
+        book = GEPUB::Book.new
+        book.add_ordered_item 'chap3.xml', content: nil, media_type: 'application/docbook+xml'
+        expect(book.items.size).to eq 1
+      end
+
+      it 'adds ordered_item with fallback' do
+        book = GEPUB::Book.new
+        xhtml_item = book.add_item 'chap3.xhtml'
+        docbook_item = book.add_ordered_item 'chap3.xml', content: nil, media_type: 'application/docbook+xml', fallback: xhtml_item.id
+        expect(docbook_item.fallback).to eq xhtml_item.id
+        expect(book.items.size).to eq 2
+      end
+
+      it 'add ordered item with toc text' do
+        book = GEPUB::Book.new
+        book.add_ordered_item 'chap3.xhtml', toc_text: 'chapter 3'
+        expect(book.instance_eval { @toc[0][:text] } ).to eq 'chapter 3'
+        expect(book.items.size).to eq 1
+      end
+
+      it 'add ordered item with properties' do
+        book = GEPUB::Book.new
+        item = book.add_ordered_item 'chap3.xhtml', properties: ['page-spread-right']
+        expect(item.properties.size).to eq 1
+        expect(item.properties[0]).to eq 'page-spread-right'
+        expect(book.items.size).to eq 1
+      end
+
+      it 'add item with property' do
+        book = GEPUB::Book.new
+        item = book.add_ordered_item 'chap3.xhtml', property: 'page-spread-right'
+        expect(item.properties.size).to eq 1
+        expect(item.properties[0]).to eq 'page-spread-right'
+        expect(book.items.size).to eq 1
+      end
+
+
+      it 'add ordered_item with media_overlay' do
+        book = GEPUB::Book.new
+        item = book.add_ordered_item 'chap3.xhtml', media_overlay: 'id-for-media-overlay'
+        expect(item.media_overlay).to eq 'id-for-media-overlay'
+        expect(book.items.size).to eq 1        
+      end
     end
     describe 'ordered' do
     end

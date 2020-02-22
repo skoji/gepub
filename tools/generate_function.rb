@@ -4,7 +4,8 @@ attrs = GEPUB::Item::ATTRIBUTES.select do |attr|
 end.map do |attr|
   attr.sub('-', '_')
 end
-attrs << "toc_text" 
+attrs << "toc_text"
+attrs << "property"
 attrs_arguments_string = attrs.map { |attr| "#{attr}: nil" }.join(',')
 attrs_internal_string = "{ " + attrs.map { |attr| "#{attr}: #{attr}"}.join(',') + " }"
 File.write(File.join(File.dirname(__FILE__), "../lib/gepub/book_add_item.rb"), <<EOF)
