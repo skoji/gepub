@@ -467,10 +467,12 @@ EOF
       item_attributes.each do |attr, val|
         next if val.nil?
         method_name = if attr == :toc_text
-                        attr.to_s
+                        ""
+                      elsif attr == :property
+                        "add_"
                       else
-                        "add_" + attr.to_s
-                      end
+                        "set_"
+                      end + attr.to_s
         item.send(method_name, val)
       end
       item
