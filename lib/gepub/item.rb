@@ -97,9 +97,7 @@ module GEPUB
     # guess and set content property from contents.
     def guess_content_property
       if File.extname(self.href) =~ /.x?html/ && @attributes['media-type'] === 'application/xhtml+xml'
-        @attributes['properties'] = (@attributes['properties'] || []).reject {
-          |x| x == 'svg' || x == 'mathml' || x == 'switch' || x == 'remote-resources'
-        }
+        @attributes['properties'] ||= []
         parsed = Nokogiri::XML::Document.parse(@content)
         return unless parsed.root.node_name === "html"
         ns_prefix =  parsed.namespaces.invert['http://www.w3.org/1999/xhtml']
