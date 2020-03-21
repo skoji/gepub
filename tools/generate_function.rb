@@ -35,7 +35,7 @@ require_relative '../lib/gepub/dsl_util.rb'
 require_relative '../lib/gepub/meta.rb'
 
 refiners = GEPUB::Meta::REFINERS.map do |refiner|
-	refiner.sub('-', '_')
+  refiner.sub('-', '_')
 end
 
 refiners_arguments_string = refiners.map { |refiner| "#{refiner}: nil" }.join(',')

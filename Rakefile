@@ -14,7 +14,7 @@ end
 
 # also generates 'lib/gepub/book_add_item.rb' 
 file 'lib/gepub/metadata_add.rb' => 'tools/generate_function.rb' do
-	sh %Q(ruby tools/generate_function.rb)
+  sh %Q(ruby tools/generate_function.rb)
 end
 
 desc 'auto generate code'

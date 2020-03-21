@@ -20,4 +20,5 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency "rubyzip", "> 1.1.1", "< 2.4"
   s.add_development_dependency "rake"
   s.add_development_dependency "rspec"
+  s.add_development_dependency "rubocop"
 end
