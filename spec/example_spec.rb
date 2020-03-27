@@ -128,7 +128,7 @@ describe 'GEPUB usage' do
       book.generate_epub(epubname)
       epubcheck(epubname)
     end
-		
+    
     it 'should generate simple EPUB3 with landmarks' do
       book = GEPUB::Book.new
       book.primary_identifier('http:/example.jp/bookid_in_url', 'BookID', 'URL')
@@ -162,8 +162,8 @@ describe 'GEPUB usage' do
       
       # within ordered block, add_item will be added to spine.
       book.ordered {
-				book.add_item('text/cover.xhtml').add_content(StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>cover</title></head><body><h1>the book title</h1><img src="../img/image1.jpg" /></body></html>')).landmark(type: 'cover', title: '表紙')
-				book.add_item('text/chap1.xhtml').add_content(StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c1</title></head><body><p>the first page</p></body></html>')).toc_text('Chapter 1').landmark(type: 'bodymatter', title: '本文')
+        book.add_item('text/cover.xhtml').add_content(StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>cover</title></head><body><h1>the book title</h1><img src="../img/image1.jpg" /></body></html>')).landmark(type: 'cover', title: '表紙')
+        book.add_item('text/chap1.xhtml').add_content(StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c1</title></head><body><p>the first page</p></body></html>')).toc_text('Chapter 1').landmark(type: 'bodymatter', title: '本文')
         book.add_item('text/chap1-1.xhtml').add_content(StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title></head><body><p>the second page</p></body></html>')) # do not appear on table of contents
         book.add_item('text/chap2.xhtml').add_content(StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c3</title></head><body><p>the third page</p></body></html>')).toc_text('Chapter 2')
       }
@@ -173,7 +173,7 @@ describe 'GEPUB usage' do
       xml = Nokogiri::XML::Document.parse book.nav_doc
 
       # check toc
-			tocs =  xml.xpath("//xmlns:nav[@epub:type='toc']/xmlns:ol/xmlns:li") 
+      tocs =  xml.xpath("//xmlns:nav[@epub:type='toc']/xmlns:ol/xmlns:li") 
       expect(tocs.size).to eq 2
       expect(tocs[0].content.strip).to eq 'Chapter 1'
       expect(tocs[1].content.strip).to eq 'Chapter 2'
