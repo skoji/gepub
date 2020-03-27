@@ -47,7 +47,7 @@ meta_attr_arguments_set_string = "lang: lang, alternates: alternates"
 
 File.write(File.join(File.dirname(__FILE__), "../lib/gepub/metadata_add.rb"), <<EOF)
 module GEPUB
-	class Metadata
+    class Metadata
     CONTENT_NODE_LIST = ['identifier', 'title', 'language', 'contributor', 'creator', 'coverage', 'date','description','format','publisher','relation','rights','source','subject','type'].each {
       |node|
       define_method(node + '_list') { @content_nodes[node].dup.sort_as_meta }
@@ -62,7 +62,7 @@ module GEPUB
 
       define_method(node, ->(content=UNASSIGNED, deprecated_id=nil, id:nil,
                              #{refiners_arguments_string},
-														 #{meta_attr_arguments_string}) {
+                             #{meta_attr_arguments_string}) {
                       if unassigned?(content)
                         get_first_node(node)
                       else
@@ -96,7 +96,7 @@ module GEPUB
 
     def add_title(content, deprecated_id = nil, deprecated_title_type = nil, id: nil,
                   #{refiners_arguments_string},
-									#{meta_attr_arguments_string})
+                  #{meta_attr_arguments_string})
       if deprecated_id
         warn 'second argument for add_title is deprecated. use id: instead'
         id = deprecated_id
@@ -106,15 +106,15 @@ module GEPUB
         title_type = deprecated_title_type
       end
       meta = add_metadata('title', content, id: id, 
-			                    #{refiners_arguments_set_string},
-													#{meta_attr_arguments_set_string})
+                                #{refiners_arguments_set_string},
+                                #{meta_attr_arguments_set_string})
       yield meta if block_given?
       meta
     end
 
     def add_person(name, content, deprecated_id = nil, deprecated_role = nil, id: nil,
                   #{refiners_arguments_string},
-									#{meta_attr_arguments_string})
+                  #{meta_attr_arguments_string})
       if deprecated_id
         warn 'second argument for add_person is deprecated. use id: instead'
         id = deprecated_id
@@ -124,15 +124,15 @@ module GEPUB
         role = deprecated_role
       end
       meta = add_metadata(name, content, id: id,
-			                    #{refiners_arguments_set_string},
-													#{meta_attr_arguments_set_string})
+                                #{refiners_arguments_set_string},
+                                #{meta_attr_arguments_set_string})
       yield meta if block_given?
       meta
     end
 
     def add_creator(content, deprecated_id = nil, deprecated_role = nil, id: nil, 
                     #{refiners_arguments_string},
-  									#{meta_attr_arguments_string}) 
+                    #{meta_attr_arguments_string}) 
       if deprecated_id
         warn 'second argument for add_creator is deprecated. use id: instead'
         id = deprecated_id
@@ -141,17 +141,17 @@ module GEPUB
         warn 'third argument for add_creator is deprecated. use role: instead'
         role = deprecated_role
       end
-			role = 'aut' if role.nil?
+      role = 'aut' if role.nil?
       meta = add_person('creator', content, id: id,
-			                    #{refiners_arguments_set_string},
-													#{meta_attr_arguments_set_string})
+                        #{refiners_arguments_set_string},
+                        #{meta_attr_arguments_set_string})
       yield meta if block_given?
       meta
     end
 
     def add_contributor(content, deprecated_id = nil, deprecated_role = nil, id: nil,
                         #{refiners_arguments_string},
-											  #{meta_attr_arguments_string}) 
+                        #{meta_attr_arguments_string}) 
       if deprecated_id
         warn 'second argument for add_contributor is deprecated. use id: instead'
         id = deprecated_id
@@ -161,32 +161,32 @@ module GEPUB
         role = deprecated_role
       end
       meta = add_person('contributor', content, id: id, 
-			                  #{refiners_arguments_set_string},
-												#{meta_attr_arguments_set_string})
+                              #{refiners_arguments_set_string},
+                              #{meta_attr_arguments_set_string})
       yield meta if block_given?
       meta
     end
 
-		def add_metadata(name, content, id: nil, itemclass: Meta,
-		#{refiners_arguments_string},
-		#{meta_attr_arguments_string}
-		)
-			meta = add_metadata_internal(name, content, id: id, itemclass: itemclass)
+        def add_metadata(name, content, id: nil, itemclass: Meta,
+        #{refiners_arguments_string},
+        #{meta_attr_arguments_string}
+        )
+            meta = add_metadata_internal(name, content, id: id, itemclass: itemclass)
       #{refiners_string}.each do |refiner|
-				if refiner[:value]
-				  meta.refine(refiner[:name], refiner[:value])
-				end
-	    end	
-			if lang
-			  meta.lang = lang
-			end
-			if alternates
-			  meta.add_alternates alternates
-			end
+                if refiner[:value]
+                  meta.refine(refiner[:name], refiner[:value])
+                end
+        end 
+            if lang
+              meta.lang = lang
+            end
+            if alternates
+              meta.add_alternates alternates
+            end
       yield meta if block_given?
-			meta
-		end
-	end
+            meta
+        end
+    end
 end
 EOF
 
