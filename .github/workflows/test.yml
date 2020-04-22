@@ -21,9 +21,7 @@ jobs:
       with:
         ruby-version: ${{ matrix.ruby }}
     - name: setup gems
-      run: |
-        gem install bundler
-        bundle install
+      run: bundle install --jobs 4 --retry 3
     - name: run test and publish code coverage
       if: runner.os == 'Linux' && matrix.ruby == '2.7' && env.CC_TEST_REPORTER_ID != ''
       uses: paambaati/codeclimate-action@v2.3.0
