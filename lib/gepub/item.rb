@@ -106,9 +106,10 @@ module GEPUB
         else
           prefix = "#{ns_prefix}:"
         end
+        images = parsed.xpath("//#{prefix}img[starts-with(@src,'http')]")
         videos = parsed.xpath("//#{prefix}video[starts-with(@src,'http')]") + parsed.xpath("//#{prefix}video/#{prefix}source[starts-with(@src,'http')]")
         audios = parsed.xpath("//#{prefix}audio[starts-with(@src,'http')]") + parsed.xpath("//#{prefix}audio/#{prefix}source[starts-with(@src,'http')]")
-        if videos.size > 0 || audios.size > 0
+        if images.size > 0 || videos.size > 0 || audios.size > 0
           self.add_property('remote-resources')
         end
         if parsed.xpath("//p:math", { 'p' => 'http://www.w3.org/1998/Math/MathML' }).size > 0
