@@ -512,11 +512,24 @@ describe GEPUB::Builder do
       book.spine_items[0].href == 'chap3_docbook.xhtml'
     end
 
-    it 'should create remote-resources' do
+    it 'should create remote-resources for videos' do
       builder = GEPUB::Builder.new {
         unique_identifier 'uid'
         resources {
           file 'with_remote.xhtml' => StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops"><head></head><body><div><p><video src="http://foo.bar">no video</video></p></div></body></html>')
+        }
+      }
+      prop = builder.instance_eval {
+        @book.item_by_href('with_remote.xhtml').properties[0]
+      }
+      expect(prop).to eq 'remote-resources'
+    end
+
+    it 'should create remote-resources for images' do
+      builder = GEPUB::Builder.new {
+        unique_identifier 'uid'
+        resources {
+          file 'with_remote.xhtml' => StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops"><head></head><body><div><p><img src="http://foo.bar" /></p></div></body></html>')
         }
       }
       prop = builder.instance_eval {
