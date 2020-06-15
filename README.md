@@ -103,7 +103,7 @@ epubname = File.join(File.dirname(__FILE__), 'example_test.epub')
 # auto-generated nav file will not appear on spine.
 book.generate_epub(epubname)
 ```
- * [examples in this repository](https://github.com/skoji/gepub/tree/master/examples/) 
+ * [examples in this repository](https://github.com/skoji/gepub/tree/main/examples/) 
 
 ## INSTALL:
 
