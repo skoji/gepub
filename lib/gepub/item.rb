@@ -138,12 +138,19 @@ module GEPUB
       self
     end
 
-    # add content form io or file to the item
+    # add content from io or file to the item
     def add_content(io_or_filename)
-      io = io_or_filename
       if io_or_filename.class == String
-        io = File.new(io_or_filename)
+        File.open(io_or_filename, mode='r') do |f|
+          add_content_io f
+        end
+      else
+        add_content_io io_or_filename
       end
+      self
+    end
+
+    def add_content_io(io)
       io.binmode
       @content = io.read
       if File.extname(self.href) =~ /x?html$/
