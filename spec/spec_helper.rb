@@ -1,3 +1,4 @@
+require 'epubcheck/ruby/cli'
 require 'simplecov'
 SimpleCov.start
 
@@ -32,7 +33,7 @@ RSpec.configure do |config|
   end
 
   def epubcheck(epubname)
-    jar = File.join(File.dirname(__FILE__), 'fixtures/epubcheck-4.2.2/epubcheck.jar')    
+    jar = Epubcheck::Ruby::CLI::JAR_FILE
     stdout = capture(:stdout) do 
       puts %x(java -Duser.language=en -jar #{jar} #{epubname} 2>&1)
     end
