@@ -5,4 +5,4 @@ gemspec
 
 # workarond : simplecov 0.18 with cc-reporter is broken
 # https://github.com/codeclimate/test-reporter/issues/418
-gem 'simplecov', '~> 0.10', '< 0.18', require: false
+gem 'simplecov', '~> 0.19', require: false
