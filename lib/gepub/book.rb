@@ -316,6 +316,9 @@ EOF
       # build nav
       builder = Nokogiri::XML::Builder.new {
         |doc|
+        unless version.to_f < 3.0
+          doc.doc.create_internal_subset('html', nil, nil )
+        end
         doc.html('xmlns' => "http://www.w3.org/1999/xhtml",'xmlns:epub' => "http://www.idpf.org/2007/ops") {
           doc.head {
             doc.title title
