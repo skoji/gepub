@@ -4,7 +4,7 @@ jobs:
   test:
     strategy:
       matrix:
-        ruby: [2.5, 2.6, 2.7, jruby]
+        ruby: [2.5, 2.6, 2.7, 3.0, jruby]
         platform: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.platform }}
     env:
