@@ -1,5 +1,6 @@
 AllCops:
   DisabledByDefault: true
 
-Style/Tab:
+Layout/IndentationStyle:
   Enabled: true
+  EnforcedStyle: spaces
