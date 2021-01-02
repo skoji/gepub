@@ -6,9 +6,6 @@ jobs:
       matrix:
         ruby: [2.5, 2.6, 2.7, 3.0, jruby]
         platform: [ubuntu-latest, macos-latest, windows-latest]
-        exclude:
-          - ruby: 3.0
-            platform: windows-latest
     runs-on: ${{ matrix.platform }}
     env:
       CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
