@@ -109,3 +109,7 @@ book.generate_epub(epubname)
 
 * gem install gepub
 
+## DONATE:
+
+* Bitcoin Address: `1M69AwoxpgPZsp5KStLUEjP7so5dHVfDTH`
+
