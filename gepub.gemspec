@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
 
-  s.add_runtime_dependency "nokogiri", ">= 1.8.2", "< 1.12"
+  s.add_runtime_dependency "nokogiri", ">= 1.8.2", "< 1.13"
   s.add_runtime_dependency "rubyzip", "> 1.1.1", "< 2.4"
   s.add_development_dependency "epubcheck-ruby"
   s.add_development_dependency "rake"
