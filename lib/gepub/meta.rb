@@ -16,12 +16,14 @@ module GEPUB
       @parent.register_meta(self) unless @parent.nil?
     end
 
-    def [](x)
-      @attributes[x]
+    # get +attribute+
+    def [](attribute)
+      @attributes[attribute]
     end
 
-    def []=(x,y)
-      @attributes[x] = y
+    # set +attribute+
+    def []=(attribute, value)
+      @attributes[attribute] = value
     end
 
     def refiner_list(name)

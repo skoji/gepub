@@ -46,12 +46,14 @@ module GEPUB
       media_type
     end
 
-    def [](x)
-      @attributes[x]
+    # get +attribute+
+    def [](attribute)
+      @attributes[attribute]
     end
 
-    def []=(x,y)
-      @attributes[x] = y
+    # set +attribute+
+    def []=(attribute, value)
+      @attributes[attribute] = value
     end
 
     # add value to properties attribute.
