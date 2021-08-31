@@ -1,3 +1,4 @@
+require_relative '../lib/gepub/inspect_mixin.rb'
 require_relative '../lib/gepub/item.rb'
 attrs = GEPUB::Item::ATTRIBUTES.select do |attr|
   attr != 'href'

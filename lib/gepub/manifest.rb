@@ -3,6 +3,8 @@ require 'nokogiri'
 module GEPUB
   class Manifest
     include XMLUtil
+    include InspectMixin
+
     attr_accessor :opf_version
     def self.parse(manifest_xml, opf_version = '3.0', id_pool = Package::IDPool.new)
       Manifest.new(opf_version, id_pool) {

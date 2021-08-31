@@ -6,6 +6,8 @@ module GEPUB
   # #id, #id=, #set_id, #href, #href=, #set_href, #media_type, #media_type=, #set_media_type,
   # #fallback, #fallback=, #set_fallback, #media_overlay, #media_overlay=, #set_media_overlay
   class Item
+    include InspectMixin
+
     attr_accessor :content
     def self.create(parent, attributes = {})
       Item.new(attributes['id'], attributes['href'], attributes['media-type'], parent,

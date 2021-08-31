@@ -3,6 +3,8 @@ require 'nokogiri'
 module GEPUB
   class Spine
     include XMLUtil
+    include InspectMixin
+
     attr_accessor :opf_version
     class Itemref
       def self.create(parent, attributes = {})

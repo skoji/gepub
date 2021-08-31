@@ -4,6 +4,7 @@ end if RUBY_VERSION < "2.7" && !(defined? ruby2_keywords)
 require 'gepub/version'
 require 'gepub/dsl_util'
 require 'gepub/xml_util'
+require 'gepub/inspect_mixin'
 require 'gepub/meta'
 require 'gepub/datemeta'
 require 'gepub/meta_array'

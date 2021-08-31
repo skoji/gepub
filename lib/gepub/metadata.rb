@@ -18,6 +18,8 @@ module GEPUB
       end
     end
     include XMLUtil, DSLUtil
+    include InspectMixin
+
     attr_accessor :opf_version
     # parse metadata element. metadata_xml should be Nokogiri::XML::Node object.
     def self.parse(metadata_xml, opf_version = '3.0', id_pool = Package::IDPool.new)

@@ -3,6 +3,8 @@ require 'nokogiri'
 module GEPUB
   class Bindings
     include XMLUtil
+    include InspectMixin
+
     class MediaType
       attr_accessor :handler, :media_type
       def initialize(handler, media_type)
