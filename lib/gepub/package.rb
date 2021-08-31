@@ -142,14 +142,15 @@ module GEPUB
                     })
     }
 
-    def [](x)
-      @attributes[x]
+    # get +attribute+
+    def [](attribute)
+      @attributes[attribute]
     end
 
-    def []=(k,v)
-      @attributes[k] = v
+    # set +attribute+
+    def []=(attribute, value)
+      @attributes[attribute] = value
     end
-
 
     def identifier(identifier=UNASSIGNED)
       if unassigned?(identifier)

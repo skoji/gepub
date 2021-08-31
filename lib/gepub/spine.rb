@@ -26,14 +26,16 @@ module GEPUB
         define_method(methodbase) { @attributes[name] }
       }
 
-      def [](x)
-        @attributes[x]
+      # get +attribute+
+      def [](attribute)
+        @attributes[attribute]
       end
 
-      def []=(x,y)
-        @attributes[x] = y
+      # set +attribute+
+      def []=(attribute, value)
+        @attributes[attribute] = value
       end
-      
+
       def add_property(property)
         (@attributes['properties'] ||=[]) << property
       end
