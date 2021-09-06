@@ -79,6 +79,8 @@ module GEPUB
   # set page-proression-direction attribute to spine.
 
   class Book
+    include InspectMixin
+
     MIMETYPE='mimetype'
     MIMETYPE_CONTENTS='application/epub+zip'
     CONTAINER='META-INF/container.xml'

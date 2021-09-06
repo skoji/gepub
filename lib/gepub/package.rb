@@ -6,6 +6,8 @@ module GEPUB
   # Holds data in opf file.
   class Package
     include XMLUtil, DSLUtil
+    include InspectMixin
+
     extend Forwardable
     attr_accessor :path, :metadata, :manifest, :spine, :bindings, :epub_backward_compat, :contents_prefix, :prefixes 
     def_delegators :@manifest, :item_by_href
