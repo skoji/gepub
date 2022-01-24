@@ -18,7 +18,7 @@ a generic EPUB parser/generator library.
 
 * See [issues](https://github.com/skoji/gepub/issues/) for known problems.
 
-If you are using GEPUB::Builder and do not like its behavior (e.g., GEPUB::Builder evaluates the block inside as inside the Builder instance),  consider using GEPUB::Book directly.
+If you are using GEPUB::Builder and do not like its behavior (e.g., GEPUB::Builder evaluates the block as inside the Builder instance),  consider using GEPUB::Book directly.
 
 ## SYNOPSIS:
 
