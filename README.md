@@ -13,12 +13,12 @@ a generic EPUB parser/generator library.
 
 ## FEATURES/PROBLEMS:
 
-* GEPUB::Book provides functionality to create EPUB file, and parsing EPUB files
+* GEPUB::Book provides functionality to create EPUB files and parse EPUB files
 * Handle every metadata in EPUB2/EPUB3.
 
 * See [issues](https://github.com/skoji/gepub/issues/) for known problems.
 
-If you are using GEPUB::Builder and do not like its behaviour(e.g. the block inside is evaluated as inside the Builder instance), please consider using GEPUB::Book directly.
+If you are using GEPUB::Builder and do not like its behavior (e.g., GEPUB::Builder evaluates the block inside as inside the Builder instance),  consider using GEPUB::Book directly.
 
 ## SYNOPSIS:
 
@@ -98,9 +98,9 @@ book.ordered {
 }
 epubname = File.join(File.dirname(__FILE__), 'example_test.epub')
 
-# if you do not specify your own nav document with add_item, 
-# simple navigation text will be generated in generate_epub.
-# auto-generated nav file will not appear on spine.
+# if you do not specify a nav document with add_item, 
+# generate_epub will generate simple navigation text.
+# auto-generated nav file will not appear on the spine.
 book.generate_epub(epubname)
 ```
  * [examples in this repository](https://github.com/skoji/gepub/tree/main/examples/) 
