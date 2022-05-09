@@ -112,4 +112,5 @@ book.generate_epub(epubname)
 ## DONATE:
 
 * Bitcoin Address: `1M69AwoxpgPZsp5KStLUEjP7so5dHVfDTH`
+* [Buy me a coffee](https://www.buymeacoffee.com/skoji)
 
