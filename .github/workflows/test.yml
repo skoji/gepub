@@ -17,6 +17,8 @@ jobs:
         ruby-version: ${{ matrix.ruby }}
     - name: setup gems
       run: bundle install --jobs 4 --retry 3
+      env:
+        JRUBY_OPTS: '-J-Djdk.io.File.enableADS=true'
     - name: run test and publish code coverage
       if: runner.os == 'Linux' && matrix.ruby == '3.1' && env.CC_TEST_REPORTER_ID != ''
       uses: paambaati/codeclimate-action@v2.3.0
