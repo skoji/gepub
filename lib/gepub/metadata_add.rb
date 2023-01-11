@@ -138,7 +138,7 @@ module GEPUB
         meta.add_alternates alternates
       end
       yield meta if block_given?
-          meta
-      end
+      meta
     end
+  end
 end
