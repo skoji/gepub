@@ -5,7 +5,7 @@
 [![Test Coverage](https://api.codeclimate.com/v1/badges/acd6df07e071a4bbb399/test_coverage)](https://codeclimate.com/github/skoji/gepub/test_coverage)
 [![Gem Version](https://badge.fury.io/rb/gepub.svg)](http://badge.fury.io/rb/gepub)
 
-* http://rdoc.info/github/skoji/gepub/main/frames
+* https://rubydoc.info/github/skoji/gepub
 
 ## DESCRIPTION:
 
