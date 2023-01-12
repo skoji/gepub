@@ -21,8 +21,8 @@ jobs:
     - name: setup gems
       run: bundle install --jobs 4 --retry 3
     - name: run test and publish code coverage
-      if: runner.os == 'Linux' && matrix.ruby == '3.1' && env.CC_TEST_REPORTER_ID != ''
-      uses: paambaati/codeclimate-action@v2.3.0
+      if: runner.os == 'Linux' && matrix.ruby == '3.2' && env.CC_TEST_REPORTER_ID != ''
+      uses: paambaati/codeclimate-action@v3.2.0
       env:
         CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
       with:
