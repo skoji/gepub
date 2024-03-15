@@ -102,7 +102,7 @@ module GEPUB
       package = nil
       package_path = nil
       book = nil
-      Zip::File.open(io) {
+      Zip::File.open_buffer(io) {
         |zip_file|
         package, package_path = parse_container(zip_file, files)
         check_consistency_of_package(package, package_path)
