@@ -102,9 +102,9 @@ module GEPUB
       package = nil
       package_path = nil
       book = nil
-      Zip::InputStream::open(io) {
-        |zis|
-        package, package_path = parse_container(zis, files)
+      Zip::File.open_buffer(io) {
+        |zip_file|
+        package, package_path = parse_container(zip_file, files)
         check_consistency_of_package(package, package_path)
         parse_files_into_package(files, package)
         book = Book.new(package.path)
@@ -379,12 +379,12 @@ EOF
     end
     
     private
-    def self.parse_container(zis, files) 
+    def self.parse_container(zip_file, files) 
       package_path = nil
       package = nil
-      while entry = zis.get_next_entry
+      zip_file.each do |entry|
         if !entry.directory?
-          files[entry.name] = zis.read
+          files[entry.name] = zip_file.read(entry)
           case entry.name
           when MIMETYPE then
             if files[MIMETYPE] != MIMETYPE_CONTENTS

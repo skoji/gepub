@@ -395,6 +395,12 @@ describe GEPUB::Book do
        expect(book.items['p-001'].href).to eq 'xhtml/p-001.xhtml'
        expect(book.items['p-001'].content.encoding).to eq Encoding::UTF_8       
       end
+      it 'reads EPUB with streamed entries' do
+       filehandle = File.new(File.dirname(__FILE__) + '/fixtures/testdata/streamed_item.epub')
+       book = GEPUB::Book.parse(filehandle)
+       expect(book).to be_instance_of GEPUB::Book
+       expect(book.items.size).to eq 3
+      end
      end
     end
   end
