@@ -73,8 +73,14 @@ describe GEPUB::Book do
 </html>
 EOF
     item3 = @book.add_ordered_item('text/nav.xhtml', content: StringIO.new(nav_string), id: 'nav').add_property('nav')
+
+    @tempdir = Dir.mktmpdir
   end
 
+  after do
+    FileUtils.remove_entry_secure @tempdir
+  end
+  
   it "should have title"  do
     expect(@book.title.to_s).to eq('thetitle') 
   end
@@ -153,13 +159,13 @@ EOF
   end
 
   it "should generate correct epub" do
-    epubname = File.join(File.dirname(__FILE__), 'testepub.epub')
+    epubname = File.join(@tempdir, 'testepub.epub')
     @book.generate_epub(epubname)
     epubcheck(epubname)
   end
 
   it "should generate correct epub with buffer" do
-    epubname = File.join(File.dirname(__FILE__), 'testepub_buf.epub')
+    epubname = File.join(@tempdir, 'testepub_buf.epub')
     File.open(epubname, 'wb') {
       |io|
       io.write @book.generate_epub_stream.string
@@ -168,7 +174,7 @@ EOF
   end
 
   it "should generate correct epub2.0" do
-    epubname = File.join(File.dirname(__FILE__), 'testepub2.epub')
+    epubname = File.join(@tempdir, 'testepub2.epub')
     @book = GEPUB::Book.new('OEPBS/package.opf', { 'version' => '2.0'} ) 
     @book.title = 'thetitle'
     @book.creator = "theauthor"
@@ -188,14 +194,14 @@ EOF
     epubcheck(epubname)
   end
   it 'should generate epub with extra file' do
-    epubname = File.join(File.dirname(__FILE__), 'testepub3.epub')
+    epubname = File.join(@tempdir, 'testepub3.epub')
     @book.add_optional_file('META-INF/foobar.xml', StringIO.new('<foo></foo>'))
     @book.generate_epub(epubname)
     epubcheck(epubname)
   end
 
   it 'should generate valid EPUB when @toc is empty' do
-    epubname = File.join(File.dirname(__FILE__), 'testepub4.epub')
+    epubname = File.join(@tempdir, 'testepub4.epub')
     @book = GEPUB::Book.new('OEPBS/package.opf', { 'version' => '3.0'} ) 
     @book.title = 'thetitle'
     @book.creator = "theauthor"
@@ -215,7 +221,7 @@ EOF
   end
 
   it 'should generate EPUB with specified lastmodified' do
-    epubname = File.join(File.dirname(__FILE__), 'testepub.epub')
+    epubname = File.join(@tempdir, 'testepub.epub')
     mod_time = Time.mktime(2010,5,5,8,10,15)
     @book.lastmodified = mod_time
     @book.generate_epub(epubname)
@@ -227,7 +233,7 @@ EOF
 
 
   it 'should generate EPUB with specified lastmodified by string' do
-    epubname = File.join(File.dirname(__FILE__), 'testepub.epub')
+    epubname = File.join(@tempdir, 'testepub.epub')
     mod_time = "2010-05-05T08:10:15Z"
     @book.lastmodified = mod_time
     @book.generate_epub(epubname)
@@ -239,7 +245,7 @@ EOF
 
   it 'should generate parsed and generated EPUB with renewed lastmodified' do
     originalfile = File.join(File.dirname(__FILE__), 'fixtures/testdata/wasteland-20120118.epub')
-    epubname = File.join(File.dirname(__FILE__), 'testepub.epub')    
+    epubname = File.join(@tempdir, 'testepub.epub')    
 
     original_book = File.open(originalfile) do |f|
       GEPUB::Book.parse(f)
@@ -256,7 +262,7 @@ EOF
 
   it 'should generate parsed and generated EPUB with newly set lastmodified' do
     originalfile = File.join(File.dirname(__FILE__), 'fixtures/testdata/wasteland-20120118.epub')
-    epubname = File.join(File.dirname(__FILE__), 'testepub.epub')    
+    epubname = File.join(@tempdir, 'testepub.epub')    
     mod_time = Time.mktime(2010,5,5,8,10,15)
     
     original_book = File.open(originalfile) do |f|
@@ -281,8 +287,8 @@ EOF
   end
 
   it 'should produce deterministic output when lastmodified is specified' do
-    epubname1 = File.join(File.dirname(__FILE__), 'testepub1.epub')
-    epubname2 = File.join(File.dirname(__FILE__), 'testepub2.epub')
+    epubname1 = File.join(@tempdir, 'testepub1.epub')
+    epubname2 = File.join(@tempdir, 'testepub2.epub')
     mod_time = "2010-05-05T08:10:15Z"
     @book.lastmodified = mod_time
 
@@ -297,7 +303,7 @@ EOF
     @book = GEPUB::Book.new
     @book.identifier = 'test'
     @book.add_ordered_item('foobar.xhtml', content: StringIO.new('<html><img src="image.svg" /></html>')).add_property 'svg'
-    epubname = File.join(__dir__, 'testepub.epub')
+    epubname = File.join(@tempdir, 'testepub.epub')
     @book.generate_epub(epubname)
     File.open(epubname) do |f|
       parsed_book = GEPUB::Book.parse(f)
