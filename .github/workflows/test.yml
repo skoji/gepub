@@ -7,7 +7,7 @@ jobs:
         ruby: [2.7, 3.0, 3.1, 3.2, 3.3, jruby]
         platform: [ubuntu-latest, macos-latest, windows-latest]
         exclude:
-          - ruby: 3.3
+          - ruby: jruby
             platform: windows-latest
     runs-on: ${{ matrix.platform }}
     env:
