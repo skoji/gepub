@@ -75,6 +75,11 @@ describe GEPUB::Book do
 </html>
 EOF
     item3 = @book.add_ordered_item('text/nav.xhtml', StringIO.new(nav_string), 'nav').add_property('nav')
+    @tempdir = Dir.mktmpdir
+  end
+
+  after do
+    FileUtils.remove_entry_secure @tempdir
   end
 
   it "should have title"  do
@@ -155,12 +160,12 @@ EOF
   end
 
   it "should generate correct epub" do
-    epubname = File.join(File.dirname(__FILE__), 'testepub.epub')
+    epubname = File.join(@tempdir, 'testepub.epub')
     @book.generate_epub(epubname)
     epubcheck(epubname)
   end
   it "should generate correct epub with buffer" do
-    epubname = File.join(File.dirname(__FILE__), 'testepub_buf.epub')
+    epubname = File.join(@tempdir, 'testepub_buf.epub')
     File.open(epubname, 'wb') {
       |io|
       io.write @book.generate_epub_stream.string
@@ -169,7 +174,7 @@ EOF
   end
 
   it "should generate correct epub2.0" do
-    epubname = File.join(File.dirname(__FILE__), 'testepub2.epub')
+    epubname = File.join(@tempdir, 'testepub2.epub')
     @book = GEPUB::Book.new('OEPBS/package.opf', { 'version' => '2.0'} ) 
     @book.title = 'thetitle'
     @book.creator = "theauthor"
@@ -189,14 +194,14 @@ EOF
     epubcheck(epubname)
   end
   it 'should generate epub with extra file' do
-    epubname = File.join(File.dirname(__FILE__), 'testepub3.epub')
+    epubname = File.join(@tempdir, 'testepub3.epub')
     @book.add_optional_file('META-INF/foobar.xml', StringIO.new('<foo></foo>'))
     @book.generate_epub(epubname)
     epubcheck(epubname)
   end
 
   it 'should generate valid EPUB when @toc is empty' do
-    epubname = File.join(File.dirname(__FILE__), 'testepub4.epub')
+    epubname = File.join(@tempdir, 'testepub4.epub')
     @book = GEPUB::Book.new('OEPBS/package.opf', { 'version' => '3.0'} ) 
     @book.title = 'thetitle'
     @book.creator = "theauthor"

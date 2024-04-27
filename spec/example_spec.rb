@@ -7,6 +7,14 @@ describe 'GEPUB usage' do
   end
   
   context 'On generating EPUB' do
+    before do
+      @tempdir = Dir.mktmpdir
+    end
+
+    after do
+      FileUtils.remove_entry_secure @tempdir
+    end
+    
     it 'should generate simple EPUB3 with Builder and buffer' do
       workdir = File.join(File.dirname(__FILE__),  'fixtures', 'testdata')
       builder = GEPUB::Builder.new {
@@ -33,7 +41,7 @@ describe 'GEPUB usage' do
           }
         }
       }
-      epubname = File.join(File.dirname(__FILE__), 'example_test_with_builder_buffer.epub')
+      epubname = File.join(@tempdir, 'example_test_with_builder_buffer.epub')
       File.open(epubname, 'wb') { |io| io.write builder.generate_epub_stream.string }
       epubcheck(epubname)
     end
@@ -64,7 +72,7 @@ describe 'GEPUB usage' do
           }
         }
       }
-      epubname = File.join(File.dirname(__FILE__), 'example_test_with_builder.epub')
+      epubname = File.join(@tempdir, 'example_test_with_builder.epub')
       builder.generate_epub(epubname)
       epubcheck(epubname)
     end
@@ -106,7 +114,7 @@ describe 'GEPUB usage' do
         book.add_item('text/chap1-1.xhtml').add_content(StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title></head><body><p>the second page</p></body></html>')) # do not appear on table of contents
         book.add_item('text/chap2.xhtml').add_content(StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c3</title></head><body><p>the third page</p></body></html>')).toc_text('Chapter 2')
       }
-      epubname = File.join(File.dirname(__FILE__), 'example_test.epub')
+      epubname = File.join(@tempdir, 'example_test.epub')
       book.generate_epub(epubname)
       epubcheck(epubname)
     end
@@ -124,7 +132,7 @@ describe 'GEPUB usage' do
         item.add_content StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c1</title></head><body><p>the first page</p></body></html>')
       end
 
-      epubname = File.join(File.dirname(__FILE__), 'example_test.epub')
+      epubname = File.join(@tempdir, 'example_test.epub')
       book.generate_epub(epubname)
       epubcheck(epubname)
     end
@@ -167,7 +175,7 @@ describe 'GEPUB usage' do
         book.add_item('text/chap1-1.xhtml').add_content(StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title></head><body><p>the second page</p></body></html>')) # do not appear on table of contents
         book.add_item('text/chap2.xhtml').add_content(StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c3</title></head><body><p>the third page</p></body></html>')).toc_text('Chapter 2')
       }
-      epubname = File.join(File.dirname(__FILE__), 'example_test.epub')
+      epubname = File.join(@tempdir, 'example_test.epub')
 
       # check nav doc
       xml = Nokogiri::XML::Document.parse book.nav_doc

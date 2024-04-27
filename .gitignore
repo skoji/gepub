@@ -19,8 +19,6 @@ rdoc
 pkg
 
 ## PROJECT::SPECIFIC
-testepub*.epub
-example_test*.epub
 
 ## BUNDLER
 Gemfile.lock
