@@ -402,6 +402,15 @@ describe GEPUB::Book do
        expect(book.items.size).to eq 3
       end
      end
+
+     context 'file path' do
+       it 'loads book and returns GEPUB::Book object' do
+         filepath = File.join(File.dirname(__FILE__), 'fixtures', 'testdata', 'wasteland-20120118.epub')
+         book = GEPUB::Book.parse(filepath)
+         expect(book).to be_instance_of GEPUB::Book
+         expect(book.items.size).to eq 6
+       end
+     end
     end
   end
 end

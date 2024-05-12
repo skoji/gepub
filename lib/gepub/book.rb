@@ -94,15 +94,15 @@ module GEPUB
       doc.css("#{defaultns}|rootfiles > #{defaultns}|rootfile")[0]['full-path']
     end
 
-    # Parses existing EPUB2/EPUB3 files from an IO object, and creates new Book object.
+    # Parses existing EPUB2/EPUB3 files from an IO object or a file path and creates new Book object.
     #   book = self.parse(File.new('some.epub'))
 
-    def self.parse(io)
+    def self.parse(path_or_io)
       files = {}
       package = nil
       package_path = nil
       book = nil
-      Zip::File.open_buffer(io) do
+      Zip::File.open(path_or_io) do
         |zip_file|
         package, package_path = parse_container(zip_file, files)
         check_consistency_of_package(package, package_path)
