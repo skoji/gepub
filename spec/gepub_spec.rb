@@ -79,8 +79,7 @@ EOF
     end
 
     after do
-      # workaround; rubyzip opened files could not be deleted with remove_entry_secure on windows.
-      FileUtils.rm_rf @tempdir
+      FileUtils.remove_entry_secure @tempdir
     end
     
     it "should have title"  do

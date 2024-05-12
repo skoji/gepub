@@ -384,7 +384,7 @@ EOF
       package = nil
       zip_file.each do |entry|
         if !entry.directory?
-          files[entry.name] = zip_file.read(entry)
+          files[entry.name] = entry.get_input_stream(&:read)
           case entry.name
           when MIMETYPE then
             if files[MIMETYPE] != MIMETYPE_CONTENTS
