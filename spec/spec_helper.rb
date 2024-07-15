@@ -39,6 +39,10 @@ RSpec.configure do |config|
     end
     expect(stdout).to include("No errors or warnings detected.")
   end
+
+  config.before(:all) do
+    @fixtures_directory = Pathname(__FILE__).dirname / "fixtures"
+  end
   
 end
 

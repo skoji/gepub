@@ -6,7 +6,7 @@ require 'nokogiri'
 describe GEPUB::Bindings do
   context 'parse existing opf' do
     before do
-      @bindings = GEPUB::Package.parse_opf(File.open(File.dirname(__FILE__) + '/fixtures/testdata/test_with_bindings.opf'), '/package.opf').instance_eval{ @bindings }
+      @bindings = GEPUB::Package.parse_opf(@fixtures_directory / 'testdata/test_with_bindings.opf', '/package.opf').instance_eval{ @bindings }
     end
     it 'should be parsed' do
       expect(@bindings.media_types.size).to eq(2)

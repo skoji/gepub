@@ -17,7 +17,7 @@ describe GEPUB::Metadata do
 
   context 'Parse Existing OPF' do
     before do
-      @metadata = GEPUB::Package.parse_opf(File.open(File.dirname(__FILE__) + '/fixtures/testdata/test.opf'), '/package.opf').instance_eval{ @metadata }
+      @metadata = GEPUB::Package.parse_opf(@fixtures_directory / 'testdata/test.opf', '/package.opf').instance_eval{ @metadata }
     end
     it 'should parse title' do
       expect(@metadata.main_title).to eq('TheTitle')
@@ -26,7 +26,7 @@ describe GEPUB::Metadata do
     end
     
     it 'should parse main title with not first display-seq' do
-      metadata = GEPUB::Package.parse_opf(File.open(File.dirname(__FILE__) + '/fixtures/testdata/test2.opf'), '/package.opf').instance_eval{ @metadata }
+      metadata = GEPUB::Package.parse_opf(@fixtures_directory / 'testdata/test2.opf', '/package.opf').instance_eval{ @metadata }
       expect(metadata.title.to_s).to eq('TheTitle')
     end
 
@@ -56,7 +56,7 @@ describe GEPUB::Metadata do
 
   context 'Should parse OPF2.0' do
     before do
-      @metadata = GEPUB::Package.parse_opf(File.open(File.dirname(__FILE__) + '/fixtures/testdata/package_2_0.opf'), '/package.opf').instance_eval{ @metadata }
+      @metadata = GEPUB::Package.parse_opf(@fixtures_directory / 'testdata/package_2_0.opf', '/package.opf').instance_eval{ @metadata }
     end
     it 'should parse title' do
       expect(@metadata.main_title).to eq('thetitle')

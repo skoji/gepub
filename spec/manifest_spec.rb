@@ -6,7 +6,7 @@ require 'nokogiri'
 describe GEPUB::Manifest do
   context 'parse existing opf' do
     before do
-      @manifest = GEPUB::Package.parse_opf(File.open(File.dirname(__FILE__) + '/fixtures/testdata/test.opf'), '/package.opf').instance_eval{ @manifest }
+      @manifest = GEPUB::Package.parse_opf(@fixtures_directory / 'testdata/test.opf', '/package.opf').instance_eval{ @manifest }
     end
 
     it 'should be parsed' do

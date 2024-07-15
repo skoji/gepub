@@ -11,7 +11,7 @@ describe GEPUB::Package do
 
   context 'parse existing opf' do
     it 'should be initialized with opf' do
-      opf = GEPUB::Package.parse_opf(File.open(File.dirname(__FILE__) + '/fixtures/testdata/test.opf'), '/package.opf')
+      opf = GEPUB::Package.parse_opf(@fixtures_directory / 'testdata/test.opf', '/package.opf')
       expect(opf.ns_prefix(GEPUB::XMLUtil::OPF_NS)).to eq('xmlns')
       expect(opf['version']).to eq('3.0')
       expect(opf['unique-identifier']).to eq('pub-id')
@@ -19,7 +19,7 @@ describe GEPUB::Package do
       expect(opf['prefix']).to eq('foaf: http://xmlns.com/foaf/spec/                   rendition:  http://www.idpf.org/vocab/rendition/#')
     end
     it 'should parse prefix data' do
-      package = GEPUB::Package.parse_opf(File.open(File.dirname(__FILE__) + '/fixtures/testdata/test.opf'), '/package.opf')
+      package = GEPUB::Package.parse_opf(@fixtures_directory / 'testdata/test.opf', '/package.opf')
       expect(package.prefixes.size).to eq(2)
       expect(package.prefixes['foaf']).to eq('http://xmlns.com/foaf/spec/')
       expect(package.prefixes['rendition']).to eq('http://www.idpf.org/vocab/rendition/#')
@@ -27,7 +27,7 @@ describe GEPUB::Package do
     end
 
     it 'should parse rendition metadata' do
-      package = GEPUB::Package.parse_opf(File.open(File.dirname(__FILE__) + '/fixtures/testdata/test.opf'), '/package.opf')
+      package = GEPUB::Package.parse_opf(@fixtures_directory / 'testdata/test.opf', '/package.opf')
       expect(package.rendition_layout).to eq('pre-paginated')
       expect(package.rendition_orientation).to eq('auto')
       expect(package.rendition_spread).to eq('both')
