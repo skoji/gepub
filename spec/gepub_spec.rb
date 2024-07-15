@@ -74,14 +74,8 @@ describe GEPUB::Book do
 </html>
 EOF
       item3 = @book.add_ordered_item('text/nav.xhtml', content: StringIO.new(nav_string), id: 'nav').add_property('nav')
-
-      @tempdir = Dir.mktmpdir
     end
 
-    after do
-      FileUtils.remove_entry_secure @tempdir
-    end
-    
     it "should have title"  do
       expect(@book.title.to_s).to eq('thetitle') 
     end
@@ -159,23 +153,20 @@ EOF
       expect(meta['content']).to eq(item.itemid)        
     end
 
-    it "should generate correct epub" do
-      epubname = File.join(@tempdir, 'testepub.epub')
-      @book.generate_epub(epubname)
-      epubcheck(epubname)
+    it "should generate correct epub", :uses_temporary_directory do
+      epub_file = @temporary_directory / 'testepub.epub'
+      @book.generate_epub(epub_file)
+      epubcheck(epub_file)
     end
 
-    it "should generate correct epub with buffer" do
-      epubname = File.join(@tempdir, 'testepub_buf.epub')
-      File.open(epubname, 'wb') {
-        |io|
-        io.write @book.generate_epub_stream.string
-      }
-      epubcheck(epubname)
+    it "should generate correct epub with buffer", :uses_temporary_directory do
+      epub_file = @temporary_directory / 'testepub_buf.epub'
+      epub_file.open('wb') {|io| io.write @book.generate_epub_stream.string }
+      epubcheck(epub_file)
     end
 
-    it "should generate correct epub2.0" do
-      epubname = File.join(@tempdir, 'testepub2.epub')
+    it "should generate correct epub2.0", :uses_temporary_directory do
+      epub_file = @temporary_directory / 'testepub2.epub'
       @book = GEPUB::Book.new('OEPBS/package.opf', { 'version' => '2.0'} ) 
       @book.title = 'thetitle'
       @book.creator = "theauthor"
@@ -191,18 +182,19 @@ EOF
                                      content: StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title></head><body><p>second page, whith is test chapter.</p></body></html>'),
                                      id: 'c2')
       item2.toc_text 'test chapter'
-      @book.generate_epub(epubname)
-      epubcheck(epubname)
-    end
-    it 'should generate epub with extra file' do
-      epubname = File.join(@tempdir, 'testepub3.epub')
-      @book.add_optional_file('META-INF/foobar.xml', StringIO.new('<foo></foo>'))
-      @book.generate_epub(epubname)
-      epubcheck(epubname)
+      @book.generate_epub(epub_file)
+      epubcheck(epub_file)
     end
 
-    it 'should generate valid EPUB when @toc is empty' do
-      epubname = File.join(@tempdir, 'testepub4.epub')
+    it 'should generate epub with extra file', :uses_temporary_directory do
+      epub_file = @temporary_directory / 'testepub3.epub'
+      @book.add_optional_file('META-INF/foobar.xml', StringIO.new('<foo></foo>'))
+      @book.generate_epub(epub_file)
+      epubcheck(epub_file)
+    end
+
+    it 'should generate valid EPUB when @toc is empty', :uses_temporary_directory do
+      epub_file = @temporary_directory / 'testepub4.epub'
       @book = GEPUB::Book.new('OEPBS/package.opf', { 'version' => '3.0'} ) 
       @book.title = 'thetitle'
       @book.creator = "theauthor"
@@ -217,43 +209,42 @@ EOF
       item2 = @book.add_ordered_item('text/barbar.xhtml',
                                      content: StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title></head><body><p>second page, whith is test chapter.</p></body></html>'),
                                      id: 'c2')
-      @book.generate_epub(epubname)
-      epubcheck(epubname)
+      @book.generate_epub(epub_file)
+      epubcheck(epub_file)
     end
 
-    it 'should generate EPUB with specified lastmodified' do
-      epubname = File.join(@tempdir, 'testepub.epub')
+    it 'should generate EPUB with specified lastmodified', :uses_temporary_directory do
+      epub_file = @temporary_directory / 'testepub.epub'
       mod_time = Time.mktime(2010,5,5,8,10,15)
       @book.lastmodified = mod_time
-      @book.generate_epub(epubname)
-      File.open(epubname) do |f|
+      @book.generate_epub(epub_file)
+      File.open(epub_file) do |f|
         parsed_book = GEPUB::Book.parse(f)
         expect(parsed_book.lastmodified.content).to eq mod_time.utc.strftime('%Y-%m-%dT%H:%M:%SZ')
       end
     end
 
-
-    it 'should generate EPUB with specified lastmodified by string' do
-      epubname = File.join(@tempdir, 'testepub.epub')
+    it 'should generate EPUB with specified lastmodified by string', :uses_temporary_directory do
+      epub_file = @temporary_directory / 'testepub.epub'
       mod_time = "2010-05-05T08:10:15Z"
       @book.lastmodified = mod_time
-      @book.generate_epub(epubname)
-      File.open(epubname) do |f|
+      @book.generate_epub(epub_file)
+      File.open(epub_file) do |f|
         parsed_book = GEPUB::Book.parse(f)
         expect(parsed_book.lastmodified.content).to eq mod_time
       end
     end
 
-    it 'should generate parsed and generated EPUB with renewed lastmodified' do
+    it 'should generate parsed and generated EPUB with renewed lastmodified', :uses_temporary_directory do
       originalfile = File.join(File.dirname(__FILE__), 'fixtures/testdata/wasteland-20120118.epub')
-      epubname = File.join(@tempdir, 'testepub.epub')    
+      epub_file = @temporary_directory / 'testepub.epub'
 
       original_book = File.open(originalfile) do |f|
         GEPUB::Book.parse(f)
       end
       original_lastmodified = original_book.lastmodified.content
-      original_book.generate_epub(epubname)
-      File.open(epubname) do |f|
+      original_book.generate_epub(epub_file)
+      File.open(epub_file) do |f|
         parsed_book = GEPUB::Book.parse(f)
         parsed_time = parsed_book.lastmodified.content
         original_time = original_lastmodified
@@ -261,17 +252,17 @@ EOF
       end
     end
 
-    it 'should generate parsed and generated EPUB with newly set lastmodified' do
+    it 'should generate parsed and generated EPUB with newly set lastmodified', :uses_temporary_directory do
       originalfile = File.join(File.dirname(__FILE__), 'fixtures/testdata/wasteland-20120118.epub')
-      epubname = File.join(@tempdir, 'testepub.epub')    
+      epub_file = @temporary_directory / 'testepub.epub'
       mod_time = Time.mktime(2010,5,5,8,10,15)
       
       original_book = File.open(originalfile) do |f|
         GEPUB::Book.parse(f)
       end
       original_book.lastmodified = mod_time
-      original_book.generate_epub(epubname)
-      File.open(epubname) do |f|
+      original_book.generate_epub(epub_file)
+      epub_file.open do |f|
         parsed_book = GEPUB::Book.parse(f)
         expect(parsed_book.lastmodified.content).to eq mod_time.utc.strftime('%Y-%m-%dT%H:%M:%SZ')
       end
@@ -287,26 +278,26 @@ EOF
       @book.generate_epub_stream
     end
 
-    it 'should produce deterministic output when lastmodified is specified' do
-      epubname1 = File.join(@tempdir, 'testepub1.epub')
-      epubname2 = File.join(@tempdir, 'testepub2.epub')
+    it 'should produce deterministic output when lastmodified is specified', :uses_temporary_directory do
+      epub_file1 = @temporary_directory / 'testepub1.epub'
+      epub_file2 = @temporary_directory / 'testepub2.epub'
       mod_time = "2010-05-05T08:10:15Z"
       @book.lastmodified = mod_time
 
-      @book.generate_epub(epubname1)
+      @book.generate_epub(epub_file1)
       sleep 2
-      @book.generate_epub(epubname2)
+      @book.generate_epub(epub_file2)
 
-      expect(FileUtils.compare_file(epubname1, epubname2)).to be true
+      expect(FileUtils.compare_file(epub_file1, epub_file2)).to be true
     end
 
-    it 'should not forget svg attribute when parsing book' do
+    it 'should not forget svg attribute when parsing book', :uses_temporary_directory do
       @book = GEPUB::Book.new
       @book.identifier = 'test'
       @book.add_ordered_item('foobar.xhtml', content: StringIO.new('<html><img src="image.svg" /></html>')).add_property 'svg'
-      epubname = File.join(@tempdir, 'testepub.epub')
-      @book.generate_epub(epubname)
-      File.open(epubname) do |f|
+      epub_file = @temporary_directory / 'testepub.epub'
+      @book.generate_epub(epub_file)
+      File.open(epub_file) do |f|
         parsed_book = GEPUB::Book.parse(f)
         item = parsed_book.item_by_href 'foobar.xhtml'
         expect(item).not_to be_nil

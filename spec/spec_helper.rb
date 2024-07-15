@@ -39,7 +39,14 @@ RSpec.configure do |config|
     end
     expect(stdout).to include("No errors or warnings detected.")
   end
-  
+
+  config.around(:example, :uses_temporary_directory) do |example|
+    @temporary_directory = Pathname(Dir.mktmpdir("gepub_spec"))    
+    example.run
+  ensure
+    @temporary_directory.rmtree
+  end
+
 end
 
 require 'rspec/core/formatters/base_text_formatter'
