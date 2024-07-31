@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-require File.dirname(__FILE__) + '/spec_helper.rb'
 require 'rubygems'
 require 'nokogiri'
 
@@ -75,11 +74,6 @@ describe GEPUB::Book do
 </html>
 EOF
     item3 = @book.add_ordered_item('text/nav.xhtml', StringIO.new(nav_string), 'nav').add_property('nav')
-    @tempdir = Dir.mktmpdir
-  end
-
-  after do
-    FileUtils.remove_entry_secure @tempdir
   end
 
   it "should have title"  do
@@ -159,22 +153,23 @@ EOF
     expect(meta['content']).to eq(item.itemid)        
   end
 
-  it "should generate correct epub" do
-    epubname = File.join(@tempdir, 'testepub.epub')
-    @book.generate_epub(epubname)
-    epubcheck(epubname)
+  it "should generate correct epub", :uses_temporary_directory do
+    epub_file = @temporary_directory / 'testepub.epub'
+    @book.generate_epub(epub_file)
+    epubcheck(epub_file)
   end
-  it "should generate correct epub with buffer" do
-    epubname = File.join(@tempdir, 'testepub_buf.epub')
-    File.open(epubname, 'wb') {
+
+  it "should generate correct epub with buffer", :uses_temporary_directory do
+    epub_file = @temporary_directory / 'testepub_buf.epub'
+    File.open(epub_file, 'wb') {
       |io|
       io.write @book.generate_epub_stream.string
     }
-    epubcheck(epubname)
+    epubcheck(epub_file)
   end
 
-  it "should generate correct epub2.0" do
-    epubname = File.join(@tempdir, 'testepub2.epub')
+  it "should generate correct epub2.0", :uses_temporary_directory do
+    epub_file = @temporary_directory / 'testepub2.epub'
     @book = GEPUB::Book.new('OEPBS/package.opf', { 'version' => '2.0'} ) 
     @book.title = 'thetitle'
     @book.creator = "theauthor"
@@ -190,18 +185,18 @@ EOF
                                    StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title></head><body><p>second page, whith is test chapter.</p></body></html>'),
                                    'c2')
     item2.toc_text 'test chapter'
-    @book.generate_epub(epubname)
-    epubcheck(epubname)
+    @book.generate_epub(epub_file)
+    epubcheck(epub_file)
   end
-  it 'should generate epub with extra file' do
-    epubname = File.join(@tempdir, 'testepub3.epub')
+  it 'should generate epub with extra file', :uses_temporary_directory do
+    epub_file = @temporary_directory / 'testepub3.epub'
     @book.add_optional_file('META-INF/foobar.xml', StringIO.new('<foo></foo>'))
-    @book.generate_epub(epubname)
-    epubcheck(epubname)
+    @book.generate_epub(epub_file)
+    epubcheck(epub_file)
   end
 
-  it 'should generate valid EPUB when @toc is empty' do
-    epubname = File.join(@tempdir, 'testepub4.epub')
+  it 'should generate valid EPUB when @toc is empty', :uses_temporary_directory do
+    epub_file = @temporary_directory / 'testepub4.epub'
     @book = GEPUB::Book.new('OEPBS/package.opf', { 'version' => '3.0'} ) 
     @book.title = 'thetitle'
     @book.creator = "theauthor"
@@ -216,8 +211,8 @@ EOF
     item2 = @book.add_ordered_item('text/barbar.xhtml',
                                    StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title></head><body><p>second page, whith is test chapter.</p></body></html>'),
                                    'c2')
-    @book.generate_epub(epubname)
-    epubcheck(epubname)
+    @book.generate_epub(epub_file)
+    epubcheck(epub_file)
 
   end
 end
