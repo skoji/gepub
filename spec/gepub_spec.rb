@@ -235,10 +235,9 @@ EOF
     end
 
     it 'should generate parsed and generated EPUB with renewed lastmodified', :uses_temporary_directory do
-      originalfile = File.join(File.dirname(__FILE__), 'fixtures/testdata/wasteland-20120118.epub')
+      original_file = @fixtures_directory / 'testdata/wasteland-20120118.epub'
       epub_file = @temporary_directory / 'testepub.epub'
-
-      original_book = File.open(originalfile) do |f|
+      original_book = File.open(original_file) do |f|
         GEPUB::Book.parse(f)
       end
       original_lastmodified = original_book.lastmodified.content
@@ -252,13 +251,11 @@ EOF
     end
 
     it 'should generate parsed and generated EPUB with newly set lastmodified', :uses_temporary_directory do
-      originalfile = File.join(File.dirname(__FILE__), 'fixtures/testdata/wasteland-20120118.epub')
+      original_file = @fixtures_directory / 'testdata/wasteland-20120118.epub'
       epub_file = @temporary_directory / 'testepub.epub'
       mod_time = Time.mktime(2010,5,5,8,10,15)
       
-      original_book = File.open(originalfile) do |f|
-        GEPUB::Book.parse(f)
-      end
+      original_book = original_file.open {|f| GEPUB::Book.parse(f) }
       original_book.lastmodified = mod_time
       original_book.generate_epub(epub_file)
       epub_file.open do |f|

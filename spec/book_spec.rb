@@ -374,8 +374,8 @@ describe GEPUB::Book do
     describe '.parse' do
      context 'IO Object' do
       it 'loads book and returns GEPUB::Book object' do
-       filehandle = File.new(File.dirname(__FILE__) + '/fixtures/testdata/wasteland-20120118.epub')
-       book = GEPUB::Book.parse(filehandle)
+       file = @fixtures_directory / 'testdata/wasteland-20120118.epub'
+       book = GEPUB::Book.parse(file)
        expect(book).to be_instance_of GEPUB::Book
        expect(book.items.size).to eq 6
        expect(book.items['t1'].href).to eq 'wasteland-content.xhtml'
@@ -389,14 +389,14 @@ describe GEPUB::Book do
        expect(book.spine_items[0].href).to eq 'wasteland-content.xhtml'
       end
       it 'loads non-latin EPUB as UTF-8' do
-       filehandle = File.new(File.dirname(__FILE__) + '/fixtures/testdata/lemon.epub')
-       book = GEPUB::Book.parse(filehandle)
+       file = @fixtures_directory / 'testdata/lemon.epub'
+       book = GEPUB::Book.parse(file)
        expect(book.items['p-001'].href).to eq 'xhtml/p-001.xhtml'
        expect(book.items['p-001'].content.encoding).to eq Encoding::UTF_8       
       end
       it 'reads EPUB with streamed entries' do
-       filehandle = File.new(File.dirname(__FILE__) + '/fixtures/testdata/streamed_item.epub')
-       book = GEPUB::Book.parse(filehandle)
+       file = @fixtures_directory / 'testdata/streamed_item.epub'
+       book = GEPUB::Book.parse(file)
        expect(book).to be_instance_of GEPUB::Book
        expect(book.items.size).to eq 3
       end
@@ -404,8 +404,8 @@ describe GEPUB::Book do
 
      context 'file path' do
        it 'loads book and returns GEPUB::Book object' do
-         filepath = File.join(File.dirname(__FILE__), 'fixtures', 'testdata', 'wasteland-20120118.epub')
-         book = GEPUB::Book.parse(filepath)
+         file = @fixtures_directory / 'testdata/wasteland-20120118.epub'
+         book = GEPUB::Book.parse(file)
          expect(book).to be_instance_of GEPUB::Book
          expect(book.items.size).to eq 6
        end

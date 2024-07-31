@@ -40,6 +40,10 @@ RSpec.configure do |config|
     expect(stdout).to include("No errors or warnings detected.")
   end
 
+  config.before(:all) do
+    @fixtures_directory = Pathname(__FILE__).dirname / "fixtures"
+  end
+  
   config.around(:example, :uses_temporary_directory) do |example|
     @temporary_directory = Pathname(Dir.mktmpdir("gepub_spec"))    
     example.run
