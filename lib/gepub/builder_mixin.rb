@@ -8,7 +8,7 @@ module GEPUB
         if !(@last_defined_item[0].apply_one_to_multi ||
              @last_defined_item.size != 1) &&
             @last_defined_item.size != args.size
-          warn "appling #{args} to #{@last_defined_item}: length differs."
+          warn "applying #{args} to #{@last_defined_item}: length differs."
         end
 
         @last_defined_item.each_with_index {

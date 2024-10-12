@@ -216,7 +216,7 @@ module GEPUB
     end
 
     def set_version(val)
-      warn 'set_version is obsolete: use verion instead.'
+      warn 'set_version is obsolete: use version instead.'
       @attributes['version'] = val
       @metadata.opf_version = val
       @manifest.opf_version = val

@@ -21,7 +21,7 @@ module GEPUB
                         get_first_node(node)
                       else
                         if deprecated_id
-                          warn "secound argument is deprecated. use id: keyword argument"
+                          warn "second argument is deprecated. use id: keyword argument"
                           id = deprecated_id
                         end
                         send(node + "_clear")

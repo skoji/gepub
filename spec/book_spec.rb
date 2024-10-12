@@ -35,7 +35,7 @@ describe GEPUB::Book do
         end
       end
     end
-    describe 'identifer=' do
+    describe 'identifier=' do
       context 'set identifier' do
         it 'will set unique-identifier and related attributes' do
           GEPUB::Book.new do |book|

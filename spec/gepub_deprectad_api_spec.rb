@@ -3,7 +3,7 @@ require 'rubygems'
 require 'nokogiri'
 
 describe GEPUB::Item do
-  it "should return atttributes" do
+  it "should return attributes" do
     item = GEPUB::Item.new('theid', 'foo/bar.bar', 'application/xhtml+xml')
     expect(item.itemid).to eq('theid')
     expect(item.href).to eq('foo/bar.bar')
@@ -52,7 +52,7 @@ describe GEPUB::Book do
     @book.spine.push(item1)
 
     item2 = @book.add_ordered_item('text/barbar.xhtml',
-                                   StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title></head><body><p>second page, whith is test chapter.</p></body></html>'),
+                                   StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title></head><body><p>second page, with is test chapter.</p></body></html>'),
                                    'c2')
     item2.toc_text 'test chapter'
 
@@ -182,7 +182,7 @@ EOF
     item1.add_content(StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c1</title></head><body><p>the first page</p></body></html>'))
     @book.spine.push(item1)
     item2 = @book.add_ordered_item('text/barbar.xhtml',
-                                   StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title></head><body><p>second page, whith is test chapter.</p></body></html>'),
+                                   StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title></head><body><p>second page, with is test chapter.</p></body></html>'),
                                    'c2')
     item2.toc_text 'test chapter'
     @book.generate_epub(epub_file)
@@ -209,7 +209,7 @@ EOF
     item1.add_content(StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c1</title></head><body><p>the first page</p></body></html>'))
     @book.spine.push(item1)
     item2 = @book.add_ordered_item('text/barbar.xhtml',
-                                   StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title></head><body><p>second page, whith is test chapter.</p></body></html>'),
+                                   StringIO.new('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>c2</title></head><body><p>second page, with is test chapter.</p></body></html>'),
                                    'c2')
     @book.generate_epub(epub_file)
     epubcheck(epub_file)
