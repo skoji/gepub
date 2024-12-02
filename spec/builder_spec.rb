@@ -390,7 +390,7 @@ describe GEPUB::Builder do
       expect(xml.root['prefix']).to eq 'rendition: http://www.idpf.org/vocab/rendition/#'
     end
 
-    it 'whould handle ibooks version' do
+    it 'would handle ibooks version' do
       workdir = File.join(File.dirname(__FILE__),'fixtures', 'builder')
       builder = GEPUB::Builder.new {
         ibooks_version '1.1.1'

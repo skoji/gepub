@@ -5,7 +5,7 @@ module GEPUB
   #
   # * Builder is obsolete on v0.7 and after. We will continue to support GEPUB::Builder works fine on version 1.x, but Builder will not be updated any more. For example, landmarks are not supported with Builder.
   #
-  # = Synopsys
+  # = Synopsis
   #      # -*- coding: utf-8 -*-
   #      # GEPUB::Builder example.
   #      require 'ruby gem'
@@ -63,7 +63,7 @@ module GEPUB
   #          glob 'img/*.jpg' # means files(Dir.glob('img/*.jpg'))
   #
   #          # Reads from file. will be placed at path indicated by key.
-  #          files('img/image.jpg' => 'imgage.jpg')
+  #          files('img/image.jpg' => 'image.jpg')
   #
   #          # Read from IO object.
   #          files('img/image.png' => supplied_io, 'img/image2.png' => supplied_io2)

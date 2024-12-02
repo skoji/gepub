@@ -176,7 +176,7 @@ module GEPUB
       @package.ordered(&block)
     end
 
-    # clenup and maintain consistency of metadata and items included in the Book
+    # cleanup and maintain consistency of metadata and items included in the Book
     # object. 
     def cleanup
       cleanup_for_epub2
@@ -249,7 +249,7 @@ EOF
     end
 
 
-    # add tocdata like this : [ {link: chapter1.xhtml, text: 'Capter 1', level: 1} ] .
+    # add tocdata like this : [ {link: chapter1.xhtml, text: 'Chapter 1', level: 1} ] .
     # if item corresponding to the link does not exists, error will be thrown.
     def add_tocdata(toc_yaml)
       newtoc = []
@@ -406,11 +406,11 @@ EOF
 
     def self.check_consistency_of_package(package, package_path)
       if package.nil?
-        raise 'this container do not cotains publication information file'
+        raise 'this container do not contains publication information file'
       end
 
       if package_path != package.path
-        warn "inconsistend EPUB file: container says opf is #{package_path}, but actually #{package.path}"
+        warn "inconsistent EPUB file: container says opf is #{package_path}, but actually #{package.path}"
       end
     end
     private_class_method :check_consistency_of_package

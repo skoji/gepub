@@ -69,7 +69,7 @@ describe 'GEPUB usage' do
       epubcheck(epub_file)
     end
 
-    it 'should generate simple EPUB3 with rather complicated matadata' do
+    it 'should generate simple EPUB3 with rather complicated metadata' do
       book = GEPUB::Book.new
       book.primary_identifier('http:/example.jp/bookid_in_url', 'BookID', 'URL')
       book.language = 'ja'
