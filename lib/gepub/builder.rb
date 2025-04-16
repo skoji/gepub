@@ -152,18 +152,22 @@ module GEPUB
   class Builder
     include BuilderMixin
     class MetaItem
+      # @rbs (GEPUB::Meta) -> void
       def initialize(item)
         @item = item
       end
 
+      # @rbs () -> bool
       def apply_one_to_multi
         false
       end
 
+      # @rbs (?Hash[untyped, untyped]) -> GEPUB::Meta
       def alt(alternates = {})
         @item.add_alternates(alternates)
       end
 
+      # @rbs (String) -> GEPUB::Meta
       def file_as(name)
         @item.file_as(name)
       end
@@ -181,6 +185,7 @@ module GEPUB
       end
     end
 
+    # @rbs (?Hash[untyped, untyped]) -> void
     def initialize(_attributes = {},  &block)
       @last_defined_item = nil
       @book = Book.new
@@ -214,15 +219,18 @@ module GEPUB
       end
     }
 
+    # @rbs (String, ?Integer) -> GEPUB::Builder::MetaItem
     def collection(val, count = 1)
       @last_defined_item =
         MetaItem.new(@book.add_title(val, title_type: GEPUB::TITLE_TYPE::COLLECTION).group_position(count.to_s))
     end
 
+    # @rbs (String, ?String) -> GEPUB::Builder::MetaItem
     def creator(val, role = 'aut')
       MetaItem.new(@book.add_creator(val, role: role))
     end
 
+    # @rbs (*String | Array[untyped]) -> Array[untyped]
     def creators(*vals)
       @last_defined_item = vals.map {
         |v|
@@ -233,6 +241,7 @@ module GEPUB
       }
     end
 
+    # @rbs (*String) -> void
     def contributors(*vals)
       @last_defined_item = vals.map {
         |v|
@@ -250,10 +259,12 @@ module GEPUB
       }
     end
 
+    # @rbs (String, ?String, ?String) -> GEPUB::Builder::MetaItem
     def unique_identifier(val, id = 'BookID', scheme = 'nil')
       @last_defined_item = MetaItem.new(@book.primary_identifier(val, id, scheme))
     end
     
+    # @rbs (?Hash[untyped, untyped]) -> Array[untyped]
     def alts(alt_vals = {})
       raise "can't specify alts on single item" if ! Array === @last_defined_item
       @last_defined_item.each_with_index {
@@ -262,6 +273,7 @@ module GEPUB
       }
     end
     
+    # @rbs (String, ?String) -> GEPUB::Builder::MetaItem
     def contributor(val, role = nil)
       MetaItem.new(@book.add_contributor(val, role: role))
     end
@@ -272,10 +284,12 @@ module GEPUB
       @book.page_progression_direction = val
     end
     # specify version for ibooks
+    # @rbs (String) -> void
     def ibooks_version(val)
       @book.ibooks_version=val
     end
     # specify scroll axis for ibooks
+    # @rbs (Symbol) -> void
     def ibooks_scroll_axis(val)
       @book.ibooks_scroll_axis = val
     end
@@ -284,6 +298,7 @@ module GEPUB
     # val should be String or Hash.
     # if val is String, file is read from the File specified by string and stored in EPUB to the path specified by string.
     # if val is Hash, file is read from the value and stored in EPUB to the path specified by the key.
+    # @rbs (Hash[untyped, untyped]) -> String
     def optional_file(val)
       path = val
       io = val if String === val
@@ -295,16 +310,19 @@ module GEPUB
       @book.add_optional_file(path, io)
     end
     
+    # @rbs (Pathname) -> void
     def generate_epub(path_to_epub)
       @book.generate_epub(path_to_epub)
     end
 
+    # @rbs (?Hash[untyped, untyped]) -> GEPUB::ResourceBuilder
     def resources(attributes = {}, &block)
       ResourceBuilder.new(@book, attributes, &block)
     end
     def book
       @book
     end
+    # @rbs () -> StringIO
     def generate_epub_stream
       @book.generate_epub_stream
     end

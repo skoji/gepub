@@ -9,6 +9,7 @@ module GEPUB
     include InspectMixin
 
     attr_accessor :content
+    # @rbs (GEPUB::Manifest, ?Hash[untyped, untyped]) -> GEPUB::Item
     def self.create(parent, attributes = {})
       Item.new(attributes['id'], attributes['href'], attributes['media-type'], parent,
                attributes.reject { |k,_v| ['id','href','media-type'].member?(k) })
@@ -20,6 +21,7 @@ module GEPUB
     # if mediatype is not specified, it will be guessed from extension name.
     # Item can't guess media type for videos and  audios, so you should specify one.
     # 
+    # @rbs (String, String, ?String?, ?GEPUB::Manifest?, ?Hash[untyped, untyped]) -> void
     def initialize(itemid, itemhref, itemmediatype = nil, parent = nil, attributes = {})
       if attributes['properties'].class == String
         attributes['properties'] = attributes['properties'].split(' ')
@@ -39,16 +41,19 @@ module GEPUB
     }
 
     # get item's id
+    # @rbs () -> String
     def itemid
       id
     end
 
     # get mediatype of the item.
+    # @rbs () -> String
     def mediatype
       media_type
     end
 
     # get +attribute+
+    # @rbs (String) -> Array[untyped]
     def [](attribute)
       @attributes[attribute]
     end
@@ -59,6 +64,7 @@ module GEPUB
     end
 
     # add value to properties attribute.
+    # @rbs (String) -> GEPUB::Item
     def add_property(property)
       (@attributes['properties'] ||=[]) << property
       self
@@ -66,39 +72,46 @@ module GEPUB
 
     # set 'cover-image' property to the Item.
     # On generating EPUB, EPUB2-style cover image meta item will be added.
+    # @rbs () -> GEPUB::Item
     def cover_image
       add_property('cover-image')
     end
 
     # set 'nav' property to the Item.
+    # @rbs () -> GEPUB::Item
     def nav
       add_property('nav')
     end
 
     # set toc text to the item
+    # @rbs (String) -> GEPUB::Item
     def toc_text text
       toc.push(:item => self, :text => text, :id => nil)
       self
     end
 
     # set toc text with id to the item
+    # @rbs (String, nil) -> GEPUB::Item
     def toc_text_with_id text, toc_id
       toc.push(:item => self, :text => text, :id => toc_id)
       self
     end
 
     # set bindings: item is a handler for media_type
+    # @rbs (String) -> GEPUB::Item
     def is_handler_of media_type
       bindings.add(self.id, media_type)
       self
     end
 
+    # @rbs (type: String, title: String, ?id: nil) -> void
     def landmark(type:, title:, id: nil)
       landmarks.push(:type => type, :title => title, :item => self, :id => id)
       self
     end
 
     # guess and set content property from contents.
+    # @rbs () -> void
     def guess_content_property
       if File.extname(self.href) =~ /.x?html/ && @attributes['media-type'] === 'application/xhtml+xml'
         @attributes['properties'] ||= []
@@ -133,6 +146,7 @@ module GEPUB
     end
 
     # add content data to the item.
+    # @rbs (String) -> GEPUB::Item
     def add_raw_content(data)
       @content = data
       if File.extname(self.href) =~ /x?html$/
@@ -143,6 +157,7 @@ module GEPUB
     end
 
     # add content from io or file to the item
+    # @rbs (String | File | StringIO) -> GEPUB::Item
     def add_content(io_or_filename)
       if io_or_filename.class == String
         File.open(io_or_filename, mode='r') do |f|
@@ -154,6 +169,7 @@ module GEPUB
       self
     end
 
+    # @rbs (File | StringIO) -> GEPUB::Item
     def add_content_io(io)
       io.binmode
       @content = io.read
@@ -165,6 +181,7 @@ module GEPUB
     end
 
     # generate xml to supplied Nokogiri builder.
+    # @rbs (Nokogiri::XML::Builder, ?String) -> Nokogiri::XML::Builder::NodeBuilder
     def to_xml(builder, opf_version = '3.0')
       attr = @attributes.dup
       if opf_version.to_f < 3.0

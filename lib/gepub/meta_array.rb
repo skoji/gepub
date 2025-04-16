@@ -1,4 +1,5 @@
 class Array
+  # @rbs () -> Array[untyped]
   def sort_as_meta
     i = 0
     sort_by {

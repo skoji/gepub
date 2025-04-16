@@ -39,19 +39,23 @@ module GEPUB
 
 
     class IDPool
+      # @rbs () -> void
       def initialize
         @pool = {}
         @counter = {}
       end
 
+      # @rbs (String, String) -> Integer?
       def counter(prefix,suffix)
         @counter[prefix + '////' + suffix]
       end
 
+      # @rbs (String, String, Integer) -> void
       def set_counter(prefix,suffix,val)
         @counter[prefix + '////' + suffix] = val
       end
       
+      # @rbs (?Hash[untyped, untyped]) -> String
       def generate_key(param = {})
         prefix = param[:prefix] || ''
         suffix = param[:suffix] || ''
@@ -73,14 +77,17 @@ module GEPUB
 
       end
       
+      # @rbs (String?) -> bool?
       def [](k)
         @pool[k]
       end
+      # @rbs (String?, bool?) -> bool?
       def []=(k,v)
         @pool[k] = v
       end
     end
 
+    # @rbs (String?) -> Hash[untyped, untyped]
     def parse_prefixes(prefix)
       return {} if prefix.nil?
       m = prefix.scan(/([\S]+): +(\S+)[\s]*/)
@@ -88,6 +95,7 @@ module GEPUB
     end
     
     # parse OPF data. opf should be io or string object.
+    # @rbs (File | String, String) -> GEPUB::Package
     def self.parse_opf(opf, path)
       Package.new(path) {
         |package|
@@ -105,6 +113,7 @@ module GEPUB
       }
     end
 
+    # @rbs (?String, ?Hash[untyped, untyped]) -> void
     def initialize(path='OEBPS/package.opf', attributes={})
       @path = path
       if File.extname(@path) != '.opf'
@@ -145,15 +154,18 @@ module GEPUB
     }
 
     # get +attribute+
+    # @rbs (String) -> String
     def [](attribute)
       @attributes[attribute]
     end
 
     # set +attribute+
+    # @rbs (String, String) -> void
     def []=(attribute, value)
       @attributes[attribute] = value
     end
 
+    # @rbs (?untyped) -> String?
     def identifier(identifier=UNASSIGNED)
       if unassigned?(identifier)
         @metadata.identifier_by_id(unique_identifier)
@@ -162,15 +174,18 @@ module GEPUB
       end
     end
     
+    # @rbs (String) -> GEPUB::Meta
     def identifier=(identifier)
       primary_identifier(identifier, nil, nil)
     end
     
+    # @rbs (String, ?String?, ?String?) -> GEPUB::Meta
     def primary_identifier(identifier, id = nil, type = nil)
       unique_identifier(id || @id_pool.generate_key(:prefix => 'BookId', :without_count => true))
       @metadata.add_identifier identifier, unique_identifier, type
     end
 
+    # @rbs (String, ?content: nil | String | File | StringIO, ?id: nil | String, ?attributes: Hash[untyped, untyped]) -> GEPUB::Item
     def add_item(href, content:nil, id: nil, attributes: {})
       item = @manifest.add_item(id, href, nil, attributes)
       item.add_content(content) unless content.nil?
@@ -179,6 +194,7 @@ module GEPUB
       item
     end
 
+    # @rbs () -> nil
     def ordered
       raise 'need block.' if !block_given?
       @ordered = true
@@ -186,6 +202,7 @@ module GEPUB
       @ordered = nil
     end
 
+    # @rbs (String, ?content: nil | StringIO, ?id: nil | String, ?attributes: Hash[untyped, untyped]) -> GEPUB::Item
     def add_ordered_item(href, content:nil, id: nil, attributes: {})
       raise 'do not call add_ordered_item within ordered block.' if @ordered
       item = add_item(href, attributes: attributes, id:id, content: content)
@@ -193,6 +210,7 @@ module GEPUB
       item
     end
 
+    # @rbs () -> Array[untyped]
     def spine_items
       spine.itemref_list.map {
         |itemref|
@@ -200,10 +218,12 @@ module GEPUB
       }
     end
 
+    # @rbs () -> Hash[untyped, untyped]
     def items
       @manifest.item_list
     end
     
+    # @rbs (?String) -> String
     def version(val=UNASSIGNED)
       if unassigned?(val)
         @attributes['version']
@@ -223,10 +243,12 @@ module GEPUB
       @spine.opf_version = val
     end
 
+    # @rbs (String) -> String
     def version=(val)
       version(val)
     end
     
+    # @rbs () -> String
     def enable_rendition
       @prefixes['rendition'] = 'http://www.idpf.org/vocab/rendition/#'
     end
@@ -235,6 +257,7 @@ module GEPUB
       @prefixes['rendition'] == 'http://www.idpf.org/vocab/rendition/#'      
     end
 
+    # @rbs () -> String
     def enable_ibooks_vocabulary
       @prefixes['ibooks'] = 'http://vocabulary.itunes.apple.com/rdf/ibooks/vocabulary-extensions-1.0/'
     end
@@ -243,6 +266,7 @@ module GEPUB
       @prefixes['ibooks'] == 'http://vocabulary.itunes.apple.com/rdf/ibooks/vocabulary-extensions-1.0/'
     end
     
+    # @rbs () -> String
     def opf_xml
       if version.to_f < 3.0 || @epub_backward_compat
         spine.toc  ||= 'ncx'

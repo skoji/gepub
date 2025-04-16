@@ -40,6 +40,7 @@ module GEPUB
     end
 
      #guess mediatype by mime type mask
+    # @rbs (String) -> String?
     def self.guess_mediatype(href)
       ext = File.extname(href)
       @@mime_types_compiled.select { |pattern, _mime| ext =~ pattern }.values[0]

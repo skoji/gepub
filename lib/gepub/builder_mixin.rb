@@ -1,5 +1,6 @@
 module GEPUB
   module BuilderMixin
+    # @rbs (Symbol, *Hash[untyped, untyped] | String) -> (GEPUB::Meta | Array[untyped] | GEPUB::Item)
     def method_missing(name, *args, &block)
       if Array === @last_defined_item &&
           @last_defined_item.size > 0 &&

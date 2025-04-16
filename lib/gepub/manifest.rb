@@ -6,6 +6,7 @@ module GEPUB
     include InspectMixin
 
     attr_accessor :opf_version
+    # @rbs (Nokogiri::XML::Element, ?String, ?GEPUB::Package::IDPool) -> GEPUB::Manifest
     def self.parse(manifest_xml, opf_version = '3.0', id_pool = Package::IDPool.new)
       Manifest.new(opf_version, id_pool) {
         |manifest|
@@ -33,6 +34,7 @@ module GEPUB
       @attributes['id']
     end
 
+    # @rbs (?String, ?GEPUB::Package::IDPool) -> void
     def initialize(opf_version = '3.0', id_pool = Package::IDPool.new)
       @id_pool = id_pool
       @attributes = {}
@@ -42,6 +44,7 @@ module GEPUB
       yield self if block_given?
     end
 
+    # @rbs () -> Hash[untyped, untyped]
     def item_list
       @items.dup
     end
@@ -50,10 +53,12 @@ module GEPUB
       @items.dup      
     end
     
+    # @rbs (String) -> GEPUB::Item?
     def item_by_href(href)
       @items_by_href[href]
     end
     
+    # @rbs (String?, String, String?, ?Hash[untyped, untyped]) -> GEPUB::Item
     def add_item(id,href,media_type, attributes = {})
       id ||= @id_pool.generate_key(:prefix=>'item_'+ File.basename(href,'.*'), :without_count => true)
       @items[id] = item = Item.new(id,href,media_type,self, attributes)
@@ -61,6 +66,7 @@ module GEPUB
       item
     end
 
+    # @rbs (Nokogiri::XML::Builder) -> Nokogiri::XML::Builder::NodeBuilder
     def to_xml(builder)
       builder.manifest(@attributes) {
         @items.each {
@@ -70,6 +76,7 @@ module GEPUB
       }
     end
     
+    # @rbs (GEPUB::Item) -> bool
     def register_item(item)
       raise "id '#{item.id}' is already in use." if @id_pool[item.id]
       @id_pool[item.id] = true

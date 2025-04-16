@@ -87,6 +87,7 @@ module GEPUB
     ROOTFILE_PATTERN=/^.+\.opf$/
     CONTAINER_NS='urn:oasis:names:tc:opendocument:xmlns:container'
 
+    # @rbs (String) -> String
     def self.rootfile_from_container(rootfile)
       doc = Nokogiri::XML::Document.parse(rootfile)
       ns = doc.root.namespaces
@@ -97,6 +98,7 @@ module GEPUB
     # Parses existing EPUB2/EPUB3 files from an IO object or a file path and creates new Book object.
     #   book = self.parse(File.new('some.epub'))
 
+    # @rbs (File | String) -> GEPUB::Book
     def self.parse(path_or_io)
       files = {}
       package = nil
@@ -115,6 +117,7 @@ module GEPUB
 
     # creates new empty Book object.
     # usually you do not need to specify any arguments.
+    # @rbs (?String, ?Hash[untyped, untyped]) -> void
     def initialize(path='OEBPS/package.opf', attributes = {}, &block)
       if File.extname(path) != '.opf'
         warn 'GEPUB::Book#new interface changed. You must supply path to package.opf as first argument. If you want to set title, please use GEPUB::Book#title='
@@ -129,11 +132,13 @@ module GEPUB
 
 
     # Get optional(not required in EPUB specification) files in the container.
+    # @rbs () -> Hash[untyped, untyped]
     def optional_files
       @optional_files || {}
     end
 
     # Add an optional file to the container
+    # @rbs (String, StringIO) -> String
     def add_optional_file(path, io_or_filename)
       io = io_or_filename
       if io_or_filename.class == String
@@ -143,6 +148,7 @@ module GEPUB
       (@optional_files ||= {})[path] = io.read
     end
     
+    # @rbs (GEPUB::Item) -> void
     def set_singleton_methods_to_item(item)
       toc = @toc
       metaclass = (class << item;self;end)
@@ -162,28 +168,33 @@ module GEPUB
     
 
     # get handler item which defined in bindings for media type, 
+    # @rbs (String) -> GEPUB::Item
     def get_handler_of(media_type)
       items[@package.bindings.handler_by_media_type[media_type]]
     end
 
+                   # @rbs (Symbol, *nil | String | String? | String | Hash[untyped, untyped] | Time | Symbol, **untyped) -> (String | GEPUB::Meta | Array[untyped] | GEPUB::DateMeta | Hash[untyped, untyped] | GEPUB::Item | GEPUB::Spine)?
     ruby2_keywords def method_missing(name, *args, &block)
       @package.send(name, *args, &block)
     end
 
     # should call ordered() with block.
     # within the block, all item added by add_item will be added to spine also.
+    # @rbs () -> nil
     def ordered(&block)
       @package.ordered(&block)
     end
 
     # cleanup and maintain consistency of metadata and items included in the Book
     # object. 
+    # @rbs () -> void
     def cleanup
       cleanup_for_epub2
       cleanup_for_epub3
     end
 
     # write EPUB to stream specified by the argument.
+    # @rbs (Zip::OutputStream) -> Array[untyped]
     def write_to_epub_container(epub)
       mod_time = Zip::DOSTime.now
       unless (last_mod = lastmodified).nil?
@@ -219,6 +230,7 @@ module GEPUB
     end
 
     # generates and returns StringIO contains EPUB.
+    # @rbs () -> StringIO
     def generate_epub_stream
       cleanup
       Zip::OutputStream::write_buffer(StringIO.new) do
@@ -228,6 +240,7 @@ module GEPUB
     end
 
     # writes EPUB to file. if file exists, it will be overwritten.
+    # @rbs (Pathname) -> Array[untyped]
     def generate_epub(path_to_epub)
       cleanup
       File.delete(path_to_epub) if File.exist?(path_to_epub)
@@ -237,6 +250,7 @@ module GEPUB
       }
     end
 
+    # @rbs () -> String
     def container_xml
       <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
@@ -262,10 +276,12 @@ EOF
       @toc = @toc + newtoc
     end
       
+    # @rbs (?String) -> GEPUB::Item
     def generate_nav_doc(title = 'Table of Contents')
       add_item('nav.xhtml', id: 'nav', content: StringIO.new(nav_doc(title))).add_property('nav')
     end
     
+    # @rbs (?String) -> String
     def nav_doc(title = 'Table of Contents')
       # handle cascaded toc
       start_level = @toc && !@toc.empty? && @toc[0][:level] || 1
@@ -286,6 +302,7 @@ EOF
         current_stack
       end
       # write toc 
+      # @rbs (Nokogiri::XML::Builder, Array[untyped]) -> Nokogiri::XML::Builder::NodeBuilder?
       def write_toc xml_doc, tocs
         return if tocs.empty?
         xml_doc.ol {
@@ -303,6 +320,7 @@ EOF
           }
         }
       end
+      # @rbs (Nokogiri::XML::Builder, Array[untyped]) -> Nokogiri::XML::Builder::NodeBuilder
       def write_landmarks xml_doc, landmarks
         xml_doc.ol {
           landmarks.each {
@@ -343,6 +361,7 @@ EOF
       builder.to_xml(:encoding => 'utf-8')
     end
 
+    # @rbs () -> String
     def ncx_xml
       builder = Nokogiri::XML::Builder.new {
         |xml|
@@ -379,6 +398,7 @@ EOF
     end
     
     private
+    # @rbs (Zip::File, Hash[untyped, untyped]) -> Array[untyped]
     def self.parse_container(zip_file, files) 
       package_path = nil
       package = nil
@@ -404,6 +424,7 @@ EOF
     end
     private_class_method :parse_container
 
+    # @rbs (GEPUB::Package, String) -> void
     def self.check_consistency_of_package(package, package_path)
       if package.nil?
         raise 'this container do not contains publication information file'
@@ -415,6 +436,7 @@ EOF
     end
     private_class_method :check_consistency_of_package
     
+    # @rbs (Hash[untyped, untyped], GEPUB::Package) -> void
     def self.parse_files_into_package(files, package)
       files.each {
         |k, content|
@@ -427,6 +449,7 @@ EOF
     end
     private_class_method :parse_files_into_package
     
+    # @rbs () -> void
     def  cleanup_for_epub2
       if version.to_f < 3.0 || @package.epub_backward_compat
         if @package.manifest.item_list.select {
@@ -440,6 +463,7 @@ EOF
         end
       end
     end
+    # @rbs () -> Array[untyped]?
     def cleanup_for_epub3
       if version.to_f >=3.0
         @package.metadata.modified_now unless @package.metadata.lastmodified_updated?
@@ -460,6 +484,7 @@ EOF
 
     private
 
+    # @rbs (String, item_attributes: Hash[untyped, untyped], ordered: bool, ?content: nil | String | File | StringIO, ?attributes: Hash[untyped, untyped]) -> GEPUB::Item
     def add_item_internal(href, content: nil, item_attributes: , attributes: {}, ordered: )
       id = item_attributes.delete(:id)
       item = 
@@ -483,6 +508,7 @@ EOF
       item
     end
 
+    # @rbs (StringIO?, String?, nil, (String | File | StringIO)?, String?, Hash[untyped, untyped]) -> Array[untyped]
     def handle_deprecated_add_item_arguments(deprecated_content, deprecated_id, deprecated_attributes, content, id, attributes) 
       if deprecated_content
         msg = 'deprecated argument; use content keyword argument instead of 2nd argument' 

@@ -7,6 +7,7 @@ module GEPUB
     include DSLUtil
     attr_accessor :content
     attr_reader :name
+    # @rbs (String, (String | Integer | Time | Symbol)?, GEPUB::Metadata, ?Hash[untyped, untyped], ?Hash[untyped, untyped]) -> void
     def initialize(name, content, parent, attributes= {}, refiners = {})
       @parent = parent
       @name = name
@@ -17,19 +18,23 @@ module GEPUB
     end
 
     # get +attribute+
+    # @rbs (String) -> String?
     def [](attribute)
       @attributes[attribute]
     end
 
     # set +attribute+
+    # @rbs (String, String) -> String
     def []=(attribute, value)
       @attributes[attribute] = value
     end
 
+    # @rbs (String) -> Array[untyped]
     def refiner_list(name)
       return @refiners[name].dup
     end
 
+    # @rbs (String) -> void
     def refiner_clear(name)
       if !@refiners[name].nil?
         @refiners[name].each {
@@ -40,6 +45,7 @@ module GEPUB
       @refiners[name]= []
     end
 
+    # @rbs (String) -> GEPUB::Meta?
     def refiner(name)
       refiner = @refiners[name]
       if refiner.nil? || refiner.size == 0
@@ -50,12 +56,14 @@ module GEPUB
     end
 
     # add a refiner.
+    # @rbs (String, String | Integer, ?Hash[untyped, untyped]) -> GEPUB::Meta
     def add_refiner(property, content, attributes = {})
       (@refiners[property] ||= []) <<  Meta.new('meta', content, @parent, { 'property' => property }.merge(attributes)) unless content.nil?
       self
     end
 
     # set a 'unique' refiner. all other refiners with same property will be removed.
+    # @rbs (String, String | Integer, ?Hash[untyped, untyped]) -> GEPUB::Meta
     def refine(property, content, attributes = {})
       if !content.nil?
         refiner_clear(property)
@@ -81,6 +89,7 @@ module GEPUB
                     })
     }
 
+    # @rbs (String) -> void
     def lang=(lang)
       @attributes['xml:lang'] = lang
     end
@@ -94,6 +103,7 @@ module GEPUB
     end
     
     # add alternate script refiner.
+    # @rbs (?Hash[untyped, untyped]) -> (GEPUB::Meta | GEPUB::DateMeta)
     def add_alternates(alternates = {})
       alternates.each {
         |locale, content|
@@ -102,6 +112,7 @@ module GEPUB
       self
     end
 
+    # @rbs () -> Hash[untyped, untyped]
     def list_alternates
       list = refiner_list('alternate-script').map {
         |refiner|
@@ -110,6 +121,7 @@ module GEPUB
       Hash[*list.flatten]
     end
 
+    # @rbs (Nokogiri::XML::Builder, GEPUB::Package::IDPool, ?String?, ?Hash[untyped, untyped]?, ?String) -> Hash[untyped, untyped]?
     def to_xml(builder, id_pool, ns = nil, additional_attr = {}, opf_version = '3.0')
       additional_attr ||= {}
       if @refiners.size > 0 && opf_version.to_f >= 3.0
@@ -137,6 +149,7 @@ module GEPUB
       end
     end
     
+    # @rbs (?String?) -> String
     def to_s(locale=nil)
       localized = nil
       if !locale.nil?
