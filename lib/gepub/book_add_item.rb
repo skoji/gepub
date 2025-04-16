@@ -4,6 +4,7 @@ module GEPUB
   class Book
     # add an item(i.e. html, images, audios, etc)  to Book.
     # the added item will be referenced by the first argument in the EPUB container.
+    # @rbs (String, ?nil, ?String?, ?nil, ?content: nil | String | File | StringIO, ?id: nil | String, ?media_type: String | nil, ?fallback: nil | String, ?properties: nil | Array[untyped], ?media_overlay: nil | String, ?toc_text: nil | String, ?property: nil | String, ?attributes: Hash[untyped, untyped]) -> GEPUB::Item
     def add_item(href, deprecated_content = nil, deprecated_id = nil, deprecated_attributes = nil, content: nil, 
                  id: nil,media_type: nil,fallback: nil,properties: nil,media_overlay: nil,toc_text: nil,property: nil,
                  attributes: {})
@@ -12,6 +13,7 @@ module GEPUB
     end
 
     # same as add_item, but the item will be added to spine of the EPUB.
+    # @rbs (String, ?StringIO?, ?String?, ?nil, ?content: nil | StringIO, ?id: nil | String, ?media_type: String | nil, ?fallback: nil | String, ?properties: nil | Array[untyped], ?media_overlay: nil | String, ?toc_text: nil | String, ?property: nil | String, ?attributes: Hash[untyped, untyped]) -> GEPUB::Item
     def add_ordered_item(href, deprecated_content = nil, deprecated_id = nil, deprecated_attributes = nil,  content:nil,
                          id: nil,media_type: nil,fallback: nil,properties: nil,media_overlay: nil,toc_text: nil,property: nil,
                          attributes: {})
