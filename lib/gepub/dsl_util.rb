@@ -3,6 +3,7 @@ module GEPUB
     UNASSIGNED = Object.new
 
     private
+    # @rbs (String | Time | Integer) -> bool
     def unassigned?(value)
       return value === UNASSIGNED
     end

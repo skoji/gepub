@@ -48,6 +48,7 @@ module GEPUB
       }
     }
 
+    # @rbs (String, ?String?, ?nil, ?id: nil | String, ?title_type: nil | String, ?identifier_type: nil, ?display_seq: nil, ?file_as: nil, ?group_position: nil, ?role: nil, ?lang: nil, ?alternates: Hash[untyped, untyped]) -> GEPUB::Meta?
     def add_title(content, deprecated_id = nil, deprecated_title_type = nil, id: nil,
                   title_type: nil,identifier_type: nil,display_seq: nil,file_as: nil,group_position: nil,role: nil,
                   lang: nil, alternates: {})
@@ -66,6 +67,7 @@ module GEPUB
       meta
     end
 
+    # @rbs (String, String, ?nil, ?nil, ?id: nil | String, ?title_type: nil, ?identifier_type: nil, ?display_seq: nil | Integer, ?file_as: nil, ?group_position: nil, ?role: String | nil, ?lang: nil, ?alternates: Hash[untyped, untyped]) -> GEPUB::Meta
     def add_person(name, content, deprecated_id = nil, deprecated_role = nil, id: nil,
                    title_type: nil,identifier_type: nil,display_seq: nil,file_as: nil,group_position: nil,role: nil,
                    lang: nil, alternates: {})
@@ -84,6 +86,7 @@ module GEPUB
       meta
     end
 
+    # @rbs (String, ?nil, ?nil, ?id: nil | String, ?title_type: nil, ?identifier_type: nil, ?display_seq: nil, ?file_as: nil, ?group_position: nil, ?role: nil | String, ?lang: nil, ?alternates: Hash[untyped, untyped]) -> GEPUB::Meta
     def add_creator(content, deprecated_id = nil, deprecated_role = nil, id: nil, 
                     title_type: nil,identifier_type: nil,display_seq: nil,file_as: nil,group_position: nil,role: nil,
                     lang: nil, alternates: {}) 
@@ -103,6 +106,7 @@ module GEPUB
       meta
     end
 
+    # @rbs (String, ?nil, ?nil, ?id: nil, ?title_type: nil, ?identifier_type: nil, ?display_seq: nil | Integer, ?file_as: nil, ?group_position: nil, ?role: String | nil, ?lang: nil, ?alternates: Hash[untyped, untyped]) -> GEPUB::Meta
     def add_contributor(content, deprecated_id = nil, deprecated_role = nil, id: nil,
                         title_type: nil,identifier_type: nil,display_seq: nil,file_as: nil,group_position: nil,role: nil,
                         lang: nil, alternates: {}) 
@@ -121,6 +125,7 @@ module GEPUB
       meta
     end
 
+    # @rbs (String, String | Time, ?id: String | nil, ?itemclass: Class, ?title_type: nil | String, ?identifier_type: nil, ?display_seq: nil | Integer, ?file_as: nil, ?group_position: nil, ?role: nil | String, ?lang: nil, ?alternates: Hash[untyped, untyped]) -> (GEPUB::Meta | GEPUB::DateMeta)?
     def add_metadata(name, content, id: nil, itemclass: Meta,
                      title_type: nil,identifier_type: nil,display_seq: nil,file_as: nil,group_position: nil,role: nil,
                      lang: nil, alternates: {}
