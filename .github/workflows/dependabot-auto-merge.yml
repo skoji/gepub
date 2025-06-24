@@ -11,16 +11,11 @@ jobs:
     runs-on: ubuntu-latest
     if: github.actor == 'dependabot[bot]'
     steps:
-      - name: Dependabot metadata
-        id: metadata
-        uses: dependabot/fetch-metadata@v2
-        with:
-          github-token: "${{ secrets.GITHUB_TOKEN }}"
+# Removed the unused Dependabot metadata step to simplify the workflow.
       
       - name: Enable auto-merge for Dependabot PRs
         run: |
           echo "Enabling auto-merge for PR #${{ github.event.pull_request.number }}"
-          gh pr merge --auto --squash "$PR_URL"
+          gh pr merge --auto --squash ${{ github.event.pull_request.number }}
         env:
-          PR_URL: ${{github.event.pull_request.html_url}}
           GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
