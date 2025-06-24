@@ -1,0 +1,21 @@
+name: Dependabot auto-merge
+on: pull_request_target
+
+permissions:
+  contents: write
+  pull-requests: write
+  checks: read
+
+jobs:
+  dependabot:
+    runs-on: ubuntu-latest
+    if: github.actor == 'dependabot[bot]'
+    steps:
+# Removed the unused Dependabot metadata step to simplify the workflow.
+      
+      - name: Enable auto-merge for Dependabot PRs
+        run: |
+          echo "Enabling auto-merge for PR #${{ github.event.pull_request.number }}"
+          gh pr merge --auto --squash ${{ github.event.pull_request.number }}
+        env:
+          GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
