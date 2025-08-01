@@ -164,11 +164,7 @@ module GEPUB
       identifier
     end
 
-    def add_date(date, deprecated_id = nil, id: nil)
-      if deprecated_id
-        warn "second argument is deprecated. use id: keyword argument"
-        id = deprecated_id
-      end
+    def add_date(date, id: nil)
       add_metadata('date', date, id: id, itemclass: DateMeta)
     end
 

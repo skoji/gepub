@@ -16,18 +16,16 @@ module GEPUB
   class Book
     # add an item(i.e. html, images, audios, etc)  to Book.
     # the added item will be referenced by the first argument in the EPUB container.
-    def add_item(href, deprecated_content = nil, deprecated_id = nil, deprecated_attributes = nil, content: nil, 
+    def add_item(href, content: nil, 
                  #{attrs_arguments_string},
                  attributes: {})
-      content, id, attributes = handle_deprecated_add_item_arguments(deprecated_content, deprecated_id, deprecated_attributes, content, id, attributes)
       add_item_internal(href, content: content, item_attributes: #{attrs_internal_string}, attributes: attributes, ordered: false)
     end
 
     # same as add_item, but the item will be added to spine of the EPUB.
-    def add_ordered_item(href, deprecated_content = nil, deprecated_id = nil, deprecated_attributes = nil,  content:nil,
+    def add_ordered_item(href, content:nil,
                          #{attrs_arguments_string},
                          attributes: {})
-      content, id, attributes = handle_deprecated_add_item_arguments(deprecated_content, deprecated_id, deprecated_attributes, content, id, attributes)
       add_item_internal(href, content: content, item_attributes: #{attrs_internal_string}, attributes: attributes, ordered: true)
     end
   end
@@ -65,16 +63,12 @@ module GEPUB
 
       next if node == 'title'
 
-      define_method(node, ->(content=UNASSIGNED, deprecated_id=nil, id:nil,
+      define_method(node, ->(content=UNASSIGNED, id:nil,
                              #{refiners_arguments_string},
                              #{meta_attr_arguments_string}) {
                       if unassigned?(content)
                         get_first_node(node)
                       else
-                        if deprecated_id
-                          warn "second argument is deprecated. use id: keyword argument"
-                          id = deprecated_id
-                        end
                         send(node + "_clear")
                         add_metadata(node, content, id: id, #{refiners_arguments_set_string}, #{meta_attr_arguments_set_string})
                       end
@@ -99,17 +93,9 @@ module GEPUB
       }
     }
 
-    def add_title(content, deprecated_id = nil, deprecated_title_type = nil, id: nil,
+    def add_title(content, id: nil,
                   #{refiners_arguments_string},
                   #{meta_attr_arguments_string})
-      if deprecated_id
-        warn 'second argument for add_title is deprecated. use id: instead'
-        id = deprecated_id
-      end
-      if deprecated_title_type
-        warn 'third argument for add_title is deprecated. use title_type: instead'
-        title_type = deprecated_title_type
-      end
       meta = add_metadata('title', content, id: id, 
                           #{refiners_arguments_set_string},
                           #{meta_attr_arguments_set_string})
@@ -117,17 +103,9 @@ module GEPUB
       meta
     end
 
-    def add_person(name, content, deprecated_id = nil, deprecated_role = nil, id: nil,
+    def add_person(name, content, id: nil,
                    #{refiners_arguments_string},
                    #{meta_attr_arguments_string})
-      if deprecated_id
-        warn 'second argument for add_person is deprecated. use id: instead'
-        id = deprecated_id
-      end
-      if deprecated_role
-        warn 'third argument for add_person is deprecated. use role: instead'
-        role = deprecated_role
-      end
       meta = add_metadata(name, content, id: id,
                           #{refiners_arguments_set_string},
                           #{meta_attr_arguments_set_string})
@@ -135,17 +113,9 @@ module GEPUB
       meta
     end
 
-    def add_creator(content, deprecated_id = nil, deprecated_role = nil, id: nil, 
+    def add_creator(content, id: nil, 
                     #{refiners_arguments_string},
                     #{meta_attr_arguments_string}) 
-      if deprecated_id
-        warn 'second argument for add_creator is deprecated. use id: instead'
-        id = deprecated_id
-      end
-      if deprecated_role
-        warn 'third argument for add_creator is deprecated. use role: instead'
-        role = deprecated_role
-      end
       role = 'aut' if role.nil?
       meta = add_person('creator', content, id: id,
                         #{refiners_arguments_set_string},
@@ -154,17 +124,9 @@ module GEPUB
       meta
     end
 
-    def add_contributor(content, deprecated_id = nil, deprecated_role = nil, id: nil,
+    def add_contributor(content, id: nil,
                         #{refiners_arguments_string},
                         #{meta_attr_arguments_string}) 
-      if deprecated_id
-        warn 'second argument for add_contributor is deprecated. use id: instead'
-        id = deprecated_id
-      end
-      if deprecated_role
-        warn 'third argument for add_contributor is deprecated. use role: instead'
-        role = deprecated_role
-      end
       meta = add_person('contributor', content, id: id, 
                          #{refiners_arguments_set_string},
                          #{meta_attr_arguments_set_string})

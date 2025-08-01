@@ -131,7 +131,7 @@ describe GEPUB::Metadata do
     it 'should detect duplicate id' do
       metadata = GEPUB::Metadata.new
       metadata.add_creator('TheCreator', id: 'id', role: 'aut')
-      expect { metadata.add_title('TheTitle', 'id') }.to raise_error(RuntimeError, "id 'id' is already in use.")
+      expect { metadata.add_title('TheTitle', id: 'id') }.to raise_error(RuntimeError, "id 'id' is already in use.")
     end
 
     it 'should generate empty metadata xml' do
@@ -148,7 +148,7 @@ describe GEPUB::Metadata do
     it 'should handle date with Time object' do
       metadata = GEPUB::Metadata.new
       a = Time.parse '2012-02-27 20:00:00 UTC'
-      metadata.add_date(a, 'date')
+      metadata.add_date(a, id: 'date')
       expect(metadata.date.to_s).to eq('2012-02-27T20:00:00Z')
     end
 
@@ -162,14 +162,14 @@ describe GEPUB::Metadata do
     it 'should handle date with Time object by content = ' do
       metadata = GEPUB::Metadata.new
       a = Time.parse '2012-02-27 20:00:00 UTC'
-      metadata.add_date('2011-01-01', 'date')
+      metadata.add_date('2011-01-01', id: 'date')
       metadata.date.content = a
       expect(metadata.date.to_s).to eq('2012-02-27T20:00:00Z')
     end
 
     it 'should handle date with a not W3C-DTF string' do
       metadata = GEPUB::Metadata.new
-      metadata.add_date('2012-02-28 05:00:00 +0900', 'date')
+      metadata.add_date('2012-02-28 05:00:00 +0900', id: 'date')
       expect(metadata.date.to_s).to eq('2012-02-27T20:00:00Z')
     end
     
