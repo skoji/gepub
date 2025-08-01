@@ -1,6 +1,3 @@
-def ruby2_keywords(*)
-end if RUBY_VERSION < "2.7" && !(defined? ruby2_keywords)
-
 require 'gepub/version'
 require 'gepub/dsl_util'
 require 'gepub/xml_util'

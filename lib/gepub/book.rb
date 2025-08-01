@@ -502,27 +502,6 @@ EOF
       item
     end
 
-    def handle_deprecated_add_item_arguments(deprecated_content, deprecated_id, deprecated_attributes, content, id, attributes)
-      if deprecated_content
-        msg = 'deprecated argument; use content keyword argument instead of 2nd argument'
-        fail msg if content
-        warn msg
-        content = deprecated_content
-      end
-      if deprecated_id
-        msg = 'deprecated argument; use id keyword argument instead of 3rd argument'
-        fail msg if id
-        warn msg
-        id = deprecated_id
-      end
-      if deprecated_attributes
-        msg = 'deprecated argument; use argument keyword attributes instead of 4th argument'
-        fail msg if attributes.size > 0
-        warn msg
-        attributes = deprecated_attributes
-      end
-      return content, id, attributes
-    end
 
   end
 end
