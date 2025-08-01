@@ -4,7 +4,7 @@ require 'nokogiri'
 require 'zip'
 require 'fileutils'
 
-# = GEPUB 
+# = GEPUB
 # Author:: KOJIMA Satoshi
 # namespace for gepub library.
 # The core class is GEPUB::Book. It holds metadata and contents of EPUB file. metadata and contents can be accessed
@@ -14,7 +14,7 @@ require 'fileutils'
 
 module GEPUB
   # Book is the class to hold data in EPUB files.
-  # 
+  #
   # It can generate and parse EPUB2/EPUB3 files.
   #
   # Book delegates many methods to objects in other class, so you can't find
@@ -74,7 +74,7 @@ module GEPUB
   # === Book#lastmodified (delegated to Metadata#lastmodified)
   # returns Meta object contains last modified time.
   # === setting and reading other metadata: publisher, language, coverage, date, description, format, relation, rights, source, subject, type (delegated to Metadata)
-  # they all have methods like: publisher(which returns 'main' publisher), add_publisher(content, id) (which add publisher), publisher= (clears and set publisher), and publisher_list(returns publisher Meta object in display-seq order). 
+  # they all have methods like: publisher(which returns 'main' publisher), add_publisher(content, id) (which add publisher), publisher= (clears and set publisher), and publisher_list(returns publisher Meta object in display-seq order).
   # === Book#page_progression_direction= (delegated to Spine#page_progression_direction=)
   # set page-proression-direction attribute to spine.
 
@@ -123,7 +123,7 @@ module GEPUB
       @toc = []
       @landmarks = []
       if block
-        block.arity < 1 ? instance_eval(&block) : block[self]        
+        block.arity < 1 ? instance_eval(&block) : block[self]
       end
     end
 
@@ -142,7 +142,7 @@ module GEPUB
       io.binmode
       (@optional_files ||= {})[path] = io.read
     end
-    
+
     def set_singleton_methods_to_item(item)
       toc = @toc
       metaclass = (class << item;self;end)
@@ -157,11 +157,11 @@ module GEPUB
       metaclass.send(:define_method, :bindings, Proc.new {
         bindings
       })
-                               
-    end
-    
 
-    # get handler item which defined in bindings for media type, 
+    end
+
+
+    # get handler item which defined in bindings for media type,
     def get_handler_of(media_type)
       items[@package.bindings.handler_by_media_type[media_type]]
     end
@@ -177,7 +177,7 @@ module GEPUB
     end
 
     # cleanup and maintain consistency of metadata and items included in the Book
-    # object. 
+    # object.
     def cleanup
       cleanup_for_epub2
       cleanup_for_epub3
@@ -191,8 +191,8 @@ module GEPUB
         mod_time = Zip::DOSTime.local(tm.year, tm.month, tm.day, tm.hour, tm.min, tm.sec)
       end
 
-      mimetype_entry = Zip::Entry.new(nil, 'mimetype', nil, nil, nil, nil, nil, nil, mod_time)
-      epub.put_next_entry(mimetype_entry, nil, nil, Zip::Entry::STORED)
+      mimetype_entry = Zip::Entry.new(nil, 'mimetype', time: mod_time, compression_method: Zip::Entry::STORED)
+      epub.put_next_entry(mimetype_entry)
       epub << "application/epub+zip"
 
       entries = {}
@@ -212,7 +212,7 @@ module GEPUB
 
       entries.sort_by { |k,_v| k }.each {
         |k,v|
-        zip_entry = Zip::Entry.new(nil, k, nil, nil, nil, nil, nil, nil, mod_time)
+        zip_entry = Zip::Entry.new(nil, k, time: mod_time)
         epub.put_next_entry(zip_entry)
         epub << v.force_encoding('us-ascii')
       }
@@ -221,9 +221,18 @@ module GEPUB
     # generates and returns StringIO contains EPUB.
     def generate_epub_stream
       cleanup
-      Zip::OutputStream::write_buffer(StringIO.new) do
-        |epub|
-        write_to_epub_container(epub)
+      # Save current Zip64 setting and disable it for EPUB compatibility
+      original_zip64_support = Zip.write_zip64_support
+      Zip.write_zip64_support = false
+
+      begin
+        Zip::OutputStream::write_buffer(StringIO.new) do
+          |epub|
+          write_to_epub_container(epub)
+        end
+      ensure
+        # Restore original Zip64 setting
+        Zip.write_zip64_support = original_zip64_support
       end
     end
 
@@ -231,10 +240,20 @@ module GEPUB
     def generate_epub(path_to_epub)
       cleanup
       File.delete(path_to_epub) if File.exist?(path_to_epub)
-      Zip::OutputStream::open(path_to_epub) {
-        |epub|
-        write_to_epub_container(epub)
-      }
+
+      # Save current Zip64 setting and disable it for EPUB compatibility
+      original_zip64_support = Zip.write_zip64_support
+      Zip.write_zip64_support = false
+
+      begin
+        Zip::OutputStream::open(path_to_epub) {
+          |epub|
+          write_to_epub_container(epub)
+        }
+      ensure
+        # Restore original Zip64 setting
+        Zip.write_zip64_support = original_zip64_support
+      end
     end
 
     def container_xml
@@ -261,11 +280,11 @@ EOF
       end
       @toc = @toc + newtoc
     end
-      
+
     def generate_nav_doc(title = 'Table of Contents')
       add_item('nav.xhtml', id: 'nav', content: StringIO.new(nav_doc(title))).add_property('nav')
     end
-    
+
     def nav_doc(title = 'Table of Contents')
       # handle cascaded toc
       start_level = @toc && !@toc.empty? && @toc[0][:level] || 1
@@ -285,7 +304,7 @@ EOF
         current_stack[:tocs].push toc_entry
         current_stack
       end
-      # write toc 
+      # write toc
       def write_toc xml_doc, tocs
         return if tocs.empty?
         xml_doc.ol {
@@ -348,7 +367,7 @@ EOF
         |xml|
         xml.ncx('xmlns' => 'http://www.daisy.org/z3986/2005/ncx/', 'version' => '2005-1') {
           xml.head {
-            xml.meta('name' => 'dtb:uid', 'content' => "#{self.identifier}") 
+            xml.meta('name' => 'dtb:uid', 'content' => "#{self.identifier}")
             xml.meta('name' => 'dtb:depth', 'content' => '1')
             xml.meta('name' => 'dtb:totalPageCount','content' => '0')
             xml.meta('name' => 'dtb:maxPageNumber', 'content' => '0')
@@ -377,9 +396,9 @@ EOF
       }
       builder.to_xml(:encoding => 'utf-8')
     end
-    
+
     private
-    def self.parse_container(zip_file, files) 
+    def self.parse_container(zip_file, files)
       package_path = nil
       package = nil
       zip_file.each do |entry|
@@ -414,7 +433,7 @@ EOF
       end
     end
     private_class_method :check_consistency_of_package
-    
+
     def self.parse_files_into_package(files, package)
       files.each {
         |k, content|
@@ -426,7 +445,7 @@ EOF
       }
     end
     private_class_method :parse_files_into_package
-    
+
     def  cleanup_for_epub2
       if version.to_f < 3.0 || @package.epub_backward_compat
         if @package.manifest.item_list.select {
@@ -443,14 +462,14 @@ EOF
     def cleanup_for_epub3
       if version.to_f >=3.0
         @package.metadata.modified_now unless @package.metadata.lastmodified_updated?
-        
+
         if @package.manifest.item_list.select {
           |_href, item|
           (item.properties||[]).member? 'nav'
           }.size == 0
           generate_nav_doc
         end
-        
+
         @package.spine.remove_with_idlist @package.manifest.item_list.map {
           |_href, item|
           item.fallback
@@ -462,7 +481,7 @@ EOF
 
     def add_item_internal(href, content: nil, item_attributes: , attributes: {}, ordered: )
       id = item_attributes.delete(:id)
-      item = 
+      item =
         if ordered
           @package.add_ordered_item(href,attributes: attributes, id:id, content: content)
         else
@@ -483,21 +502,21 @@ EOF
       item
     end
 
-    def handle_deprecated_add_item_arguments(deprecated_content, deprecated_id, deprecated_attributes, content, id, attributes) 
+    def handle_deprecated_add_item_arguments(deprecated_content, deprecated_id, deprecated_attributes, content, id, attributes)
       if deprecated_content
-        msg = 'deprecated argument; use content keyword argument instead of 2nd argument' 
+        msg = 'deprecated argument; use content keyword argument instead of 2nd argument'
         fail msg if content
         warn msg
         content = deprecated_content
       end
       if deprecated_id
-        msg = 'deprecated argument; use id keyword argument instead of 3rd argument' 
+        msg = 'deprecated argument; use id keyword argument instead of 3rd argument'
         fail msg if id
         warn msg
         id = deprecated_id
       end
       if deprecated_attributes
-        msg = 'deprecated argument; use argument keyword attributes instead of 4th argument' 
+        msg = 'deprecated argument; use argument keyword attributes instead of 4th argument'
         fail msg if attributes.size > 0
         warn msg
         attributes = deprecated_attributes

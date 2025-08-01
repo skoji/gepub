@@ -12,12 +12,14 @@ Gem::Specification.new do |s|
   s.description = %q{gepub is a generic EPUB parser/generator. Generates and parse EPUB2 and EPUB3}
   s.license     = "BSD-3-Clause"
 
+  s.required_ruby_version = ">= 3.2"
+
   s.files         = `git ls-files`.split("\n").reject { |f| f.match(%r{^spec/}) }
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
 
   s.add_runtime_dependency "nokogiri", ">= 1.8.2", "< 2.0"
-  s.add_runtime_dependency "rubyzip", "> 1.1.1", "< 2.5"
+  s.add_runtime_dependency "rubyzip", ">= 3.0", "< 3.1"
   s.add_development_dependency "epubcheck-ruby"
   s.add_development_dependency "rake"
   s.add_development_dependency "rspec"
