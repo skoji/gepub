@@ -1,9 +1,7 @@
 # gepub  
 
-[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/skoji/gepub?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![GitHub Actions Status](https://github.com/skoji/gepub/workflows/Test/badge.svg)](https://github.com/skoji/gepub/actions?query=workflow%3ATest)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/acd6df07e071a4bbb399/test_coverage)](https://codeclimate.com/github/skoji/gepub/test_coverage)
-[![Gem Version](https://badge.fury.io/rb/gepub.svg)](http://badge.fury.io/rb/gepub)
+[![Gem Version](https://badge.fury.io/rb/gepub.svg?icon=si%3Arubygems)](https://badge.fury.io/rb/gepub)
 
 * https://rubydoc.info/github/skoji/gepub
 
