@@ -17,6 +17,7 @@ jobs:
       run: bundle install --jobs 4 --retry 3
     - name: run test
       run: bundle exec rake spec
-    - uses: joshmfrankel/simplecov-check-action@main
+    - if: runner.os == 'Linux' && matrix.ruby == '3.4'
+      uses: joshmfrankel/simplecov-check-action@v1
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
