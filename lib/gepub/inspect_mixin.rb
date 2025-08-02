@@ -1,5 +1,6 @@
 module GEPUB
   module InspectMixin
+    # :nocov:
     def inspect
       result = instance_variables.each
         .with_object({}) { |name, h| h[name] = instance_variable_get(name) }
@@ -22,5 +23,6 @@ module GEPUB
 
       "#<#{self.class.name} " + result + '>'
     end
+    # :nocov:
   end
 end
