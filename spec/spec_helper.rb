@@ -1,6 +1,13 @@
 require 'epubcheck/ruby/cli'
 require 'simplecov'
-SimpleCov.start
+require "simplecov-json"
+SimpleCov.formatters = SimpleCov::Formatter::MultiFormatter.new([
+  SimpleCov::Formatter::HTMLFormatter,
+  SimpleCov::Formatter::JSONFormatter
+])
+SimpleCov.start do
+  enable_coverage :branch
+end  
 
 require "stringio"
 
