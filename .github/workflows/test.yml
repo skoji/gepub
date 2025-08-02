@@ -7,8 +7,6 @@ jobs:
         ruby: [3.2, 3.3, 3.4, jruby]
         platform: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.platform }}
-    env:
-      CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
     steps:
     - uses: actions/checkout@v4
     - name: Set up Ruby
@@ -19,3 +17,6 @@ jobs:
       run: bundle install --jobs 4 --retry 3
     - name: run test
       run: bundle exec rake spec
+    - uses: joshmfrankel/simplecov-check-action@main
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
