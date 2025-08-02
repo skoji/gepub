@@ -7,7 +7,7 @@ SimpleCov.formatters = SimpleCov::Formatter::MultiFormatter.new([
 ])
 SimpleCov.start do
   enable_coverage :branch
-end  
+end
 
 require "stringio"
 
