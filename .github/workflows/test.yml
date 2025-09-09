@@ -6,6 +6,9 @@ jobs:
       matrix:
         ruby: [3.2, 3.3, 3.4, jruby, truffleruby]
         platform: [ubuntu-latest, macos-latest, windows-latest]
+        exclude:
+          - ruby: truffleruby
+            platform: windows-latest
     runs-on: ${{ matrix.platform }}
     steps:
     - uses: actions/checkout@v4
