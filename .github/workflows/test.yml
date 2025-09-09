@@ -4,7 +4,7 @@ jobs:
   test:
     strategy:
       matrix:
-        ruby: [3.2, 3.3, 3.4, jruby]
+        ruby: [3.2, 3.3, 3.4, jruby, truffleruby]
         platform: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.platform }}
     steps:
