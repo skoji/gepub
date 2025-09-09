@@ -20,4 +20,4 @@ jobs:
     - if: runner.os == 'Linux' && matrix.ruby == '3.4'
       uses: joshmfrankel/simplecov-check-action@1.0.0
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+        github_token: ${{ secrets.CI_TOKEN }}
