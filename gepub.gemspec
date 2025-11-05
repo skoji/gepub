@@ -19,7 +19,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
 
   s.add_runtime_dependency "nokogiri", ">= 1.8.2", "< 2.0"
-  s.add_runtime_dependency "rubyzip", ">= 3.0", "< 3.1"
+  s.add_runtime_dependency "rubyzip", ">= 3.0", "< 3.3"
   s.add_development_dependency "epubcheck-ruby"
   s.add_development_dependency "rake"
   s.add_development_dependency "rspec"
