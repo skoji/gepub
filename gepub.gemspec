@@ -22,6 +22,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency "rubyzip", ">= 3.0", "< 3.3"
   s.add_development_dependency "epubcheck-ruby"
   s.add_development_dependency "rake"
+  s.add_development_dependency "rdoc"
   s.add_development_dependency "rspec"
   s.add_development_dependency "rubocop"
 end
