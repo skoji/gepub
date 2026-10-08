@@ -103,6 +103,18 @@ book.generate_epub(epubname)
 ```
  * [examples in this repository](https://github.com/skoji/gepub/tree/main/examples/) 
 
+### Streaming output
+
+`generate_epub` and `generate_epub_stream` are built on `write_epub`, which writes the EPUB as it gets
+generated, into anything that responds to `<<` or `write` - a socket, a pipe, `$stdout`:
+
+```ruby
+book.write_epub($stdout)
+```
+
+`write_epub` also accepts a `ZipKit::Streamer`, such as the one yielded by `zip_kit_stream` in Rails, and
+`book.to_rack_body` returns a Rack response body.
+
 ## INSTALL:
 
 * gem install gepub

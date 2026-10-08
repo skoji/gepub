@@ -186,11 +186,7 @@ module GEPUB
 
     # write EPUB to ZipKit::Streamer specified by the argument.
     def write_to_epub_container(epub)
-      mod_time = Time.now
-      unless (last_mod = lastmodified).nil?
-        tm = last_mod.content
-        mod_time = Time.local(tm.year, tm.month, tm.day, tm.hour, tm.min, tm.sec)
-      end
+      mod_time = zip_modification_time
 
       epub.write_mimetype_file(MIMETYPE_CONTENTS, modification_time: mod_time)
 
@@ -200,7 +196,7 @@ module GEPUB
         entries[k] = content
       }
 
-      entries['META-INF/container.xml'] = container_xml
+      entries[CONTAINER] = container_xml
       entries[@package.path] = opf_xml
       @package.manifest.item_list.each {
         |_k, item|
@@ -211,28 +207,37 @@ module GEPUB
 
       entries.sort_by { |k,_v| k }.each {
         |k,v|
-        data = v.b
-        deflated = Zlib::Deflate.new(Zlib::DEFAULT_COMPRESSION, -Zlib::MAX_WBITS).deflate(data, Zlib::FINISH)
-        epub.add_deflated_entry(filename: k, modification_time: mod_time, compressed_size: deflated.bytesize,
-                                uncompressed_size: data.bytesize, crc32: Zlib.crc32(data))
-        epub << deflated
+        write_zip_entry(epub, k, v, mod_time)
       }
+    end
+
+    # writes EPUB to the argument, which can be anything responding to `<<` or `write` -
+    # a File, a socket, a Rack streaming body and so on - or a ZipKit::Streamer. The output is
+    # written as it gets generated, without assembling the whole EPUB in memory first. Returns the argument.
+    #   book.write_epub($stdout)
+    def write_epub(io)
+      cleanup
+      self.class.send(:with_epub_streamer, io) { |epub| write_to_epub_container(epub) }
+      io
     end
 
     # generates and returns StringIO contains EPUB.
     def generate_epub_stream
-      cleanup
-      out = StringIO.new(+'')
-      ZipKit::Streamer.open(out, ocf: true) { |epub| write_to_epub_container(epub) }
-      out
+      write_epub(StringIO.new(String.new))
     end
 
     # writes EPUB to file. if file exists, it will be overwritten.
     def generate_epub(path_to_epub)
+      File.open(path_to_epub, 'wb') { |f| write_epub(f) }
+    end
+
+    # returns an object which yields the EPUB in chunks from `each`, usable as a Rack response body.
+    # The EPUB only gets generated once the body is iterated over, but `cleanup` runs right away.
+    # Errors which occur while writing - such as a file name which is not allowed in an EPUB -
+    # are raised from `each`, which will be after the response status and headers have been sent.
+    def to_rack_body
       cleanup
-      File.open(path_to_epub, 'wb') do |f|
-        ZipKit::Streamer.open(f, ocf: true) { |epub| write_to_epub_container(epub) }
-      end
+      ZipKit::OutputEnumerator.new(ocf: true) { |epub| write_to_epub_container(epub) }
     end
 
     def container_xml
@@ -377,6 +382,29 @@ EOF
     end
 
     private
+    def zip_modification_time
+      return Time.now if (last_mod = lastmodified).nil?
+      tm = last_mod.content
+      Time.local(tm.year, tm.month, tm.day, tm.hour, tm.min, tm.sec)
+    end
+
+    # Precompressed, so that the sizes go into the local header and no data descriptor is needed
+    def write_zip_entry(epub, name, content, mod_time)
+      data = content.b
+      deflated = Zlib::Deflate.new(Zlib::DEFAULT_COMPRESSION, -Zlib::MAX_WBITS).deflate(data, Zlib::FINISH)
+      epub.add_deflated_entry(filename: name, modification_time: mod_time, compressed_size: deflated.bytesize,
+                              uncompressed_size: data.bytesize, crc32: Zlib.crc32(data))
+      epub << deflated
+    end
+
+    # A Streamer responds to `<<` too, and would get a whole ZIP written into it as one entry body.
+    # A Streamer we did not create must have been opened with `ocf: true` by the caller
+    def self.with_epub_streamer(io, &block)
+      return yield(io) if io.is_a?(ZipKit::Streamer)
+      ZipKit::Streamer.open(io, ocf: true, &block)
+    end
+    private_class_method :with_epub_streamer
+
     def self.with_zip_io(path_or_io)
       return yield(path_or_io) if path_or_io.respond_to?(:seek)
       File.open(path_or_io, 'rb') { |f| yield(f) }

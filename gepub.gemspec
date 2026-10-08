@@ -21,6 +21,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency "nokogiri", ">= 1.8.2", "< 2.0"
   s.add_runtime_dependency "zip_kit", "~> 6.4", ">= 6.4.1"
   s.add_development_dependency "epubcheck-ruby"
+  s.add_development_dependency "rack"
   s.add_development_dependency "rake"
   s.add_development_dependency "rdoc"
   s.add_development_dependency "rspec"

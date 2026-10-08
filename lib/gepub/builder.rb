@@ -308,5 +308,11 @@ module GEPUB
     def generate_epub_stream
       @book.generate_epub_stream
     end
+    def write_epub(io)
+      @book.write_epub(io)
+    end
+    def to_rack_body
+      @book.to_rack_body
+    end
   end
 end
