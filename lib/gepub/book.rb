@@ -79,6 +79,10 @@ module GEPUB
   # === Book#page_progression_direction= (delegated to Spine#page_progression_direction=)
   # set page-proression-direction attribute to spine.
 
+  # raised when a Book that streams its EPUB out gets asked to do something it no longer can,
+  # such as changing content which has already been written
+  StreamingError = Class.new(StandardError)
+
   class Book
     include InspectMixin
 
@@ -114,6 +118,31 @@ module GEPUB
       book
     end
 
+    # builds the Book in the block and writes the EPUB into `io` while the block runs: the content
+    # of every item gets written out as soon as it is added, and is not kept in memory. Everything
+    # which needs the whole book - package.opf, the navigation documents - gets written at the end.
+    # `io` can be anything responding to `<<` or `write`, or a ZipKit::Streamer - such as the one
+    # yielded by `zip_kit_stream` in Rails. Returns `io`.
+    #
+    #   GEPUB::Book.write_epub(File.open('book.epub', 'wb')) do |book|
+    #     book.title = 'Streamed'
+    #     book.ordered { chapters.each { |c| book.add_item(c.href, content: c.io).toc_text(c.title) } }
+    #   end
+    #
+    # The content of an item can only be added once. Metadata, such as the toc text or properties
+    # of items, can be changed until the block returns.
+    def self.write_epub(io, path = 'OEBPS/package.opf', attributes = {}, &block)
+      with_epub_streamer(io) { |epub| new(path, attributes).stream_to_epub_container(epub, &block) }
+      io
+    end
+
+    # same as `write_epub`, but returns a Rack response body. The block only runs once the
+    # body gets iterated over - that is, while the response is being sent. Errors from the block
+    # will be raised from `each`, after the response status and headers have been sent.
+    def self.rack_body(path = 'OEBPS/package.opf', attributes = {}, &block)
+      ZipKit::OutputEnumerator.new(ocf: true) { |epub| new(path, attributes).stream_to_epub_container(epub, &block) }
+    end
+
     # creates new empty Book object.
     # usually you do not need to specify any arguments.
     def initialize(path='OEBPS/package.opf', attributes = {}, &block)
@@ -141,7 +170,11 @@ module GEPUB
         io = File.new(io_or_filename)
       end
       io.binmode
-      (@optional_files ||= {})[path] = io.read
+      if @streaming_epub
+        @streaming_epub.write_file(path, modification_time: zip_modification_time) { |sink| IO.copy_stream(io, sink) }
+      else
+        (@optional_files ||= {})[path] = io.read
+      end
     end
 
     def set_singleton_methods_to_item(item)
@@ -186,6 +219,7 @@ module GEPUB
 
     # write EPUB to ZipKit::Streamer specified by the argument.
     def write_to_epub_container(epub)
+      raise_if_streamed
       mod_time = zip_modification_time
 
       epub.write_mimetype_file(MIMETYPE_CONTENTS, modification_time: mod_time)
@@ -211,11 +245,35 @@ module GEPUB
       }
     end
 
+    # writes the EPUB into the ZipKit::Streamer while the block builds the Book, see Book.write_epub
+    def stream_to_epub_container(epub, &block)
+      raise_if_streamed
+      @streamed = true
+      @streaming_epub = epub
+      # Fixed upfront, since cleanup sets the lastmodified halfway through the entries
+      @streaming_mod_time = zip_modification_time
+      epub.write_mimetype_file(MIMETYPE_CONTENTS, modification_time: zip_modification_time)
+      write_zip_entry(epub, CONTAINER, container_xml, zip_modification_time)
+      block.arity < 1 ? instance_eval(&block) : block[self] if block
+
+      # This adds the nav and ncx, which get streamed out like any other item
+      cleanup
+      # Content which bypassed add_content, for instance via Item#content=
+      @package.manifest.item_list.each_value do |item|
+        stream_item_content(item, item.content) unless item.content.nil?
+      end
+      write_zip_entry(epub, @package.path, opf_xml, zip_modification_time)
+    ensure
+      @streaming_epub = nil
+      @streaming_mod_time = nil
+    end
+
     # writes EPUB to the argument, which can be anything responding to `<<` or `write` -
     # a File, a socket, a Rack streaming body and so on - or a ZipKit::Streamer. The output is
     # written as it gets generated, without assembling the whole EPUB in memory first. Returns the argument.
     #   book.write_epub($stdout)
     def write_epub(io)
+      raise_if_streamed
       cleanup
       self.class.send(:with_epub_streamer, io) { |epub| write_to_epub_container(epub) }
       io
@@ -236,6 +294,7 @@ module GEPUB
     # Errors which occur while writing - such as a file name which is not allowed in an EPUB -
     # are raised from `each`, which will be after the response status and headers have been sent.
     def to_rack_body
+      raise_if_streamed
       cleanup
       ZipKit::OutputEnumerator.new(ocf: true) { |epub| write_to_epub_container(epub) }
     end
@@ -382,7 +441,12 @@ EOF
     end
 
     private
+    def raise_if_streamed
+      raise StreamingError, 'This Book has been streamed out, and does not hold its content anymore' if @streamed
+    end
+
     def zip_modification_time
+      return @streaming_mod_time if @streaming_mod_time
       return Time.now if (last_mod = lastmodified).nil?
       tm = last_mod.content
       Time.local(tm.year, tm.month, tm.day, tm.hour, tm.min, tm.sec)
@@ -395,6 +459,16 @@ EOF
       epub.add_deflated_entry(filename: name, modification_time: mod_time, compressed_size: deflated.bytesize,
                               uncompressed_size: data.bytesize, crc32: Zlib.crc32(data))
       epub << deflated
+    end
+
+    def stream_item_content(item, string_or_io)
+      name = @package.contents_prefix + item.href
+      if string_or_io.is_a?(String)
+        write_zip_entry(@streaming_epub, name, string_or_io, zip_modification_time)
+        item.content = nil
+      else
+        @streaming_epub.write_file(name, modification_time: zip_modification_time) { |sink| IO.copy_stream(string_or_io, sink) }
+      end
     end
 
     # A Streamer responds to `<<` too, and would get a whole ZIP written into it as one entry body.
@@ -502,13 +576,19 @@ EOF
 
     def add_item_internal(href, content: nil, item_attributes: , attributes: {}, ordered: )
       id = item_attributes.delete(:id)
+      # While streaming, the content gets added once the sink is in place, so that it goes straight out
+      package_content = @streaming_epub ? nil : content
       item =
         if ordered
-          @package.add_ordered_item(href,attributes: attributes, id:id, content: content)
+          @package.add_ordered_item(href,attributes: attributes, id:id, content: package_content)
         else
-          @package.add_item(href, attributes: attributes, id: id, content: content)
+          @package.add_item(href, attributes: attributes, id: id, content: package_content)
         end
       set_singleton_methods_to_item(item)
+      if @streaming_epub
+        item.content_sink = method(:stream_item_content)
+        item.add_content(content) unless content.nil?
+      end
       item_attributes.each do |attr, val|
         next if val.nil?
         method_name = if attr == :toc_text

@@ -112,8 +112,78 @@ generated, into anything that responds to `<<` or `write` - a socket, a pipe, `$
 book.write_epub($stdout)
 ```
 
-`write_epub` also accepts a `ZipKit::Streamer`, such as the one yielded by `zip_kit_stream` in Rails, and
-`book.to_rack_body` returns a Rack response body.
+### Building the book while streaming
+
+The book still holds all of its content in memory until it gets written. To avoid that, build the book
+inside a block given to `GEPUB::Book.write_epub`. The content of every item is then written out as soon as
+it gets added, and does not stay in memory:
+
+```ruby
+GEPUB::Book.write_epub(File.open('audiobook.epub', 'wb')) do |book|
+  book.identifier = 'urn:uuid:5c8a6b7e-0a5f-4b6e-9c1d-2f1e3a4b5c6d'
+  book.title = 'A very long audiobook'
+  book.language = 'en'
+
+  book.ordered do
+    chapters.each do |chapter|
+      item = book.add_item("text/#{chapter.slug}.xhtml", content: StringIO.new(chapter.xhtml))
+      item.toc_text(chapter.title)
+    end
+  end
+
+  tracks.each do |track|
+    File.open(track.path, 'rb') do |io|
+      book.add_item("audio/#{track.slug}.mp3", content: io)
+    end
+  end
+end
+```
+
+Media and other non-XHTML content is copied through from its IO without being read whole. XHTML is read
+item by item, because gepub inspects it to set item properties such as `svg` or `mathml`. Everything which
+needs the whole book - `package.opf` and the navigation documents - is written when the block returns.
+
+Since the content is gone once written, it can only be added once per item, and the book can not be
+generated again afterwards. Metadata - the title, toc texts, landmarks, item properties - can be changed
+until the block returns. `GEPUB::Builder.write_epub` takes the same block as `GEPUB::Builder.new`.
+
+### Sending an EPUB from Rails
+
+gepub writes EPUBs with [zip_kit](https://github.com/julik/zip_kit), which adds `zip_kit_stream` to your
+controllers. Give the block it yields to `GEPUB::Book.write_epub`, and the book gets built while it is
+being downloaded - even the database queries for its content happen during the download:
+
+```ruby
+class PublicationsController < ApplicationController
+  def download
+    publication = Publication.find(params[:id])
+
+    zip_kit_stream(filename: "#{publication.slug}.epub", type: 'application/epub+zip', ocf: true) do |zip|
+      GEPUB::Book.write_epub(zip) do |book|
+        book.identifier = "urn:uuid:#{publication.uuid}"
+        book.title = publication.title
+        book.language = publication.language
+
+        book.ordered do
+          publication.chapters.order(:position).each do |chapter|
+            item = book.add_item("text/chapter-#{chapter.position}.xhtml", content: StringIO.new(chapter.xhtml))
+            item.toc_text(chapter.title)
+          end
+        end
+      end
+    end
+  end
+end
+```
+
+Pass `ocf: true` to `zip_kit_stream`, so that zip_kit checks the file names against the EPUB rules. An already
+built book can be written into the same block with `book.write_epub(zip)`.
+
+The response is underway by the time the block runs, so if building the book fails - for example because an
+item has a file name which is not allowed in an EPUB - the download gets cut short rather than turning into
+an error page.
+
+Outside of Rails, `GEPUB::Book.rack_body { |book| ... }` and `book.to_rack_body` return a Rack response body.
 
 ## INSTALL:
 

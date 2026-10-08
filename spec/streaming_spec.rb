@@ -138,15 +138,276 @@ describe 'Streaming EPUB output' do
     end
   end
 
-  describe 'writing into a ZipKit::Streamer' do
-    # This is what zip_kit_stream in a Rails controller does with its block and options
-    it 'writes into it instead of nesting a ZIP inside it', :uses_temporary_directory do
-      book = build_book
-      body = ZipKit::OutputEnumerator.new(ocf: true) { |zip| book.write_epub(zip) }
-      bytes = +''
-      body.each { |chunk| bytes << chunk }
-      expect(bytes.byteslice(30, 8)).to eq('mimetype') # it is the first entry, not a ZIP stored inside one
-      expect_valid_epub(bytes)
+  describe 'building the book while streaming' do
+    # Hands out data in small pieces, and refuses to be read whole - so we know it was streamed through
+    class ChunkedSource
+      attr_reader :max_read
+
+      def initialize(bytes)
+        @io = StringIO.new(bytes)
+        @max_read = 0
+      end
+
+      def binmode
+        self
+      end
+
+      def read(length = nil, outbuf = nil)
+        raise 'the source was read whole' if length.nil?
+        @max_read = [@max_read, length].max
+        @io.read([length, 16 * 1024].min, outbuf)
+      end
+    end
+
+    def add_chapters(book, count = 2)
+      book.ordered do
+        count.times do |i|
+          book.add_item("text/chap#{i + 1}.xhtml", content: StringIO.new(chapter("Chapter #{i + 1}"))).toc_text("Chapter #{i + 1}")
+        end
+      end
+    end
+
+    def set_metadata(book)
+      book.identifier = 'http://example.jp/streamed-build'
+      book.title = 'Built while streaming'
+      book.language = 'en'
+    end
+
+    it 'writes a valid EPUB with a block taking the book', :uses_temporary_directory do
+      sink = ChunkCollector.new
+      returned = GEPUB::Book.write_epub(sink) do |book|
+        set_metadata(book)
+        add_chapters(book)
+        book.add_item('img/image1.jpg', content: (@fixtures_directory / 'testdata/image1.jpg').open('rb')).cover_image
+      end
+      expect(returned).to equal(sink)
+      expect_valid_epub(sink.string)
+    end
+
+    it 'writes a valid EPUB with a block evaluated inside the book', :uses_temporary_directory do
+      spec = self
+      sink = ChunkCollector.new
+      GEPUB::Book.write_epub(sink) do
+        spec.set_metadata(self)
+        spec.add_chapters(self)
+        add_item('img/image1.jpg', content: (spec.instance_variable_get(:@fixtures_directory) / 'testdata/image1.jpg').open('rb'))
+      end
+      expect_valid_epub(sink.string)
+    end
+
+    it 'writes the content out while the block is still running, and does not keep it' do
+      sink = ChunkCollector.new
+      GEPUB::Book.write_epub(sink) do |book|
+        set_metadata(book)
+        item = book.add_item('text/chap1.xhtml', content: StringIO.new(chapter('Chapter 1')))
+        expect(sink.string).to include('OEBPS/text/chap1.xhtml') # its local header is out already
+        expect(item.content).to be_nil
+      end
+    end
+
+    it 'streams non-XHTML content through without reading it whole' do
+      payload = Random.bytes(3 * 1024 * 1024 + 17)
+      source = ChunkedSource.new(payload)
+      sink = ChunkCollector.new
+      GEPUB::Book.write_epub(sink) do |book|
+        set_metadata(book)
+        add_chapters(book, 1)
+        book.add_item('audio/track.mp3', content: source)
+      end
+      expect(source.max_read).to be < payload.bytesize
+
+      zip = StringIO.new(sink.string)
+      entry = ZipKit::FileReader.read_zip_structure(io: zip).find { |e| e.filename == 'OEBPS/audio/track.mp3' }
+      reader = entry.extractor_from(zip)
+      extracted = +''
+      extracted << reader.extract(64 * 1024) until reader.eof?
+      expect(extracted).to eq(payload)
+    end
+
+    it 'still detects the properties of XHTML content' do
+      sink = ChunkCollector.new
+      GEPUB::Book.write_epub(sink) do |book|
+        set_metadata(book)
+        svg = '<html xmlns="http://www.w3.org/1999/xhtml"><head><title>s</title></head>' \
+              '<body><svg xmlns="http://www.w3.org/2000/svg"/></body></html>'
+        book.add_ordered_item('text/svg.xhtml', content: StringIO.new(svg))
+      end
+      expect(GEPUB::Book.parse(StringIO.new(sink.string)).item_by_href('text/svg.xhtml').properties).to include('svg')
+    end
+
+    it 'accepts content added after the item, and IOs which get closed right after', :uses_temporary_directory do
+      sink = ChunkCollector.new
+      GEPUB::Book.write_epub(sink) do |book|
+        set_metadata(book)
+        book.ordered do
+          book.add_item('text/chap1.xhtml').add_content(StringIO.new(chapter('Chapter 1'))).toc_text('Chapter 1')
+        end
+        (@fixtures_directory / 'testdata/image1.jpg').open('rb') do |io|
+          book.add_item('img/image1.jpg', content: io).cover_image
+        end
+        book.add_item('text/chap2.xhtml').add_raw_content(chapter('Chapter 2'))
+      end
+      expect_valid_epub(sink.string)
+    end
+
+    it 'takes metadata changes to items which have been written already' do
+      sink = ChunkCollector.new
+      GEPUB::Book.write_epub(sink) do |book|
+        set_metadata(book)
+        item = book.add_ordered_item('text/chap1.xhtml', content: StringIO.new(chapter('Chapter 1')))
+        image = book.add_item('img/image1.jpg', content: (@fixtures_directory / 'testdata/image1.jpg').open('rb'))
+        item.toc_text('Late title').landmark(type: 'bodymatter', title: 'Start')
+        image.cover_image
+      end
+      parsed = GEPUB::Book.parse(StringIO.new(sink.string))
+      expect(parsed.item_by_href('img/image1.jpg').properties).to include('cover-image')
+      expect(parsed.item_by_href('nav.xhtml').content).to include('Late title', 'bodymatter')
+    end
+
+    it 'writes content which was assigned without add_content at the end' do
+      sink = ChunkCollector.new
+      GEPUB::Book.write_epub(sink) do |book|
+        set_metadata(book)
+        book.add_ordered_item('text/chap1.xhtml').content = chapter('Assigned')
+      end
+      expect(GEPUB::Book.parse(StringIO.new(sink.string)).item_by_href('text/chap1.xhtml').content).to include('Assigned')
+    end
+
+    it 'writes optional files as they get added' do
+      sink = ChunkCollector.new
+      GEPUB::Book.write_epub(sink) do |book|
+        set_metadata(book)
+        add_chapters(book, 1)
+        book.add_optional_file('META-INF/com.apple.ibooks.display-options.xml', StringIO.new('<display_options/>'))
+        expect(sink.string).to include('META-INF/com.apple.ibooks.display-options.xml')
+      end
+      expect(GEPUB::Book.parse(StringIO.new(sink.string)).optional_files).to include('META-INF/com.apple.ibooks.display-options.xml')
+    end
+
+    it 'refuses to replace content which has been written' do
+      GEPUB::Book.write_epub(ChunkCollector.new) do |book|
+        set_metadata(book)
+        item = book.add_item('text/chap1.xhtml', content: StringIO.new(chapter('Chapter 1')))
+        expect { item.add_content(StringIO.new(chapter('Again'))) }.to raise_error(GEPUB::StreamingError, %r{text/chap1.xhtml})
+        expect { item.add_raw_content(chapter('Again')) }.to raise_error(GEPUB::StreamingError)
+
+        image = book.add_item('img/image1.jpg', content: (@fixtures_directory / 'testdata/image1.jpg').open('rb'))
+        expect { image.add_content(StringIO.new('again')) }.to raise_error(GEPUB::StreamingError)
+      end
+    end
+
+    it 'refuses to generate the book again, since it has no content anymore' do
+      kept = nil
+      GEPUB::Book.write_epub(ChunkCollector.new) do |book|
+        set_metadata(book)
+        add_chapters(book, 1)
+        kept = book
+        expect { book.generate_epub_stream }.to raise_error(GEPUB::StreamingError)
+        expect { book.to_rack_body }.to raise_error(GEPUB::StreamingError)
+        expect(book.items.values.map(&:href)).not_to include('nav.xhtml') # no cleanup ran before raising
+      end
+      expect { kept.generate_epub_stream }.to raise_error(GEPUB::StreamingError)
+    end
+
+    it 'lets errors from the block through' do
+      expect {
+        GEPUB::Book.write_epub(ChunkCollector.new) { |_book| raise 'source went away' }
+      }.to raise_error('source went away')
+    end
+
+    describe 'writing into a ZipKit::Streamer' do
+      # This is what zip_kit_stream in a Rails controller does with its block and options
+      def zip_kit_stream_body(&block)
+        ZipKit::OutputEnumerator.new(ocf: true, &block)
+      end
+
+      def read_body(body)
+        bytes = +''
+        body.each { |chunk| bytes << chunk }
+        bytes
+      end
+
+      it 'builds the book into it instead of nesting a ZIP inside it', :uses_temporary_directory do
+        spec = self
+        body = zip_kit_stream_body do |zip|
+          GEPUB::Book.write_epub(zip) do |book|
+            spec.set_metadata(book)
+            spec.add_chapters(book, 2)
+          end
+        end
+        bytes = read_body(body)
+        expect(bytes.byteslice(30, 8)).to eq('mimetype') # it is the first entry, not a ZIP stored inside one
+        expect_valid_epub_with(bytes, 'text/chap2.xhtml')
+      end
+
+      it 'writes an already built book into it', :uses_temporary_directory do
+        book = build_book
+        expect_valid_epub(read_body(zip_kit_stream_body { |zip| book.write_epub(zip) }))
+      end
+
+      it 'works with GEPUB::Builder', :uses_temporary_directory do
+        block = builder_block
+        bytes = read_body(zip_kit_stream_body { |zip| GEPUB::Builder.write_epub(zip, &block) })
+        expect_valid_epub_with(bytes, 'text/chap1.xhtml')
+      end
+    end
+
+    describe '.rack_body' do
+      it 'only runs the block once the body is iterated over' do
+        ran = false
+        body = GEPUB::Book.rack_body { |book| ran = true; set_metadata(book); add_chapters(book, 1) }
+        expect(ran).to eq(false)
+        body.each { |_chunk| }
+        expect(ran).to eq(true)
+      end
+
+      it 'can be served as a Rack response body', :uses_temporary_directory do
+        spec = self
+        app = lambda do |_env|
+          body = GEPUB::Book.rack_body do |book|
+            spec.set_metadata(book)
+            spec.add_chapters(book, 3)
+          end
+          [200, {'content-type' => 'application/epub+zip'}, body]
+        end
+        response = Rack::MockRequest.new(Rack::Lint.new(app)).get('/book.epub')
+        expect_valid_epub_with(response.body, 'text/chap3.xhtml')
+      end
+    end
+
+    describe 'with GEPUB::Builder' do
+      it 'writes a valid EPUB with write_epub and rack_body', :uses_temporary_directory do
+        sink = ChunkCollector.new
+        GEPUB::Builder.write_epub(sink, &builder_block)
+        expect_valid_epub_with(sink.string, 'text/chap1.xhtml')
+
+        rack_bytes = +''
+        GEPUB::Builder.rack_body(&builder_block).each { |chunk| rack_bytes << chunk }
+        expect_valid_epub_with(rack_bytes, 'text/chap1.xhtml')
+      end
+    end
+
+    def builder_block
+      lambda do |*|
+        unique_identifier 'http://example.jp/builder-streamed-build', 'BookID', 'URL'
+        language 'en'
+        title 'Built while streaming via Builder'
+        resources do
+          ordered do
+            file 'text/chap1.xhtml' => StringIO.new(<<~XHTML)
+              <html xmlns="http://www.w3.org/1999/xhtml"><head><title>c1</title></head><body><p>Hello</p></body></html>
+            XHTML
+            heading 'Chapter 1'
+          end
+        end
+      end
+    end
+
+    def expect_valid_epub_with(bytes, href)
+      epub_file = @temporary_directory / 'built.epub'
+      epub_file.binwrite(bytes)
+      epubcheck(epub_file)
+      expect(GEPUB::Book.parse(StringIO.new(bytes)).item_by_href(href)).not_to be_nil
     end
   end
 end
