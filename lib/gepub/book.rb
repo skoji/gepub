@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 require 'rubygems'
 require 'nokogiri'
-require 'zip'
+require 'zip_kit'
+require 'zlib'
 require 'fileutils'
 
 # = GEPUB
@@ -102,9 +103,9 @@ module GEPUB
       package = nil
       package_path = nil
       book = nil
-      Zip::File.open(path_or_io) do
-        |zip_file|
-        package, package_path = parse_container(zip_file, files)
+      with_zip_io(path_or_io) do
+        |zip_io|
+        package, package_path = parse_container(zip_io, files)
         check_consistency_of_package(package, package_path)
         parse_files_into_package(files, package)
         book = Book.new(package.path)
@@ -183,17 +184,15 @@ module GEPUB
       cleanup_for_epub3
     end
 
-    # write EPUB to stream specified by the argument.
+    # write EPUB to ZipKit::Streamer specified by the argument.
     def write_to_epub_container(epub)
-      mod_time = Zip::DOSTime.now
+      mod_time = Time.now
       unless (last_mod = lastmodified).nil?
         tm = last_mod.content
-        mod_time = Zip::DOSTime.local(tm.year, tm.month, tm.day, tm.hour, tm.min, tm.sec)
+        mod_time = Time.local(tm.year, tm.month, tm.day, tm.hour, tm.min, tm.sec)
       end
 
-      mimetype_entry = Zip::Entry.new(nil, 'mimetype', time: mod_time, compression_method: Zip::Entry::STORED)
-      epub.put_next_entry(mimetype_entry)
-      epub << "application/epub+zip"
+      epub.write_mimetype_file(MIMETYPE_CONTENTS, modification_time: mod_time)
 
       entries = {}
       optional_files.each {
@@ -212,47 +211,27 @@ module GEPUB
 
       entries.sort_by { |k,_v| k }.each {
         |k,v|
-        zip_entry = Zip::Entry.new(nil, k, time: mod_time)
-        epub.put_next_entry(zip_entry)
-        epub << v.force_encoding('us-ascii')
+        data = v.b
+        deflated = Zlib::Deflate.new(Zlib::DEFAULT_COMPRESSION, -Zlib::MAX_WBITS).deflate(data, Zlib::FINISH)
+        epub.add_deflated_entry(filename: k, modification_time: mod_time, compressed_size: deflated.bytesize,
+                                uncompressed_size: data.bytesize, crc32: Zlib.crc32(data))
+        epub << deflated
       }
     end
 
     # generates and returns StringIO contains EPUB.
     def generate_epub_stream
       cleanup
-      # Save current Zip64 setting and disable it for EPUB compatibility
-      original_zip64_support = Zip.write_zip64_support
-      Zip.write_zip64_support = false
-
-      begin
-        Zip::OutputStream::write_buffer(StringIO.new) do
-          |epub|
-          write_to_epub_container(epub)
-        end
-      ensure
-        # Restore original Zip64 setting
-        Zip.write_zip64_support = original_zip64_support
-      end
+      out = StringIO.new(+'')
+      ZipKit::Streamer.open(out, ocf: true) { |epub| write_to_epub_container(epub) }
+      out
     end
 
     # writes EPUB to file. if file exists, it will be overwritten.
     def generate_epub(path_to_epub)
       cleanup
-      File.delete(path_to_epub) if File.exist?(path_to_epub)
-
-      # Save current Zip64 setting and disable it for EPUB compatibility
-      original_zip64_support = Zip.write_zip64_support
-      Zip.write_zip64_support = false
-
-      begin
-        Zip::OutputStream::open(path_to_epub) {
-          |epub|
-          write_to_epub_container(epub)
-        }
-      ensure
-        # Restore original Zip64 setting
-        Zip.write_zip64_support = original_zip64_support
+      File.open(path_to_epub, 'wb') do |f|
+        ZipKit::Streamer.open(f, ocf: true) { |epub| write_to_epub_container(epub) }
       end
     end
 
@@ -398,13 +377,19 @@ EOF
     end
 
     private
-    def self.parse_container(zip_file, files)
+    def self.with_zip_io(path_or_io)
+      return yield(path_or_io) if path_or_io.respond_to?(:seek)
+      File.open(path_or_io, 'rb') { |f| yield(f) }
+    end
+    private_class_method :with_zip_io
+
+    def self.parse_container(zip_io, files)
       package_path = nil
       package = nil
-      zip_file.each do |entry|
-        if !entry.directory?
-          files[entry.name] = entry.get_input_stream(&:read)
-          case entry.name
+      ZipKit::FileReader.read_zip_structure(io: zip_io).each do |entry|
+        unless entry.filename.end_with?('/')
+          files[entry.filename] = read_entry(entry, zip_io)
+          case entry.filename
           when MIMETYPE then
             if files[MIMETYPE] != MIMETYPE_CONTENTS
               warn "#{MIMETYPE} is not valid: should be #{MIMETYPE_CONTENTS} but was #{files[MIMETYPE]}"
@@ -414,14 +399,22 @@ EOF
             package_path = rootfile_from_container(files[CONTAINER])
             files.delete(CONTAINER)
           when ROOTFILE_PATTERN then
-            package = Package.parse_opf(files[entry.name], entry.name)
-            files.delete(entry.name)
+            package = Package.parse_opf(files[entry.filename], entry.filename)
+            files.delete(entry.filename)
           end
         end
       end
       return package, package_path
     end
     private_class_method :parse_container
+
+    def self.read_entry(entry, zip_io)
+      reader = entry.extractor_from(zip_io)
+      data = +''
+      data << reader.extract(64 * 1024) until reader.eof?
+      data
+    end
+    private_class_method :read_entry
 
     def self.check_consistency_of_package(package, package_path)
       if package.nil?
