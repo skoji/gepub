@@ -182,12 +182,27 @@ module GEPUB
     end
 
     def initialize(_attributes = {},  &block)
+      build(Book.new, &block)
+    end
+
+    # same as Book.write_epub, but the block is evaluated like the block given to Builder.new
+    def self.write_epub(io, _attributes = {}, &block)
+      Book.write_epub(io) { |book| allocate.send(:build, book, &block) }
+    end
+
+    # same as Book.rack_body, but the block is evaluated like the block given to Builder.new
+    def self.rack_body(_attributes = {}, &block)
+      Book.rack_body { |book| allocate.send(:build, book, &block) }
+    end
+
+    def build(book, &block)
       @last_defined_item = nil
-      @book = Book.new
+      @book = book
       instance_eval(&block)
       # TODO check @book's consistency
       true
     end
+    private :build
 
     # define base methods.
     GEPUB::Metadata::CONTENT_NODE_LIST.each {
@@ -307,6 +322,12 @@ module GEPUB
     end
     def generate_epub_stream
       @book.generate_epub_stream
+    end
+    def write_epub(io)
+      @book.write_epub(io)
+    end
+    def to_rack_body
+      @book.to_rack_body
     end
   end
 end

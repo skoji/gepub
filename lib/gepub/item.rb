@@ -9,6 +9,9 @@ module GEPUB
     include InspectMixin
 
     attr_accessor :content
+    # Set by Book while it streams the EPUB out: gets called with the item and its content
+    # (a String or an IO) as soon as the content is added, so that the item does not hold on to it
+    attr_writer :content_sink
     def self.create(parent, attributes = {})
       Item.new(attributes['id'], attributes['href'], attributes['media-type'], parent,
                attributes.reject { |k,_v| ['id','href','media-type'].member?(k) })
@@ -134,11 +137,13 @@ module GEPUB
 
     # add content data to the item.
     def add_raw_content(data)
+      raise_if_content_written
       @content = data
       if File.extname(self.href) =~ /x?html$/
         @content.force_encoding('utf-8')
       end
       guess_content_property
+      pass_content_to_sink
       self
     end
 
@@ -155,14 +160,35 @@ module GEPUB
     end
 
     def add_content_io(io)
+      raise_if_content_written
       io.binmode
+      # Only (X)HTML has to be read whole, for guess_content_property - everything else streams through
+      if @content_sink && File.extname(self.href) !~ /x?html$/
+        @content_sink.call(self, io)
+        @content_written = true
+        return self
+      end
       @content = io.read
       if File.extname(self.href) =~ /x?html$/
         @content.force_encoding('utf-8')
       end
       guess_content_property
+      pass_content_to_sink
       self
     end
+
+    def pass_content_to_sink
+      return unless @content_sink
+      @content_sink.call(self, @content)
+      @content = nil
+      @content_written = true
+    end
+    private :pass_content_to_sink
+
+    def raise_if_content_written
+      raise StreamingError, "The content of #{href} has already been written into the EPUB" if @content_written
+    end
+    private :raise_if_content_written
 
     # generate xml to supplied Nokogiri builder.
     def to_xml(builder, opf_version = '3.0')
